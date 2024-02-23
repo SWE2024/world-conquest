@@ -30,4 +30,9 @@ public class ScriptButtonHover : MonoBehaviour
     {
         img.enabled = false;
     }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }

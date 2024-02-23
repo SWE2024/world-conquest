@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 public class ScriptStartGame : MonoBehaviour
 {
+    private AsyncOperation asyncOperation;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(LoadGameScene());
     }
 
     // Update is called once per frame
@@ -20,17 +22,15 @@ public class ScriptStartGame : MonoBehaviour
 
     public void HandleClick()
     {
-        // sound for button click is not loading here
-        SceneManager.LoadScene("Assets/Scenes/Game.unity");
-        // StartCoroutine(LoadGameScene());
+        asyncOperation.allowSceneActivation = true;
     }
 
     IEnumerator LoadGameScene()
     {
-        AsyncOperation load = SceneManager.LoadSceneAsync("Assets/Scenes/Game.unity");
-        while (!load.isDone)
-        {
-            yield return null;
-        }
+        asyncOperation = SceneManager.LoadSceneAsync("Assets/Scenes/Game.unity");
+        asyncOperation.allowSceneActivation = false;
+        Debug.Log("Progress: " + asyncOperation.progress);
+
+        yield return null;
     }
 }
