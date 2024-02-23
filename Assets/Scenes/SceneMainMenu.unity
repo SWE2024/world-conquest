@@ -269,9 +269,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 320192200}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7666ad1e0c5f5748b089a78985a5e4d, type: 3}
+  m_Script: {fileID: 11500000, guid: bb5b846a1bb7da342b00df6124bbe17b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  btnPlay: {fileID: 741365446}
+  btnExit: {fileID: 1588799041}
 --- !u!1 &468452919
 GameObject:
   m_ObjectHideFlags: 0
@@ -882,23 +884,11 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 801305846}
           m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-          m_MethodName: Play
-          m_Mode: 1
+          m_MethodName: PlayOneShot
+          m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 1
-        - m_Target: {fileID: 320192207}
-          m_TargetAssemblyTypeName: ScriptStartGame, Assembly-CSharp
-          m_MethodName: HandleClick
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_ObjectArgument: {fileID: 8300000, guid: 8e5c3ea0311bace44b513a10e5dac4c3, type: 3}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -1276,11 +1266,11 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 801305846}
           m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-          m_MethodName: Play
-          m_Mode: 1
+          m_MethodName: PlayOneShot
+          m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_ObjectArgument: {fileID: 8300000, guid: 8e5c3ea0311bace44b513a10e5dac4c3, type: 3}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.AudioClip, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
@@ -1414,7 +1404,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -100}
   m_SizeDelta: {x: 2560, y: 1440}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1631435349
@@ -1464,8 +1454,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 144
-  m_fontSizeBase: 144
+  m_fontSize: 169
+  m_fontSizeBase: 169
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1659,8 +1649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6f4d83a6a787824b86ee0e2d740812b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicMenu: {fileID: 1875832247}
-  isMuted: 0
+  musicTrack: {fileID: 1875832247}
 --- !u!1 &1900907778
 GameObject:
   m_ObjectHideFlags: 0
