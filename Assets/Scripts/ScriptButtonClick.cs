@@ -30,7 +30,7 @@ public class ScriptButtonClick : MonoBehaviour
 
     private IEnumerator SwitchScene()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         SceneManager.LoadScene("assets/scenes/scenegame.unity");
     }
 
@@ -41,7 +41,7 @@ public class ScriptButtonClick : MonoBehaviour
 
     private IEnumerator CloseGame()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
         Application.Quit();
     }
 }

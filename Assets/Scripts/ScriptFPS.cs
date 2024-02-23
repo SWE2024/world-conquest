@@ -13,6 +13,7 @@ public class FPSUpdate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 240; // limits frame rate to 240
         fpsText.enabled = isShown;
     }
 
@@ -22,7 +23,7 @@ public class FPSUpdate : MonoBehaviour
         toggleFpsCounter();
         if (isShown)
         {
-            updateFpsCounter();
+            updateFpsCounter(); // updates fps counter every frame
         }
     }
 
@@ -39,18 +40,18 @@ public class FPSUpdate : MonoBehaviour
                 fpsText.enabled = true;
             }
 
-            isShown = !isShown;
+            isShown = !isShown; // disables frame rate (or enables)
         }
     }
 
     private void updateFpsCounter()
     {
-        updateTimer -= Time.deltaTime;
+        updateTimer -= Time.deltaTime; // take away time since last frame
         if (updateTimer <= 0f)
         {
             fps = 1f / Time.unscaledDeltaTime;
             fpsText.text = "FPS: " + Mathf.Round(fps);
-            updateTimer = 0.25f;
+            updateTimer = 0.2f;
         }
     }
 }
