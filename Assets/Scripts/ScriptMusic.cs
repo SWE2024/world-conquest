@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MusicScript : MonoBehaviour
 {
-    [SerializeField] AudioSource musicMenu;
-    [SerializeField] bool isMuted;
+    [SerializeField] AudioSource musicTrack;
+    private bool isMuted;
 
     // Start is called before the first frame update
     void Start()
     {
-        musicMenu.enabled = true;
-        musicMenu.mute = isMuted;
+        musicTrack.enabled = true;
+        musicTrack.mute = isMuted;
     }
 
     // Update is called once per frame
@@ -20,7 +21,7 @@ public class MusicScript : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             isMuted = !isMuted;
-            musicMenu.mute = isMuted;
+            musicTrack.mute = isMuted;
         }
     }
 }
