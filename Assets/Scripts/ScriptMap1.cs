@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,53 +10,150 @@ using UnityEngine.UI;
 
 
 
-// public class Player {};
 
-
-
-
-public class Country
-{
-    Button pointer;
-    UnityEngine.Color color;
-    bool highlighted = false;
-    int troops = 0;
-    public Country(Button button, UnityEngine.Color color) {
-        this.pointer = button;
-        this.color = color;
-    }
-    
-}
-
-// public enum colors : UnityEngine.Color {
-//     green = Color.green,
-//     blue = Color.blue,
-//     red = Color.red,
-//     white = Color.white,
-// }
 
 
 
 public class ScriptMap1 : MonoBehaviour
 {
-    Dictionary<Button, Country> country_state = new Dictionary<Button, Country>();
-    public System.Random random = new System.Random();
+    Dictionary<Button, Country> country_map = new Dictionary<Button, Country>();
 
-
-    static UnityEngine.Color int_to_color(int num) 
-    {
-        switch (num) 
-        {
-            case 0:
-                return UnityEngine.Color.green;
-            case 1:
-                return UnityEngine.Color.blue;
-            case 2:
-                return UnityEngine.Color.red;
-            default:
-                return UnityEngine.Color.white;
-        }
-    }
+    GameState game;
+    List<Country> countries = new List<Country>();
+    List<List<int>> list_of_neighbors = new List<List<int>> {
+        new List<int> {
+            2, 3, 37
+        },
+        new List<int> {
+            1, 3, 4, 9
+        },
+        new List<int> {
+            1, 2, 4, 6
+        },
+        new List<int> {
+            2, 3, 5, 6, 7, 9
+        },
+        new List<int> {
+            4, 7, 9
+        },
+        new List<int> {
+            3, 4, 7, 8
+        },
+        new List<int> {
+            4, 5, 6, 8
+        },
+        new List<int> {
+            6, 7, 10
+        },
+        new List<int> {
+            2, 4, 5, 14
+        },
+        new List<int> {
+            8, 11, 12
+        },
+        new List<int> {
+            10, 12, 21
+        },
+        new List<int> {
+            10, 11, 13
+        },
+        new List<int> {
+            11, 12
+        },
+        new List<int> {
+            9, 15, 16
+        },
+        new List<int> {
+            14, 16, 18, 19
+        },
+        new List<int> {
+            14, 15, 17, 18
+        },
+        new List<int> {
+            16, 18, 20, 27, 28, 29
+        },
+        new List<int> {
+            15, 16, 17, 19, 20
+        },
+        new List<int> {
+            15, 18, 20, 21
+        },
+        new List<int> {
+            17, 18,19, 22, 29
+        },
+        new List<int> {
+            11, 19, 22, 23, 24
+        },
+        new List<int> {
+            20, 21, 23, 29
+        },
+        new List<int> {
+            21, 22, 24, 26, 29
+        },
+        new List<int> {
+            21, 23, 25
+        },
+        new List<int> {
+            23, 24, 26
+        },
+        new List<int> {
+            23, 25
+        },
+        new List<int> {
+            17, 28, 32, 34
+        },
+        new List<int> {
+            17, 27, 29, 30, 32
+        },
+        new List<int> {
+            17, 20, 22, 23, 28, 29
+        },
+        new List<int> {
+            28, 29, 31, 32
+        },
+        new List<int> {
+            30, 32, 41
+        },
+        new List<int> {
+            27, 28, 30, 31, 33, 34
+        },
+        new List<int> {
+            32, 34, 35, 39, 40
+        },
+        new List<int> {
+            27, 32, 33, 35, 36
+        },
+        new List<int> {
+            33, 34, 36, 38, 39
+        },
+        new List<int> {
+            34, 35, 37, 38
+        },
+        new List<int> {
+            1, 36, 38
+        },
+        new List<int> {
+            35, 36, 39
+        },
+        new List<int> {
+            33, 35, 38, 40
+        },
+        new List<int> {
+            33, 39
+        },
+        new List<int> {
+            31, 42
+        },
+        new List<int> {
+            41, 43, 44
+        },
+        new List<int> {
+            42, 44
+        },
+        new List<int> {
+            42, 43
+        },
+    };
 
 
 
@@ -153,14 +252,52 @@ public class ScriptMap1 : MonoBehaviour
         // dictOfNeighbours.Add(country42, new List<Button>() { country41, country43, country44 });
         // dictOfNeighbours.Add(country43, new List<Button>() { country42, country44 });
         // dictOfNeighbours.Add(country44, new List<Button>() { country42, country43 });
+
+
+
+        
+
+        // initializes the country instances and stores them in a hashmap to access the country map with the button
+        // the colors of countries are randomly set here
+        // also gets added to the countries list
+
+        
+        List<Country> countries = new List<Country>();
         for (int i = 1; i < 45; i++) {
             Button button = GameObject.Find($"country{i}").GetComponent<Button>();
-            UnityEngine.Color color = ScriptMap1.int_to_color(this.random.Next(0, 3));
+            UnityEngine.Color color = GameState.int_to_color(GameState.random.Next(0, 3));
             button.GetComponent<Image>().color = color;
             Country country = new Country(button, color);
 
-            this.country_state.Add(button, country);
+            this.country_map.Add(button, country);
+            countries.Add(country);
         }
+
+        if (countries.Count != this.list_of_neighbors.Count) {
+            throw new Exception("list sizes do not match");
+        } else {
+            Debug.Log("list sizes do match");
+        }
+
+        // sets neighbors for each country 
+        for(int i = 0; i < countries.Count; i++) {
+            List<Country> neighbors = new List<Country>();
+
+            foreach(int index in list_of_neighbors[i]) {
+                neighbors.Add(countries[index - 1]);
+            }
+
+            countries[i].set_neighbors(neighbors);
+        }
+
+
+        //initializes the gamestate instance
+        this.game = new GameState(countries);
+    }
+
+    private List<T> ArrayListList<T>()
+    {
+        throw new NotImplementedException();
     }
 
     // Update is called once per frame
@@ -168,25 +305,29 @@ public class ScriptMap1 : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            // GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
+            GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
 
-            // if (selectedObj != null)
-            // {
-            //     Button selectedBtn = GameObject.Find(selectedObj.name).GetComponent<Button>();
+            if (selectedObj != null)
+            {
+                Button selectedBtn = GameObject.Find(selectedObj.name).GetComponent<Button>();
 
-            //     if (selectedBtn != null) 
-            //     {
+                if (selectedBtn != null) 
+                {
+                    Country country = this.country_map[selectedBtn];
+
+                    game.take_country_click(country);
+
+                    // foreach (Button neighbour in dictOfNeighbours[selectedBtn])
+                    // {
+                    //     neighbour.GetComponent<Image>().color = Color.green;
+                    // }
                     
 
-            //     }
+                }
 
 
 
-            //     foreach (Button neighbour in dictOfNeighbours[selectedBtn])
-            //     {
-            //         neighbour.GetComponent<Image>().color = Color.green;
-            //     }
-            // }
+            }
         }
     }
 }
