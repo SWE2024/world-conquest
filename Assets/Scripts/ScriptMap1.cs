@@ -156,11 +156,38 @@ public class ScriptMap1 : MonoBehaviour
         // the colors of countries are randomly set here
         // also gets added to the countries list
         Debug.Log($"starting with {playerCount} players");
+
+                //initializes the gamestate instance which is singleton
+        this.game = GameState.New(ScriptMap1.playerCount);
         
+        int num_of_countries = 44 / ScriptMap1.playerCount;
+        int remainder = 44 % ScriptMap1.playerCount;
+
+        List<Color> list_of_colors = new List<Color>();
+        List<Color> copy_turns = new List<Color>();
+
+        foreach (Color color in this.game.turns_order) {
+            copy_turns.Add(color);
+            for (int i = 0; i < num_of_countries; i ++) list_of_colors.Add(color);
+        }
+
+
+        for (int i = 0; i < remainder; i++) {
+            int index = GameState.random.Next(copy_turns.Count);
+            list_of_colors.Add(copy_turns[index]);
+            copy_turns.RemoveAt(index);
+        }
+
         List<Country> countries = new List<Country>();
         for (int i = 1; i < 45; i++) {
             Button button = GameObject.Find($"country{i}").GetComponent<Button>();
-            UnityEngine.Color color = GameState.int_to_color(GameState.random.Next(0, 3));
+
+
+            int index = GameState.random.Next(list_of_colors.Count);
+            
+            UnityEngine.Color color = list_of_colors[index];
+            list_of_colors.RemoveAt(index);
+
             button.GetComponent<Image>().color = color;
             Country country = new Country(button, color);
 
@@ -186,8 +213,6 @@ public class ScriptMap1 : MonoBehaviour
         }
 
 
-        //initializes the gamestate instance
-        this.game = new GameState(countries);
     }
 
     private List<T> ArrayListList<T>()

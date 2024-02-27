@@ -13,26 +13,51 @@ public enum Country_State {
     considered,
 }
 public class GameState 
-{
+{   
+    private static GameState instance = null;
+
     List<Country> list_of_countries;
     public static System.Random random = new System.Random();
     Country highlighted = null;
     List<Country> considered = null;
     UnityEngine.Color turn_color;
     SpriteRenderer square;
-    List<UnityEngine.Color> turns_order;
+    public List<UnityEngine.Color> turns_order;
     int turn_index = 0;
 
-    public GameState(List<Country> list) {
-        this.list_of_countries = list;
-        this.turns_order = GameState.create_turns();        
+    int playerCount;
+
+    
+
+    private GameState(int playerCount) {
+        // this.list_of_countries = list;
+        this.playerCount = playerCount;
+        this.turns_order = GameState.create_turns(this.playerCount);        
         this.turn_color = this.turns_order[0];
         this.square = GameObject.Find("Square").GetComponent<SpriteRenderer>();
         this.square.color = turn_color;
     }
 
-    private static List<Color> create_turns() {
-        List<int> list = new List<int> {0 , 1, 2};
+    public void set_countries(List<Country> list) {
+        this.list_of_countries = list;
+    }
+
+
+    //singleton's constructor method access thru here
+    public static GameState New(int playerCount) {
+        if (instance != null) return GameState.instance;
+        GameState.instance = new GameState(playerCount);
+        return GameState.instance;
+    }
+
+
+    private static List<Color> create_turns(int playerCount) {
+        List<int> list = new List<int>();
+
+        for (int i = 0; i < playerCount; i++) {
+            list.Add(i);
+        }
+
 
         List<int> randomized = new List<int>();
 
@@ -64,8 +89,20 @@ public class GameState
                 return Color.blue;
             case 2:
                 return Color.red;
+            case 3:
+                return Color.cyan;
+            case 4: 
+                return Color.magenta;
+            case 5: 
+                return Color.yellow;
+            case 6:
+                return new Color(200, 99, 69, 255);
+            case 7: 
+                return new Color(90, 69, 75, 255);
             default:
-                return Color.white;
+                Debug.Log("default clause hit");
+                throw new System.Exception("wtf");
+
         }
     }
 
