@@ -2,19 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.Accessibility;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class ScriptButtonClick : MonoBehaviour
+public class ClickMainMenu : MonoBehaviour
 {
     [SerializeField] Button btnPlay;
     [SerializeField] Button btnExit;
+    [SerializeField] Button btnSettingsEnter;
+    [SerializeField] Button btnSettingsLeave;
+    [SerializeField] Canvas menuSettings;
 
     // Start is called before the first frame update
     void Start()
     {
-        btnPlay.onClick.AddListener(LoadGame);
+        menuSettings.enabled = false;
+        btnPlay.onClick.AddListener(LoadLobby);
         btnExit.onClick.AddListener(ExitGame);
+        btnSettingsEnter.onClick.AddListener(SettingsEnter);
+        btnSettingsLeave.onClick.AddListener(SettingsLeave);
     }
 
     // Update is called once per frame
@@ -23,7 +30,7 @@ public class ScriptButtonClick : MonoBehaviour
         
     }
 
-    void LoadGame()
+    void LoadLobby()
     {
         StartCoroutine(SwitchScene());
     }
@@ -31,7 +38,17 @@ public class ScriptButtonClick : MonoBehaviour
     private IEnumerator SwitchScene()
     {
         yield return new WaitForSeconds(1);
-        SceneManager.LoadScene("assets/scenes/scenegame.unity");
+        SceneManager.LoadScene("assets/scenes/scenelobby.unity");
+    }
+
+    void SettingsEnter()
+    {
+        menuSettings.enabled = true;
+    }
+
+    void SettingsLeave()
+    {
+        menuSettings.enabled = false;
     }
 
     void ExitGame()
