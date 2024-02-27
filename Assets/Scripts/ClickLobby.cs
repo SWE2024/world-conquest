@@ -33,20 +33,14 @@ public class ClickButton : MonoBehaviour
 
     void HandleMinus()
     {
-        if (playerCount <= 2)
-        {
-            return;
-        }
+        if (playerCount <= 2) { return; }
         playerCount--;
         number.text = $"{playerCount}"; 
     }
 
     void HandlePlus()
     {
-        if (playerCount >= 8)
-        {
-            return;
-        }
+        if (playerCount >= 8) { return; }
         playerCount++;
         number.text = $"{playerCount}";
     }

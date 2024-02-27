@@ -767,19 +767,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 664162403}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 320192205}
-        m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-        m_MethodName: QuitGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &664162403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1469,19 +1457,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1466504386}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 320192205}
-        m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-        m_MethodName: QuitGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &1466504386
 MonoBehaviour:
   m_ObjectHideFlags: 0
