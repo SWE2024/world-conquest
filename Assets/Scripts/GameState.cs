@@ -34,7 +34,7 @@ public class GameState
         this.playerCount = playerCount;
         this.turns_order = GameState.create_turns(this.playerCount);        
         this.turn_color = this.turns_order[0];
-        this.square = GameObject.Find("Square").GetComponent<SpriteRenderer>();
+        this.square = GameObject.Find("CurrentColour").GetComponent<SpriteRenderer>();
         this.square.color = turn_color;
     }
 
