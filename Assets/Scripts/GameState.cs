@@ -16,7 +16,7 @@ public class GameState
 {   
     private static GameState instance = null;
 
-    List<Country> list_of_countries;
+    public List<Country> list_of_countries;
     public static System.Random random = new System.Random();
     Country highlighted = null;
     List<Country> considered = null;

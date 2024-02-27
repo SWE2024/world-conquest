@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -211,6 +212,32 @@ public class ScriptMap1 : MonoBehaviour
 
             countries[i].set_neighbors(neighbors);
         }
+
+        game.set_countries(countries);
+
+
+        Dictionary<Color, int> dict = new Dictionary<Color, int>();
+
+        foreach (Country country in game.list_of_countries) {
+
+            Color color = country.color;
+            if (dict.ContainsKey(color)) {
+                dict[color] = dict[color] + 1;
+            } else {
+                dict[color] = 1;
+            }
+
+
+        }
+
+        foreach (int num in dict.Values.ToList()) {
+            Debug.Log($"{num}");
+        }
+
+        
+
+
+
 
 
     }
