@@ -69,8 +69,8 @@ public class GameState
 
         List<Color> output = new List<Color>();
 
-        foreach (int index in randomized) {
-            output.Add(GameState.int_to_color(index));
+        foreach (int color_index in randomized) {
+            output.Add(GameState.int_to_color(color_index));
         }
 
         return output;
@@ -96,9 +96,9 @@ public class GameState
             case 5: 
                 return Color.yellow;
             case 6:
-                return new Color(200, 99, 69, 255);
+                return new Color(1.0F, 0.5F, 0.0F, 1.0F);
             case 7: 
-                return new Color(90, 69, 75, 255);
+                return new Color(0.5F, 0.1F, 1F, 1.0F);
             default:
                 Debug.Log("default clause hit");
                 throw new System.Exception("wtf");
