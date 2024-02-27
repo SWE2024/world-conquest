@@ -14,17 +14,38 @@ public enum Country_State {
 }
 public class GameState 
 {   
+    //holds the reference to the singleton instance
     private static GameState instance = null;
 
-    public List<Country> list_of_countries;
+    // list of countries
+    public List<Country> list_of_countries = new List<Country>();
+
+    // random generator
     public static System.Random random = new System.Random();
+
+    // represent a state, if it holds a country that country is highlighted
+    // if not highlighted, holds null
     Country highlighted = null;
+
+    // represent the same state as above, if it holds a list of country a country is highlighted (can be empty but still means highlighted)
+    // if not highlighted, holds null
+    // country held in the list are the attackable countries when a country is selected. so not all neighboring countries will be here
+    // only the attckable neighboring country
     List<Country> considered = null;
+
+    //turn's color
     UnityEngine.Color turn_color;
+
+    // the square sprite that shows the color of the turn
     SpriteRenderer square;
+
+    // this holds the order of turn represented by color
     public List<UnityEngine.Color> turns_order;
+
+    // it's the index to the turns order to know aht is next
     int turn_index = 0;
 
+    //player count
     int playerCount;
 
     
@@ -32,17 +53,17 @@ public class GameState
     private GameState(int playerCount) {
         // this.list_of_countries = list;
         this.playerCount = playerCount;
-        this.turns_order = GameState.create_turns(this.playerCount);        
+
+        // creates the turns order here
+        this.turns_order = GameState.create_turns(this.playerCount);       
+
+        // set the first turn color
         this.turn_color = this.turns_order[0];
         this.square = GameObject.Find("CurrentColour").GetComponent<SpriteRenderer>();
         this.square.color = turn_color;
     }
 
-    public void set_countries(List<Country> list) {
-        this.list_of_countries = list;
-    }
-
-
+    
     //singleton's constructor method access thru here
     public static GameState New(int playerCount) {
         if (instance != null) return GameState.instance;
@@ -50,7 +71,32 @@ public class GameState
         return GameState.instance;
     }
 
+    // this generates a of colors that represents the distributed number of countries, 
+    // if 5 reds are here red holds five countries
+    public List<Color> generate_list_of_colors() {
+        int num_of_countries = 44 / this.playerCount;
+        int remainder = 44 % this.playerCount;
 
+        List<Color> list_of_colors = new List<Color>();
+        List<Color> copy_turns = new List<Color>();
+
+        foreach (Color color in this.turns_order) {
+            copy_turns.Add(color);
+            for (int i = 0; i < num_of_countries; i ++) list_of_colors.Add(color);
+        }
+
+
+        for (int i = 0; i < remainder; i++) {
+            int index = GameState.random.Next(copy_turns.Count);
+            list_of_colors.Add(copy_turns[index]);
+            copy_turns.RemoveAt(index);
+        }
+
+        return list_of_colors;
+    }
+
+
+    // generate the randomized a color list to track turns
     private static List<Color> create_turns(int playerCount) {
         List<int> list = new List<int>();
 
@@ -78,7 +124,7 @@ public class GameState
 
 
 
-
+    // returns a color from a int for randomizing color
     public static Color int_to_color(int num) 
     {
         switch (num) 
@@ -106,34 +152,38 @@ public class GameState
         }
     }
 
-
-
+    // deal with country click
+    // top level general method
     public void take_country_click(Country country) {
         //this handles highlighting (if nothing is highlighted)
         if (this.highlighted == null) {
-            // this handles the case that the clicked country's owner doesn't much turn's player
+            // handles the case  where this turn's player clicked a country not owned by this player
             if (this.turn_color != country.color) return;
             this.highlight(country);
             return;
         }  
 
-        //from here onwards is when smth is highlighted
-
+        //from here onwards is when smth is highlighted and it about to handle a country click 
         //check if the country being clicked is attackable, positive index is true, else is false
         int index = this.considered.IndexOf(country);
 
+        //if clicked country is unattackable, unhighlights and returns
         if (index < 0) {
             this.unhighlight();
             return;
         }
 
+        //from here is attacking
 
+        //changes the country's owner and color
         this.attack(index);
 
+        //changes turns
         this.next_turn();
 
         return;
     }
+
 
     public void highlight(Country country) {
         this.highlighted = country;
@@ -151,6 +201,7 @@ public class GameState
         this.highlighted = null;
         this.considered = null;
     }
+
 
     public void attack(int index) {
         Country attacked = this.considered[index];
@@ -175,7 +226,6 @@ public class GameState
         Debug.Log($"the turn now is {this.turn_index}");
 
         this.turn_color = this.turns_order[this.turn_index];
-
         this.square.GetComponent<SpriteRenderer>().color = this.turn_color;
     }
 }
