@@ -4,7 +4,7 @@ using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class ScriptCamera : MonoBehaviour
+public class CameraHandler : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     private Vector3 dragOrigin;

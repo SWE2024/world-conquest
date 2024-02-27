@@ -32,7 +32,7 @@ public class GameState
         this.square.color = turn_color;
     }
 
-    private static List<UnityEngine.Color> create_turns() {
+    private static List<Color> create_turns() {
         List<int> list = new List<int> {0 , 1, 2};
 
         List<int> randomized = new List<int>();
@@ -43,7 +43,7 @@ public class GameState
             list.RemoveAt(index);
         }
 
-        List<UnityEngine.Color> output = new List<UnityEngine.Color>();
+        List<Color> output = new List<Color>();
 
         foreach (int index in randomized) {
             output.Add(GameState.int_to_color(index));
@@ -55,18 +55,18 @@ public class GameState
 
 
 
-    public static UnityEngine.Color int_to_color(int num) 
+    public static Color int_to_color(int num) 
     {
         switch (num) 
         {
             case 0:
-                return UnityEngine.Color.green;
+                return Color.green;
             case 1:
-                return UnityEngine.Color.blue;
+                return Color.blue;
             case 2:
-                return UnityEngine.Color.red;
+                return Color.red;
             default:
-                return UnityEngine.Color.white;
+                return Color.white;
         }
     }
 
@@ -142,82 +142,4 @@ public class GameState
 
         this.square.GetComponent<SpriteRenderer>().color = this.turn_color;
     }
-
-
-
-
-}
-
-
-
-
-
-
-public class Country
-{
-    public Button pointer = null;
-    public List<Country> neighbors = null;
-    public UnityEngine.Color color;
-    public Country_State state = Country_State.none;
-    public int troops = 0;
-    public Country(Button button, UnityEngine.Color color) {
-        this.pointer = button;
-        this.color = color;
-    }
-    public void set_neighbors(List<Country> list) {
-        if (neighbors != null) return;
-        this.neighbors = list;
-    }
-
-    public void change_country_color(UnityEngine.Color color) {
-        this.color = color;
-        this.pointer.GetComponent<Image>().color = color;
-    }
-
-    private void button_temp_color_change(UnityEngine.Color color) {
-        this.pointer.GetComponent<Image>().color = color;
-    }
-
-    public void reverse_color_change() {
-        this.pointer.GetComponent<Image>().color = this.color;
-    }
-
-    public void country_clicked() {
-        switch(this.state) {
-            case Country_State.none:
-                this.highlight();
-                return ;
-            case Country_State.highlighted:
-                this.unhighlight();
-                return ;
-            default:
-                return ;
-        }
-    }
-
-    public List<Country> highlight() {
-        this.button_temp_color_change(UnityEngine.Color.black);
-
-        List<Country> output = new List<Country>();
-
-        foreach (Country neighbor in this.neighbors ) {
-            if (neighbor.color == this.color) continue;
-
-            neighbor.button_temp_color_change(UnityEngine.Color.white);
-            output.Add(neighbor);
-        }
-        return output;
-    }
-
-    public void unhighlight() {
-        this.reverse_color_change();
-        this.state = Country_State.none;
-
-        foreach (Country neighbor in this.neighbors ) {
-            neighbor.reverse_color_change();
-            neighbor.state = Country_State.none;
-        }
-    }
-
-
 }
