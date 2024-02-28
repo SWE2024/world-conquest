@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
-
-public class Big_list {
+public class Neighbours
+{
     public static List<List<int>> list_of_neighbors = new List<List<int>> {
         new List<int> {
             2, 3, 37
