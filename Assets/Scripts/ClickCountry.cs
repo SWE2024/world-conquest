@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScriptClickCountry : MonoBehaviour
+public class ClickCountry : MonoBehaviour
 {
     [SerializeField] Image btn;
 

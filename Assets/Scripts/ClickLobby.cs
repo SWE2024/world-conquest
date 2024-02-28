@@ -44,7 +44,7 @@ public class ClickButton : MonoBehaviour
 
     void LoadGame()
     {
-        ScriptMap1.playerCount = playerCount;
+        Map1.playerCount = playerCount;
         SceneManager.LoadScene("assets/scenes/scenegame.unity");
     }
 
