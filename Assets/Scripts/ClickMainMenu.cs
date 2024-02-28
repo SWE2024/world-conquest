@@ -1,8 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-using UnityEngine.Accessibility;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -27,7 +24,7 @@ public class ClickMainMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void LoadLobby()

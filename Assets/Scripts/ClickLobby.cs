@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -28,14 +25,14 @@ public class ClickButton : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void HandleMinus()
     {
         if (playerCount <= 2) { return; }
         playerCount--;
-        number.text = $"{playerCount}"; 
+        number.text = $"{playerCount}";
     }
 
     void HandlePlus()
