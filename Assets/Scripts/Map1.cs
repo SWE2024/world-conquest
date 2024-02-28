@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ScriptMap1 : MonoBehaviour
+public class Map1 : MonoBehaviour
 {
     //number of players, this gets set before this scene loads by the previous scene
     public static int playerCount;
@@ -17,7 +17,7 @@ public class ScriptMap1 : MonoBehaviour
     GameState game;
 
     // list of neighbors
-    static List<List<int>> list_of_neighbors = Neighbours.list_of_neighbors;
+    static List<List<int>> list_of_neighbors = Map1Neighbours.list_of_neighbors;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +25,7 @@ public class ScriptMap1 : MonoBehaviour
         Debug.Log($"starting with {playerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameState.New(ScriptMap1.playerCount);
+        game = GameState.New(Map1.playerCount);
 
         //this is the list of distributed colors which will be randomly picked
         List<Color> list_of_colors = game.generate_list_of_colors();
@@ -54,7 +54,7 @@ public class ScriptMap1 : MonoBehaviour
             game.list_of_countries.Add(country);
         }
 
-        if (game.list_of_countries.Count != Neighbours.list_of_neighbors.Count)
+        if (game.list_of_countries.Count != Map1Neighbours.list_of_neighbors.Count)
         {
             throw new Exception("list sizes do not match");
         }

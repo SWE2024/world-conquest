@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class Neighbours
+public class Map1Neighbours
 {
     public static List<List<int>> list_of_neighbors = new List<List<int>> {
         new List<int> {
