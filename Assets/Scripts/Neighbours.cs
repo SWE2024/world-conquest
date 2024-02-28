@@ -88,7 +88,7 @@ public class Neighbours
             17, 27, 29, 30, 32
         },
         new List<int> {
-            17, 20, 22, 23, 28, 29
+            17, 20, 22, 23, 28, 30
         },
         new List<int> {
             28, 29, 31, 32
