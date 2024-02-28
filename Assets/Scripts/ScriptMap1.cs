@@ -41,7 +41,6 @@ public class ScriptMap1 : MonoBehaviour
             UnityEngine.Color color = list_of_colors[index];
             list_of_colors.RemoveAt(index);
 
-
             // sets the button color and create a country instance with it
             button.GetComponent<Image>().color = color;
             Country country = new Country(button, color);

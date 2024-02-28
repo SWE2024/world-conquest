@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public enum Country_State
 {
@@ -30,21 +30,19 @@ public class GameState
     List<Country> considered = null;
 
     //turn's color
-    UnityEngine.Color turn_color;
+    Color turn_color;
 
     // the square sprite that shows the color of the turn
-    SpriteRenderer square;
+    Image square;
 
     // this holds the order of turn represented by color
-    public List<UnityEngine.Color> turns_order;
+    public List<Color> turns_order;
 
     // it's the index to the turns order to know aht is next
     int turn_index = 0;
 
     //player count
     int playerCount;
-
-
 
     private GameState(int playerCount)
     {
@@ -56,10 +54,13 @@ public class GameState
 
         // set the first turn color
         this.turn_color = this.turns_order[0];
-        this.square = GameObject.Find("CurrentColour").GetComponent<SpriteRenderer>();
+        this.square = GameObject.Find("CurrentColour").GetComponent<Image>();
+        /*
+         * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
+         * GameObject.Find("CurrentPlayer").GetComponent<Image>();
+         */
         this.square.color = turn_color;
     }
-
 
     //singleton's constructor method access thru here
     public static GameState New(int playerCount)
@@ -85,7 +86,6 @@ public class GameState
             for (int i = 0; i < num_of_countries; i++) list_of_colors.Add(color);
         }
 
-
         for (int i = 0; i < remainder; i++)
         {
             int index = GameState.random.Next(copy_turns.Count);
@@ -96,7 +96,6 @@ public class GameState
         return list_of_colors;
     }
 
-
     // generate the randomized a color list to track turns
     private static List<Color> create_turns(int playerCount)
     {
@@ -106,7 +105,6 @@ public class GameState
         {
             list.Add(i);
         }
-
 
         List<int> randomized = new List<int>();
 
@@ -126,8 +124,6 @@ public class GameState
 
         return output;
     }
-
-
 
     // returns a color from a int for randomizing color
     public static Color int_to_color(int num)
@@ -192,7 +188,6 @@ public class GameState
         return;
     }
 
-
     public void highlight(Country country)
     {
         this.highlighted = country;
@@ -212,7 +207,6 @@ public class GameState
         this.highlighted = null;
         this.considered = null;
     }
-
 
     public void attack(int index)
     {
@@ -240,6 +234,6 @@ public class GameState
         Debug.Log($"the turn now is {this.turn_index}");
 
         this.turn_color = this.turns_order[this.turn_index];
-        this.square.GetComponent<SpriteRenderer>().color = this.turn_color;
+        this.square.GetComponent<Image>().color = this.turn_color;
     }
 }
