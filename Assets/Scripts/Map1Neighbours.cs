@@ -115,7 +115,7 @@ public class Map1Neighbours
             1, 36, 38
         },
         new List<int> {
-            35, 36, 39
+            35, 36, 37, 39
         },
         new List<int> {
             33, 35, 38, 40
