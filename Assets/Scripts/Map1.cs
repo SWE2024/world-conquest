@@ -76,7 +76,30 @@ public class Map1 : MonoBehaviour
             game.list_of_countries[i].set_neighbors(neighbors);
         }
         // game.set_countries(countries);
+
+
+        // create a class to have methods to manipulate a few fields of gamestate:
+        // 1. list of countries
+        // 2. square to show turns
+        // 3. turns_order to iterate the turns
+        // 4. change the color field of the country instance 
+        // 5. access the button through the country instance to actually change the color
+
+
+        //after setup function executes the only difference is the the country buttons actual color the and the 
+        // country instance's color field
+
+        
+        //the ui when you select the country is confirm and cancel 
+        // you have to track of when a country is selected so switch between highlighted and not highlighted
+        // keep track of which country instance is already taken, you can do this by its color field if its white or not
+
+
+        
+
     }
+
+
 
     // Update is called once per frame
     void Update()
