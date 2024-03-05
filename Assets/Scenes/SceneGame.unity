@@ -7550,7 +7550,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'World Conquest (build: sprint-2)'
+  m_text: 'World Conquest (build: sprint-3)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e3afd6450cbd8a84cbcc577456a52d03, type: 2}
   m_sharedMaterial: {fileID: 5575954358767294868, guid: e3afd6450cbd8a84cbcc577456a52d03, type: 2}
