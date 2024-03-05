@@ -10,6 +10,8 @@ public class Map1 : MonoBehaviour
     //number of players, this gets set before this scene loads by the previous scene
     public static int playerCount;
 
+    public static List<Color> list_of_colors;
+
     //this is map to get the country instance that holds the button that is clicked
     Dictionary<Button, Country> country_map = new Dictionary<Button, Country>();
 
@@ -25,10 +27,16 @@ public class Map1 : MonoBehaviour
         Debug.Log($"starting with {playerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameState.New(Map1.playerCount);
+        game = GameState.Get();
 
         //this is the list of distributed colors which will be randomly picked
-        List<Color> list_of_colors = game.generate_list_of_colors();
+        //List<Color> list_of_colors = game.generate_list_of_colors();
+
+        GameObject.Find("CurrentColour").GetComponent<Image>().color = game.turn_color; // sets the turn color indicator
+        /*
+         * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
+         * GameObject.Find("CurrentPlayer").GetComponent<Image>();
+         */
 
         //loop to create country instances set color randomly add them to the country list        
         for (int i = 1; i < 45; i++)

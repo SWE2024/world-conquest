@@ -8,6 +8,7 @@ public enum Country_State
     highlighted,
     considered,
 }
+
 public class GameState
 {
     //holds the reference to the singleton instance
@@ -30,7 +31,7 @@ public class GameState
     List<Country> considered = null;
 
     //turn's color
-    Color turn_color;
+    public Color turn_color;
 
     // the square sprite that shows the color of the turn
     Image square;
@@ -38,7 +39,7 @@ public class GameState
     // this holds the order of turn represented by color
     public List<Color> turns_order;
 
-    // it's the index to the turns order to know aht is next
+    // it's the index to the turns order to know who is next
     int turn_index = 0;
 
     //player count
@@ -67,6 +68,17 @@ public class GameState
     {
         if (instance != null) return GameState.instance;
         GameState.instance = new GameState(playerCount);
+        return GameState.instance;
+    }
+
+    public void reset_turn()
+    {
+        this.turn_color = this.turns_order[0];
+        this.turn_index = 0;
+    }
+
+    public static GameState Get()
+    {
         return GameState.instance;
     }
 
@@ -142,10 +154,6 @@ public class GameState
                 return Color.magenta;
             case 5:
                 return Color.yellow;
-            case 6:
-                return new Color(1.0F, 0.5F, 0.0F, 1.0F);
-            case 7:
-                return new Color(0.5F, 0.1F, 1F, 1.0F);
             default:
                 Debug.Log("default clause hit");
                 throw new System.Exception("wtf");
