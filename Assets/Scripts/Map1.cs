@@ -10,7 +10,7 @@ public class Map1 : MonoBehaviour
     //number of players, this gets set before this scene loads by the previous scene
     public static int playerCount;
 
-    public static List<Color> list_of_colors;
+    public static List<(Color color, int troops)> list_of_setup_countries;
 
     //this is map to get the country instance that holds the button that is clicked
     Dictionary<Button, Country> country_map = new Dictionary<Button, Country>();
@@ -29,16 +29,32 @@ public class Map1 : MonoBehaviour
         //initializes the gamestate instance which is singleton
         game = GameState.Get();
 
-        //this is the list of distributed colors which will be randomly picked
-        //List<Color> list_of_colors = game.generate_list_of_colors();
-
         GameObject.Find("CurrentColour").GetComponent<Image>().color = game.turn_color; // sets the turn color indicator
         /*
          * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
          * GameObject.Find("CurrentPlayer").GetComponent<Image>();
          */
 
-        //loop to create country instances set color randomly add them to the country list        
+        // if not randomly generating, use the code below
+        for (int i = 1; i < 45; i++)
+        {
+            Button button = GameObject.Find($"country{i}").GetComponent<Button>();
+            Color color = list_of_setup_countries[i - 1].color;
+            int troops = list_of_setup_countries[i - 1].troops;
+
+            Country country = new Country(button, color, troops);
+            button.GetComponent<Image>().color = color;
+            button.GetComponentInChildren<TextMeshProUGUI>().text = $"{troops}";
+
+            country_map.Add(button, country);
+            game.list_of_countries.Add(country);
+        }
+
+        // if randomly generating, use the code below
+        // this is the list of distributed colors which will be randomly picked
+        // List<Color> list_of_colors = game.generate_list_of_colors();
+        // loop to create country instances set color randomly add them to the country list        
+        /*
         for (int i = 1; i < 45; i++)
         {
             //gets the button
@@ -46,7 +62,7 @@ public class Map1 : MonoBehaviour
 
             //randomly selected index to pop a color
             int index = GameState.random.Next(list_of_colors.Count);
-            UnityEngine.Color color = list_of_colors[index];
+            Color color = list_of_colors[index];
             list_of_colors.RemoveAt(index);
 
             // sets the button color and create a country instance with it
@@ -70,6 +86,7 @@ public class Map1 : MonoBehaviour
         {
             Debug.Log("list sizes do match");
         }
+        */
 
         // sets neighbors for each country 
         for (int i = 0; i < game.list_of_countries.Count; i++)
@@ -106,8 +123,6 @@ public class Map1 : MonoBehaviour
         
 
     }
-
-
 
     // Update is called once per frame
     void Update()

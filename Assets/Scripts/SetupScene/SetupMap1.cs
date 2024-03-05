@@ -18,7 +18,7 @@ public class SetupMap1 : MonoBehaviour
     GameState game;
 
     // the list of colors chosen in setup phase
-    List<Color> list;
+    List<(Color color, int troops)> list;
 
     // Start is called before the first frame update
     void Start()
@@ -28,29 +28,35 @@ public class SetupMap1 : MonoBehaviour
         //initializes the gamestate instance which is singleton
         game = GameState.New(SetupMap1.playerCount);
 
-        list = new List<Color>(44);
+        list = new List<(Color color, int troops)>(44);
 
         for (int i = 0; i < 44; i++)
         {
-            list.Add(Color.white);
+            list.Add((Color.white, 0));
+            Button button = GameObject.Find($"country{i + 1}").GetComponent<Button>();
+            button.GetComponentInChildren<TextMeshProUGUI>().text = $"0";
         }
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
+         * this is the phase where everyone adds 1 troop to an unowned country
+         * create logic later to handle the leftover troops that need to be placed
+         */
         if (numberOfClaims == 44)
         {
             game.reset_turn(); // ensures the game starts with the first player
             Map1.playerCount = playerCount;
-            Map1.list_of_colors = list;
+            Map1.list_of_setup_countries = list;
             SceneManager.LoadScene("assets/scenes/scenegame.unity");
         }
 
         if (Input.GetMouseButtonDown(0))
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
-            
+
             if (selectedObj != null)
             {
                 Button selectedCountry = selectedObj.GetComponent<Button>();
@@ -59,11 +65,17 @@ public class SetupMap1 : MonoBehaviour
                     // take the unowned country
                     numberOfClaims++;
                     print(numberOfClaims);
-                    selectedCountry.GetComponent<Image>().color = game.turn_color;
                     int countryNumber = Int32.Parse(selectedCountry.name.Substring(7));
-                    list[countryNumber - 1] = game.turn_color;
-                    game.next_turn();
+                    Color newColor = game.turn_color;
+                    int newTroops = 1;
+                    list[countryNumber - 1] = (newColor, newTroops);
+                    selectedCountry.GetComponent<Image>().color = newColor;
+                    {
+                        selectedCountry.GetComponentInChildren<TextMeshProUGUI>().text = $"{newTroops}";
+                        game.next_turn();
+                    }
                 }
+                // need to create a state where you add the remaining troops
             }
         }
     }

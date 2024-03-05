@@ -23,10 +23,11 @@ public class Country
         this.pointer = button; // use this constructor is if you do not yet know the color
     }
 
-    public Country(Button button, Color color)
+    public Country(Button button, Color color, int troops)
     {
         this.pointer = button; // use this constructor if you do know the color
         this.color = color;
+        this.troops = troops;
     }
 
     public void set_neighbors(List<Country> list)
