@@ -42,7 +42,7 @@ public class GameState
     // it's the index to the turns order to know who is next
     int turn_index = 0;
 
-    //player count
+    // player count
     int playerCount;
 
     private GameState(int playerCount)
@@ -143,21 +143,19 @@ public class GameState
         switch (num)
         {
             case 0:
-                return Color.green;
+                return new Color(0.95f, 0.30f, 0.30f);
             case 1:
-                return Color.blue;
+                return new Color(0.25f, 0.25f, 0.50f);
             case 2:
-                return Color.red;
+                return new Color(0.35f, 0.70f, 0.30f);
             case 3:
-                return Color.cyan;
+                return new Color(0.50f, 0.30f, 0.50f);
             case 4:
-                return Color.magenta;
+                return new Color(0.40f, 0.25f, 0.10f);
             case 5:
-                return Color.yellow;
+                return new Color(0.80f, 0.80f, 0.00f);
             default:
-                Debug.Log("default clause hit");
-                throw new System.Exception("wtf");
-
+                throw new System.Exception("color not found");
         }
     }
 
@@ -224,6 +222,8 @@ public class GameState
 
         //change the attacked country color
         attacked.change_country_color(this.turn_color);
+        
+        // also handle increasing troop numbers etc...
 
         //unhighlight the rest
         this.unhighlight();
@@ -241,7 +241,13 @@ public class GameState
 
         Debug.Log($"the turn now is {this.turn_index}");
 
+        // set the next turn color
         this.turn_color = this.turns_order[this.turn_index];
-        this.square.GetComponent<Image>().color = this.turn_color;
+        this.square = GameObject.Find("CurrentColour").GetComponent<Image>();
+        /*
+         * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
+         * GameObject.Find("CurrentPlayer").GetComponent<Image>();
+         */
+        this.square.color = turn_color;
     }
 }
