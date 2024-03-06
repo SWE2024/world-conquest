@@ -31,12 +31,13 @@ public class Country
 
     public Color get_color() { return owner.color; }
 
-    public void set_owner(Player player) { 
+    public void set_owner(Player player)
+    { 
         this.owner = player;
         pointer.GetComponent<Image>().color = player.color;
     }
 
-    public Player get_owner() {return this.owner;}
+    public Player get_owner() { return this.owner; }
 
     public int get_troops() { return this.troops; }
 

@@ -10,7 +10,6 @@ public class Map1 : MonoBehaviour
     //number of players, this gets set before this scene loads by the previous scene
     public static int playerCount;
 
-
     //the scene holds a reference to the gamestate object
     GameState game;
 
@@ -18,7 +17,6 @@ public class Map1 : MonoBehaviour
     static List<List<int>> list_of_neighbors = Map1Neighbours.list_of_neighbors;
 
     public static bool auto_populate_flag = false;
-
 
     [SerializeField] Canvas user_input;
 
@@ -37,22 +35,12 @@ public class Map1 : MonoBehaviour
             Country country = game.list_of_countries[i];
             country.pointer.GetComponent<Image>().color = color;
             // country.color = color;
-
-
+            
             // sets the number of troops above the country
             TextMeshProUGUI numberTroopsText = GameObject.Find($"country{i + 1}").GetComponentInChildren<TextMeshProUGUI>();
             numberTroopsText.text = $"{country.get_troops()}";
-
         }
-
-
-
-
-
-
-
     }
-
 
     // Start is called before the first frame update
     void Start()
@@ -66,7 +54,6 @@ public class Map1 : MonoBehaviour
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> country_map = new Dictionary<Button, Country>();
-
 
         for (int i = 1; i < 45; i++)
         {
@@ -91,7 +78,7 @@ public class Map1 : MonoBehaviour
 
             game.list_of_countries[i].set_neighbors(neighbors);
         }
-        
+
         game.set_hashmap(country_map);
     }
 
