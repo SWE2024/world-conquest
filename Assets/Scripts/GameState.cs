@@ -81,12 +81,6 @@ public class GameState
         return GameState.instance;
     }
 
-    public void reset_turn()
-    {
-        this.turn_color = this.turns_order[0];
-        this.turn_index = 0;
-    }
-
     public static GameState Get()
     {
         return GameState.instance;

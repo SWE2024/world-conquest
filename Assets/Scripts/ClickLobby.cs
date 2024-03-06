@@ -44,8 +44,8 @@ public class ClickButton : MonoBehaviour
 
     void LoadGame()
     {
-        SetupMap1.playerCount = playerCount;
-        SceneManager.LoadScene("assets/scenes/scenesetup.unity");
+        Map1.playerCount = playerCount;
+        SceneManager.LoadScene("assets/scenes/scenegame.unity");
     }
 
     void LoadMenu()
