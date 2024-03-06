@@ -34,7 +34,7 @@ public class Map1Neighbours
             8, 11, 12
         },
         new List<int> {
-            10, 12, 21
+            10, 12, 13, 21
         },
         new List<int> {
             10, 11, 13
@@ -70,7 +70,7 @@ public class Map1Neighbours
             20, 21, 23, 29
         },
         new List<int> {
-            21, 22, 24, 26, 29
+            21, 22, 24, 25, 26, 29
         },
         new List<int> {
             21, 23, 25

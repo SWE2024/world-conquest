@@ -13,15 +13,14 @@ public class Country
 
     // country's current game logic color
     // might not reflect the button's color, because of highlighting
-    public Color color;
+    public Player owner = null;
 
     // number of troops
     public int troops = 0;
 
-    public Country(Button button, Color color)
+    public Country(Button button)
     {
         this.pointer = button;
-        this.color = color;
     }
 
     public void set_neighbors(List<Country> list)
@@ -30,22 +29,35 @@ public class Country
         neighbors = list;
     }
 
-    public Color get_color() { return color; }
+    public Color get_color() { return owner.color; }
 
-    public int get_troops() { return troops; }
+    public void set_owner(Player player) { 
+        this.owner = player;
+        pointer.GetComponent<Image>().color = player.color;
+    }
+
+    public Player get_owner() {return this.owner;}
+
+    public int get_troops() { return this.troops; }
 
     public void set_troops(int new_troops)
     {
-        troops += new_troops;
-        pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{troops}";
+        this.troops = new_troops;
+        this.pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{troops}";
+    }
+
+    public void increase_troops(int increment) 
+    {
+        this.troops += increment;
+        this.pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{troops}";
     }
 
     // this is when a country is taken by order player
-    public void change_country_color(Color color)
-    {
-        this.color = color;
-        pointer.GetComponent<Image>().color = color;
-    }
+    // public void change_country_color(Color color)
+    // {
+    //     this.color = color;
+    //     pointer.GetComponent<Image>().color = color;
+    // }
 
     // this is for changing button color for highlighting either to black or white
     private void button_temp_color_change(Color color)
@@ -57,7 +69,7 @@ public class Country
     // this is to undo the highlighting so change to the owner color from either black or white
     public void reverse_color_change()
     {
-        pointer.GetComponent<Image>().color = color;
+        pointer.GetComponent<Image>().color = this.owner.color;
     }
 
     // highlights the color to grey 
@@ -71,7 +83,7 @@ public class Country
 
         foreach (Country neighbor in neighbors)
         {
-            if (neighbor.color == color) continue;
+            if (neighbor.owner == this.owner) continue;
 
             neighbor.button_temp_color_change(Color.white);
             output.Add(neighbor);
