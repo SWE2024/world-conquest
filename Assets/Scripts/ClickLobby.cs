@@ -37,7 +37,7 @@ public class ClickButton : MonoBehaviour
 
     void HandlePlus()
     {
-        if (playerCount >= 8) { return; }
+        if (playerCount >= 6) { return; }
         playerCount++;
         number.text = $"{playerCount}";
     }
