@@ -20,6 +20,8 @@ public class Map1 : MonoBehaviour
 
     [SerializeField] Canvas user_input;
 
+    float timeBetweenClicks = 0;
+
     void auto_populate(){
         //this is the list of distributed colors which will be randomly picked
         List<Color> list_of_colors = game.generate_list_of_colors();
@@ -88,14 +90,10 @@ public class Map1 : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
-
-            // Debug.Log($"{selectedObj.name}");
-
             game.Handle_Country_Click(selectedObj);
-
+       
             // if (selectedObj == null) game.Handle_Country_Click(null);
             // else if (selectedObj.name.StartsWith("country"))
-
 
             // if (selectedObj != null)
             // {
