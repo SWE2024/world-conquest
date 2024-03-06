@@ -70,7 +70,7 @@ public class Map1Neighbours
             20, 21, 23, 29
         },
         new List<int> {
-            21, 22, 24, 26, 29
+            21, 22, 24, 25, 26, 29
         },
         new List<int> {
             21, 23, 25
