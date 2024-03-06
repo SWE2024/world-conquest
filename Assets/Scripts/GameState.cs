@@ -55,6 +55,7 @@ public class GameState
     private GameState(int playerCount, Canvas user_input)
     {
         this.user_input = user_input;
+        this.user_input.enabled = false;
         // this.list_of_countries = list;
         this.playerCount = playerCount;
 
@@ -234,7 +235,7 @@ public class GameState
             if (country.owner != this.turn_player) return;
 
             this.highlighted = country;
-            GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Remaining : {this.turn_player.num_of_troops}";
+            GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Remaining Troops: {this.turn_player.num_of_troops}";
 
             this.user_input.enabled = true;
             return;
