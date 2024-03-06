@@ -188,8 +188,7 @@ public class GameState
         
 
         Country country = this.country_map[selectedObj.GetComponent<Button>()];
-        if (country == null) return;
-        if (country.owner != null) return;
+        if (country == null || country.owner != null) return;
 
         // user_input.enabled = true;
 
