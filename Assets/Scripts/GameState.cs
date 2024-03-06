@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,7 @@ public class GameState
     //holds the reference to the singleton instance
     private static GameState instance = null;
     int playerCount;
-    Canvas user_input;
+    public Canvas distribute_canvas;
     public delegate void Delegate_Var(GameObject selectedObj);
 
     public Delegate_Var Handle_Country_Click;
@@ -21,8 +22,6 @@ public class GameState
 
     //this is map to get the country instance that holds the button that is clicked
     Dictionary<Button, Country> country_map = new Dictionary<Button, Country>();
-
-
 
     // these are related to the turns
     Image square;
@@ -34,8 +33,6 @@ public class GameState
 
     // it's the index to the turns order to know aht is next
     int turn_index = 0;
-
-
     
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
@@ -47,18 +44,15 @@ public class GameState
     // only the attckable neighboring country
     List<Country> considered = null;
 
-
     int populated_country_count = 0;
 
     public void set_hashmap(Dictionary<Button, Country> map)    
     {
         this.country_map = map;
     }
-     
-
-    private GameState(int playerCount, Canvas user_input)
+    private GameState(int playerCount, Canvas distribute_canvas)
     {
-        this.user_input = user_input;
+        this.distribute_canvas = distribute_canvas;
         // this.list_of_countries = list;
         this.playerCount = playerCount;
 
@@ -75,14 +69,18 @@ public class GameState
         this.square.color = this.get_turns_color();
 
         this.Handle_Country_Click = populating_take_country_click;
-
     }
 
     //singleton's constructor method access thru here
-    public static GameState New(int playerCount, Canvas user_input)
+    public static GameState New(int playerCount, Canvas distribute_canvas)
     {
         if (instance != null) return GameState.instance;
-        GameState.instance = new GameState(playerCount, user_input);
+        GameState.instance = new GameState(playerCount, distribute_canvas);
+        return GameState.instance;
+    }
+
+    public static GameState Get()
+    {
         return GameState.instance;
     }
 
@@ -122,7 +120,6 @@ public class GameState
         }
         return output;
     }
-
 
     // generate the randomized a color list to track turns
     private static List<Player> create_turns(int playerCount)
@@ -183,7 +180,7 @@ public class GameState
         if (country == null) return;
         if (country.owner != null) return;
 
-        // user_input.enabled = true;
+        // distribute_canvas.enabled = true;
 
         country.set_owner(this.turn_player);
         country.set_troops(1);
@@ -234,24 +231,25 @@ public class GameState
         String objName = selectedObj.name;
 
         if (objName.StartsWith("country")) {
+            CameraHandler.inDistributionPhase = true;
             Country country = this.country_map[selectedObj.GetComponent<Button>()];
             if (country.owner != this.turn_player) return;
 
             this.highlighted = country;
             GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turn_player.num_of_troops}";
 
-            this.user_input.enabled = true;
+            this.distribute_canvas.enabled = true;
             return;
         }
 
         if (objName == "Confirm") {
-            Debug.Log("confirm pressed");
+            CameraHandler.inDistributionPhase = false;
 
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
             this.highlighted.increase_troops(num);
             this.turn_player.num_of_troops -= num;
             this.highlighted = null;
-            this.user_input.enabled = false;
+            this.distribute_canvas.enabled = false;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
 
             if (this.turn_player.num_of_troops > 0) return;
@@ -264,9 +262,11 @@ public class GameState
             this.Handle_Country_Click = attack_take_country_click;
             return;
         } else if (objName == "Cancel") {
+            CameraHandler.inDistributionPhase = false;
+
             this.highlighted = null;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
-            this.user_input.enabled = false;
+            this.distribute_canvas.enabled = false;
             return;
         } else if (objName == "ButtonPlus") {
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);

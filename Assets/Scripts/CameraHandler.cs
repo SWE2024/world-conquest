@@ -1,31 +1,41 @@
+using System;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CameraHandler : MonoBehaviour
 {
     [SerializeField] private Camera cam;
     private Vector3 dragOrigin;
     private float zoomStep, minCamSize, maxCamSize;
+    public static bool inDistributionPhase = false;
 
     // Start is called before the first frame update
     void Start()
     {
         // change accordingly if the canvas ever changes size
         // higher size means less zoom, etc etc.
-        minCamSize = 500;
+        minCamSize = 300;
         maxCamSize = 900;
-        zoomStep = 30;
+        zoomStep = 50;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (inDistributionPhase)
+        {
+            return;
+        }
+
         PanCamera();
         ZoomCamera();
     }
 
     private void PanCamera()
     {
-        if (cam.orthographicSize < maxCamSize) // prevents zooming out further than the game
+        if (cam.orthographicSize < maxCamSize) // prevents moving out further than the game
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -35,8 +45,8 @@ public class CameraHandler : MonoBehaviour
             if (Input.GetMouseButton(0))
             {
                 Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
-                float newLocationX = Mathf.Clamp(cam.transform.position.x + difference.x, 890, 1670);
-                float newLocationY = Mathf.Clamp(cam.transform.position.y + difference.y, 320, 940);
+                float newLocationX = Mathf.Clamp(cam.transform.position.x + (difference.x * 0.33f), 890, 1670);
+                float newLocationY = Mathf.Clamp(cam.transform.position.y + (difference.y * 0.33f), 320, 940);
                 cam.transform.position = new Vector3(newLocationX, newLocationY, -10);
             }
         }
