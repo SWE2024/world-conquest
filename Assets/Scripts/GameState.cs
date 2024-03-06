@@ -190,7 +190,7 @@ public class GameState
         this.populated_country_count++;
 
         if (populated_country_count == 44) {
-            Debug.Log("hit this clause");
+            Debug.Log("game phase begins");
             this.reset_turn();
 
             bool flag = false;
@@ -242,8 +242,6 @@ public class GameState
         }
 
         if (objName == "Confirm") {
-            Debug.Log("confirm pressed");
-
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
             this.highlighted.increase_troops(num);
             this.turn_player.num_of_troops -= num;
