@@ -145,20 +145,13 @@ public class GameState
     {
         switch (num)
         {
-            case 0:
-                return new Color(0.95f, 0.30f, 0.30f);
-            case 1:
-                return new Color(0.25f, 0.25f, 0.50f);
-            case 2:
-                return new Color(0.35f, 0.70f, 0.30f);
-            case 3:
-                return new Color(0.50f, 0.30f, 0.50f);
-            case 4:
-                return new Color(0.00f, 0.75f, 0.70f);
-            case 5:
-                return new Color(0.80f, 0.80f, 0.00f);
-            default:
-                throw new System.Exception("color not found");
+            case 0: return new Color(0.95f, 0.30f, 0.30f);
+            case 1: return new Color(0.25f, 0.25f, 0.50f);
+            case 2: return new Color(0.35f, 0.70f, 0.30f);
+            case 3: return new Color(0.50f, 0.30f, 0.50f);
+            case 4: return new Color(0.00f, 0.75f, 0.70f);
+            case 5: return new Color(0.80f, 0.80f, 0.00f);
+            default: throw new Exception("color not found");
         }
     }
 
@@ -174,10 +167,10 @@ public class GameState
 
         country.SetOwner(this.turnPlayer);
         country.SetTroops(1);
-        this.turnPlayer.NumberOfTroops--;
-        this.NextTurn();
-        this.populatedCountries++;
+        turnPlayer.NumberOfTroops--;
+        populatedCountries++;
 
+        NextTurn();
 
         if (populatedCountries == 44)
         {
@@ -186,38 +179,38 @@ public class GameState
 
             bool flag = false;
 
-            foreach (Player player in this.turnsOrder)
+            foreach (Player player in turnsOrder)
             {
                 if (player.NumberOfTroops > 0) flag = true;
                 if (player.NumberOfTroops < 0) player.NumberOfTroops = 0;
             }
 
-            if (flag) HandleCountryClick = distributing_Troops_take_country_click;
-            else HandleCountryClick = Attack_take_country_click;
+            if (flag) HandleCountryClick = DistributingTroopsTakeCountryClick;
+            else HandleCountryClick = AttackTakeCountryClick;
             return;
         }
     }
 
-    public bool next_player_with_Troops()
+    public bool NextPlayerWithTroops()
     {
         Player player = null;
         while (true)
         {
-            if (this.turnPlayer.NumberOfTroops > 0)
+            if (turnPlayer.NumberOfTroops > 0)
             {
-                player = this.turnPlayer;
+                player = turnPlayer;
                 break;
             }
 
-            if (this.turnIndex == this.turnsOrder.Count - 1) break;
-            this.NextTurn();
+            if (turnIndex == turnsOrder.Count - 1) break;
+            NextTurn();
         }
 
         if (player != null) return true;
         return false;
     }
 
-    public void distributing_Troops_take_country_click(GameObject selectedObj)
+    public void DistributingTroopsTakeCountryClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
 
@@ -226,13 +219,13 @@ public class GameState
         if (objName.StartsWith("country"))
         {
             CameraHandler.InDistributionPhase = true;
-            Country country = this.countryMap[selectedObj.GetComponent<Button>()];
-            if (country.Owner != this.turnPlayer) return;
+            Country country = countryMap[selectedObj.GetComponent<Button>()];
+            if (country.Owner != turnPlayer) return;
 
-            this.highlighted = country;
+            highlighted = country;
             GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.NumberOfTroops}";
 
-            this.DistributeCanvas.enabled = true;
+            DistributeCanvas.enabled = true;
             return;
         }
 
@@ -247,14 +240,14 @@ public class GameState
             this.DistributeCanvas.enabled = false;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
 
-            if (this.turnPlayer.NumberOfTroops > 0) return;
+            if (turnPlayer.NumberOfTroops > 0) return;
 
-            bool check = this.next_player_with_Troops();
+            bool check = this.NextPlayerWithTroops();
 
             if (check) return;
 
-            this.ResetTurn();
-            this.HandleCountryClick = Attack_take_country_click;
+            ResetTurn();
+            HandleCountryClick = AttackTakeCountryClick;
             return;
         }
         else if (objName == "Cancel")
@@ -286,17 +279,17 @@ public class GameState
 
     // deal with country click
     // top level general method
-    public void Attack_take_country_click(GameObject selectedObj)
+    public void AttackTakeCountryClick(GameObject selectedObj)
     {
         //this handles Highlighting (if nothing is highlighted)
-        if (this.highlighted == null)
+        if (highlighted == null)
         {
             if (selectedObj == null) return;
-            Country country_selected = this.countryMap[selectedObj.GetComponent<Button>()];
+            Country country_selected = countryMap[selectedObj.GetComponent<Button>()];
 
             // handles the case  where this turn's player clicked a country not owned by this player
-            if (this.turnPlayer != country_selected.Owner) return;
-            this.Highlight(country_selected);
+            if (turnPlayer != country_selected.Owner) return;
+            Highlight(country_selected);
             return;
         }
 
@@ -305,27 +298,24 @@ public class GameState
 
         if (selectedObj == null || !selectedObj.name.StartsWith("country"))
         {
-            this.unHighlight();
+            this.UnHighlight();
             return;
         }
 
-        Country country = this.countryMap[selectedObj.GetComponent<Button>()];
-        int index = this.considered.IndexOf(country);
+        Country country = countryMap[selectedObj.GetComponent<Button>()];
+        int index = considered.IndexOf(country);
 
-        //if clicked country is unAttackable, unHighlights and returns
+        //if clicked country is unAttackable, UnHighlights and returns
         if (index < 0)
         {
-            this.unHighlight();
+            UnHighlight();
             return;
         }
 
         //from here is Attacking
 
-        //changes the country's Owner and color
-        this.Attack(index);
-
-        //changes turns
-        this.NextTurn();
+        Attack(index); // changes the country's Owner and Color
+        NextTurn(); // changes turns
 
         return;
     }
@@ -337,7 +327,7 @@ public class GameState
         return;
     }
 
-    public void unHighlight()
+    public void UnHighlight()
     {
         this.highlighted.ReverseColorChange();
 
@@ -359,8 +349,8 @@ public class GameState
         //change the Attacked country color
         attacked.SetOwner(this.turnPlayer);
 
-        //unHighlight the rest
-        this.unHighlight();
+        //UnHighlight the rest
+        this.UnHighlight();
     }
 
     public void NextTurn()
@@ -374,16 +364,16 @@ public class GameState
 
         // Debug.Log($"current player: {this.turnIndex}"); // uncomment for debug
 
-        this.turnPlayer = this.turnsOrder[this.turnIndex];
-        this.square.GetComponent<Image>().color = this.GetTurnsColor();
+        turnPlayer = turnsOrder[turnIndex];
+        square.GetComponent<Image>().color = GetTurnsColor();
     }
 
     public void ResetTurn()
     {
-        this.turnIndex = 0;
-        this.turnPlayer = this.turnsOrder[0];
-        this.square.GetComponent<Image>().color = this.GetTurnsColor();
+        turnIndex = 0;
+        turnPlayer = turnsOrder[0];
+        square.GetComponent<Image>().color = GetTurnsColor();
     }
 
-    public Color GetTurnsColor() => this.turnPlayer.Color;
+    public Color GetTurnsColor() => turnPlayer.Color;
 }
