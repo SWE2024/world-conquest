@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum Troop
@@ -11,6 +12,8 @@ public class Player
     public Color Color;
     public int NumberOfTroops;
 
+    List<Country> ownedCountries;
+
     public Player(Color color)
     {
         switch (Map1.PlayerCount)
@@ -23,5 +26,18 @@ public class Player
         }
 
         Color = color;
+        ownedCountries = new List<Country>();
     }
+
+    public void AddCountry(Country country)
+    {
+        ownedCountries.Add(country);
+    }
+
+    public void RemoveCountry(Country country)
+    {
+        ownedCountries.Remove(country);
+    }
+
+    public int GetOwnedCountries() => ownedCountries.Count;
 }

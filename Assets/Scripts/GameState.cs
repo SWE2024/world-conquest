@@ -165,7 +165,8 @@ public class GameState
 
         // DistributeCanvas.enabled = true;
 
-        country.SetOwner(this.turnPlayer);
+        turnPlayer.AddCountry(country);
+        country.SetOwner(turnPlayer);
         country.SetTroops(1);
         turnPlayer.NumberOfTroops--;
         populatedCountries++;
@@ -276,15 +277,11 @@ public class GameState
         }
     }
 
-    public void ReinforcementTakeClick(GameObject selectedObj) 
+    public void ReinforcementTakeClick(GameObject selectedObj)
     {
         if (selectedObj) return;
         return;
-
-
     }
-
-
 
     // deal with country click
     // top level general method
