@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -22,11 +21,12 @@ public class Map1 : MonoBehaviour
 
     float timeBetweenClicks = 0;
 
-    void auto_populate(){
+    void auto_populate()
+    {
         //this is the list of distributed colors which will be randomly picked
         List<Color> list_of_colors = game.generate_list_of_colors();
 
-        for(int i = 0; i < list_of_colors.Count; i++) 
+        for (int i = 0; i < list_of_colors.Count; i++)
         {
             //randomly selected index to pop a color
             int index = GameState.random.Next(list_of_colors.Count);
@@ -45,7 +45,7 @@ public class Map1 : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {   
+    {
         user_input.enabled = false;
 
         Debug.Log($"starting with {playerCount} players");
@@ -80,7 +80,7 @@ public class Map1 : MonoBehaviour
 
             game.list_of_countries[i].set_neighbors(neighbors);
         }
-        
+
         game.set_hashmap(country_map);
     }
 
@@ -91,7 +91,7 @@ public class Map1 : MonoBehaviour
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
             game.Handle_Country_Click(selectedObj);
-       
+
             // if (selectedObj == null) game.Handle_Country_Click(null);
             // else if (selectedObj.name.StartsWith("country"))
 

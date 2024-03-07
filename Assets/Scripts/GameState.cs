@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,7 +32,7 @@ public class GameState
 
     // it's the index to the turns order to know aht is next
     int turn_index = 0;
-    
+
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
     Country highlighted = null;
@@ -46,7 +45,7 @@ public class GameState
 
     int populated_country_count = 0;
 
-    public void set_hashmap(Dictionary<Button, Country> map)    
+    public void set_hashmap(Dictionary<Button, Country> map)
     {
         this.country_map = map;
     }
@@ -110,11 +109,11 @@ public class GameState
         return list_of_colors;
     }
 
-    public List<Color> generate_turns_order_as_colors() 
+    public List<Color> generate_turns_order_as_colors()
     {
         List<Color> output = new List<Color>();
 
-        foreach(Player player in this.turns_order) 
+        foreach (Player player in this.turns_order)
         {
             output.Add(player.color);
         }
@@ -172,7 +171,7 @@ public class GameState
         }
     }
 
-    public void populating_take_country_click(GameObject selectedObj) 
+    public void populating_take_country_click(GameObject selectedObj)
     {
         if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
 
@@ -189,13 +188,14 @@ public class GameState
         this.populated_country_count++;
 
 
-        if (populated_country_count == 44) {
+        if (populated_country_count == 44)
+        {
             Debug.Log("hit this clause");
             this.reset_turn();
 
             bool flag = false;
 
-            foreach(Player player in this.turns_order)
+            foreach (Player player in this.turns_order)
             {
                 if (player.num_of_troops > 0) flag = true;
                 if (player.num_of_troops < 0) player.num_of_troops = 0;
@@ -210,8 +210,10 @@ public class GameState
     public bool next_player_with_troops()
     {
         Player player = null;
-        while (true) {
-            if (this.turn_player.num_of_troops > 0) {
+        while (true)
+        {
+            if (this.turn_player.num_of_troops > 0)
+            {
                 player = this.turn_player;
                 break;
             }
@@ -227,10 +229,11 @@ public class GameState
     public void distributing_troops_take_country_click(GameObject selectedObj)
     {
         if (selectedObj == null) return;
-        
+
         String objName = selectedObj.name;
 
-        if (objName.StartsWith("country")) {
+        if (objName.StartsWith("country"))
+        {
             CameraHandler.inDistributionPhase = true;
             Country country = this.country_map[selectedObj.GetComponent<Button>()];
             if (country.owner != this.turn_player) return;
@@ -242,7 +245,8 @@ public class GameState
             return;
         }
 
-        if (objName == "Confirm") {
+        if (objName == "Confirm")
+        {
             CameraHandler.inDistributionPhase = false;
 
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
@@ -261,20 +265,26 @@ public class GameState
             this.reset_turn();
             this.Handle_Country_Click = attack_take_country_click;
             return;
-        } else if (objName == "Cancel") {
+        }
+        else if (objName == "Cancel")
+        {
             CameraHandler.inDistributionPhase = false;
 
             this.highlighted = null;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
             this.distribute_canvas.enabled = false;
             return;
-        } else if (objName == "ButtonPlus") {
+        }
+        else if (objName == "ButtonPlus")
+        {
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
             if (num == this.turn_player.num_of_troops) return;
             num++;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num}";
             return;
-        } else if (objName == "ButtonMinus") {
+        }
+        else if (objName == "ButtonMinus")
+        {
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
             if (num == 1) return;
             num--;
@@ -302,11 +312,11 @@ public class GameState
         //from here onwards is when smth is highlighted and it about to handle a country click 
         //check if the country being clicked is attackable, positive index is true, else is false
 
-        if (selectedObj == null || !selectedObj.name.StartsWith("country")) 
+        if (selectedObj == null || !selectedObj.name.StartsWith("country"))
         {
             this.unhighlight();
             return;
-        } 
+        }
 
         Country country = this.country_map[selectedObj.GetComponent<Button>()];
         int index = this.considered.IndexOf(country);
