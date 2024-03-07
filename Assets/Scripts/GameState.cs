@@ -186,11 +186,10 @@ public class GameState
             }
 
             if (flag) HandleCountryClick = DistributingTroopsTakeCountryClick;
-            else HandleCountryClick = AttackTakeCountryClick;
+            else HandleCountryClick = ReinforcementTakeClick;
             return;
         }
     }
-
     public bool NextPlayerWithTroops()
     {
         Player player = null;
@@ -247,7 +246,7 @@ public class GameState
             if (check) return;
 
             ResetTurn();
-            HandleCountryClick = AttackTakeCountryClick;
+            HandleCountryClick = ReinforcementTakeClick;
             return;
         }
         else if (objName == "Cancel")
@@ -276,6 +275,16 @@ public class GameState
             return;
         }
     }
+
+    public void ReinforcementTakeClick(GameObject selectedObj) 
+    {
+        if (selectedObj) return;
+        return;
+
+
+    }
+
+
 
     // deal with country click
     // top level general method
@@ -319,6 +328,14 @@ public class GameState
 
         return;
     }
+
+    public void FortificationTakeClick(GameObject selectedObj) 
+    {
+        if (selectedObj == null) return;
+        return;
+    }
+
+
 
     public void Highlight(Country country)
     {
