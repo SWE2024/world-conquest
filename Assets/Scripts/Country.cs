@@ -29,17 +29,17 @@ public class Country
         neighbors = list;
     }
 
-    public Color get_color() { return owner.color; }
-
     public void set_owner(Player player)
     {
         this.owner = player;
         pointer.GetComponent<Image>().color = player.color;
     }
 
-    public Player get_owner() { return this.owner; }
+    public Player get_owner() => this.owner;
 
-    public int get_troops() { return this.troops; }
+    public Color get_color() => owner.color;
+
+    public int get_troops() => this.troops;
 
     public void set_troops(int new_troops)
     {

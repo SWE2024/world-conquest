@@ -78,10 +78,7 @@ public class GameState
         return GameState.instance;
     }
 
-    public static GameState Get()
-    {
-        return GameState.instance;
-    }
+    public static GameState Get() => GameState.instance;
 
     // this generates a of colors that represents the distributed number of countries, 
     // if 5 reds are here red holds five countries
@@ -374,7 +371,6 @@ public class GameState
 
     public void next_turn()
     {
-
         this.turn_index++;
 
         if (this.turn_index > (this.turns_order.Count - 1))
@@ -395,10 +391,5 @@ public class GameState
         this.square.GetComponent<Image>().color = this.get_turns_color();
     }
 
-    public Color get_turns_color()
-    {
-        return this.turn_player.color;
-    }
-
-
+    public Color get_turns_color() => this.turn_player.color;
 }

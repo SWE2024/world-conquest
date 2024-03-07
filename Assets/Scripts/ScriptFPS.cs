@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class FPSUpdate : MonoBehaviour
 {
-    float fps;
-    float updateTimer = 0.25f;
     [SerializeField] TextMeshProUGUI fpsText;
     [SerializeField] bool isShown = true;
+    private float fps;
+    private float updateTimer = 0.25f;
 
     // Start is called before the first frame update
     void Start()
