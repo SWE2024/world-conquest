@@ -1,20 +1,20 @@
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
-public enum Troop {
-    infantry,
-    tanks,
+public enum Troop
+{
+    Infantry,
+    Tanks,
 }
 
-public class Player {
-    public Color color;
-    public int num_of_troops;
+public class Player
+{
+    public Color Color;
+    public int NumberOfTroops;
 
 
-    public Player(Color color) {
-        this.color = color;
-        this.num_of_troops = 20;
+    public Player(Color color)
+    {
+        this.Color = color;
+        this.NumberOfTroops = 20;
     }
 }

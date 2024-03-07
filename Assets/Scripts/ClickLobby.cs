@@ -11,7 +11,7 @@ public class ClickButton : MonoBehaviour
     [SerializeField] Button btnPlus;
     [SerializeField] TextMeshProUGUI number;
 
-    public static int playerCount = 2; // 2 is the default amount of players
+    public static int PlayerCount = 2; // 2 is the default amount of players
 
     // Start is called before the first frame update
     void Start()
@@ -30,27 +30,27 @@ public class ClickButton : MonoBehaviour
 
     void HandleMinus()
     {
-        if (playerCount <= 2) { return; }
-        playerCount--;
-        number.text = $"{playerCount}";
+        if (PlayerCount <= 2) { return; }
+        PlayerCount--;
+        number.text = $"{PlayerCount}";
     }
 
     void HandlePlus()
     {
-        if (playerCount >= 6) { return; }
-        playerCount++;
-        number.text = $"{playerCount}";
+        if (PlayerCount >= 6) { return; }
+        PlayerCount++;
+        number.text = $"{PlayerCount}";
     }
 
     void LoadGame()
     {
-        Map1.playerCount = playerCount;
+        Map1.PlayerCount = PlayerCount;
         SceneManager.LoadScene("assets/scenes/scenegame.unity");
     }
 
     void LoadMenu()
     {
-        playerCount = 2;
+        PlayerCount = 2;
         SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
     }
 }

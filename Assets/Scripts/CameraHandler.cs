@@ -6,10 +6,11 @@ using UnityEngine.UI;
 
 public class CameraHandler : MonoBehaviour
 {
-    [SerializeField] private Camera cam;
-    private Vector3 dragOrigin;
-    private float zoomStep, minCamSize, maxCamSize;
-    public static bool inDistributionPhase = false;
+    public static bool InDistributionPhase = false;
+
+    [SerializeField] Camera cam;
+    Vector3 dragOrigin;
+    float zoomStep, minCamSize, maxCamSize;
 
     // Start is called before the first frame update
     void Start()
@@ -24,7 +25,7 @@ public class CameraHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (inDistributionPhase)
+        if (InDistributionPhase)
         {
             return;
         }
