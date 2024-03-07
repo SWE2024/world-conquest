@@ -11,7 +11,8 @@ public class Map1 : MonoBehaviour
     private static List<List<int>> ListOfNeighbours = Map1Neighbours.ListOfNeighbours;
 
     private GameState game;
-    [SerializeField] Canvas userInput;
+    [SerializeField] Canvas troopDistribution;
+    [SerializeField] Canvas troopAttack;
 
     void AutoPopulate()
     {
@@ -37,12 +38,13 @@ public class Map1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        userInput.enabled = false;
+        troopDistribution.enabled = false;
+        troopAttack.enabled = false;
 
         Debug.Log($"starting game with {PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameState.New(Map1.PlayerCount, userInput);
+        game = GameState.New(Map1.PlayerCount, troopDistribution, troopAttack);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();

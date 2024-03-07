@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,7 @@ public class GameState
     public delegate void DelegateVar(GameObject selectedObj);
     public DelegateVar HandleCountryClick;
     public Canvas DistributeCanvas;
+    public Canvas AttackCanvas;
     public List<Country> ListOfCountries = new List<Country>();
 
     int playerCount;
@@ -29,6 +31,7 @@ public class GameState
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
     Country highlighted = null;
+    Country target = null;
 
     // represent the same state as above, if it holds a list of country a country is highlighted (can be empty but still means highlighted)
     // if not highlighted, holds null
@@ -39,15 +42,18 @@ public class GameState
     int turnIndex = 0; // indicates who is playing
     int populatedCountries = 0;
 
+    public static int DiceRoll() => Random.Next(1, 7);
+
     public void SetHashmap(Dictionary<Button, Country> map)
     {
         this.countryMap = map;
     }
 
-    private GameState(int playerCount, Canvas distributeCanvas)
+    private GameState(int playerCount, Canvas distributeCanvas, Canvas attackCanvas)
     {
-        this.DistributeCanvas = distributeCanvas;
         this.playerCount = playerCount;
+        this.DistributeCanvas = distributeCanvas;
+        this.AttackCanvas = attackCanvas;
 
         // creates the turns order here
         this.turnsOrder = GameState.CreateTurns(this.playerCount);
@@ -65,10 +71,10 @@ public class GameState
     }
 
     //singleton's constructor method access thru here
-    public static GameState New(int playerCount, Canvas distributeCanvas)
+    public static GameState New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas)
     {
         if (instance != null) return GameState.instance;
-        GameState.instance = new GameState(playerCount, distributeCanvas);
+        GameState.instance = new GameState(playerCount, distributeCanvas, attackCanvas);
         return GameState.instance;
     }
 
@@ -100,7 +106,7 @@ public class GameState
         return listOfColors;
     }
 
-    public List<Color> GenerateTurnsOrderAsColors()
+    private List<Color> GenerateTurnsOrderAsColors()
     {
         List<Color> output = new List<Color>();
 
@@ -163,8 +169,6 @@ public class GameState
         if (country == null) return;
         if (country.Owner != null) return;
 
-        // DistributeCanvas.enabled = true;
-
         turnPlayer.AddCountry(country);
         country.SetOwner(turnPlayer);
         country.SetTroops(1);
@@ -187,27 +191,9 @@ public class GameState
             }
 
             if (flag) HandleCountryClick = DistributingTroopsTakeCountryClick;
-            else HandleCountryClick = ReinforcementTakeClick;
+            else HandleCountryClick = AttackTakeCountryClick;
             return;
         }
-    }
-    public bool NextPlayerWithTroops()
-    {
-        Player player = null;
-        while (true)
-        {
-            if (turnPlayer.NumberOfTroops > 0)
-            {
-                player = turnPlayer;
-                break;
-            }
-
-            if (turnIndex == turnsOrder.Count - 1) break;
-            NextTurn();
-        }
-
-        if (player != null) return true;
-        return false;
     }
 
     public void DistributingTroopsTakeCountryClick(GameObject selectedObj)
@@ -218,7 +204,7 @@ public class GameState
 
         if (objName.StartsWith("country"))
         {
-            CameraHandler.InDistributionPhase = true;
+            CameraHandler.DisableMovement = true;
             Country country = countryMap[selectedObj.GetComponent<Button>()];
             if (country.Owner != turnPlayer) return;
 
@@ -229,9 +215,24 @@ public class GameState
             return;
         }
 
+        /*
+         * 
+         * 
+         * 
+         * 
+         *  PLEASE REWRITE THIS AS A SWITCH CASE
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         * 
+         */
+
         if (objName == "Confirm")
         {
-            CameraHandler.InDistributionPhase = false;
+            CameraHandler.DisableMovement = false;
 
             int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
             this.highlighted.IncreaseTroops(num);
@@ -247,12 +248,12 @@ public class GameState
             if (check) return;
 
             ResetTurn();
-            HandleCountryClick = ReinforcementTakeClick;
+            HandleCountryClick = AttackTakeCountryClick;
             return;
         }
         else if (objName == "Cancel")
         {
-            CameraHandler.InDistributionPhase = false;
+            CameraHandler.DisableMovement = false;
 
             this.highlighted = null;
             GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
@@ -277,6 +278,25 @@ public class GameState
         }
     }
 
+    public bool NextPlayerWithTroops()
+    {
+        Player player = null;
+        while (true)
+        {
+            if (turnPlayer.NumberOfTroops>0)
+            {
+                player=turnPlayer;
+                break;
+            }
+
+            if (turnIndex==turnsOrder.Count-1) break;
+            NextTurn();
+        }
+
+        if (player!=null) return true;
+        return false;
+    }
+
     public void ReinforcementTakeClick(GameObject selectedObj)
     {
         if (selectedObj) return;
@@ -287,21 +307,32 @@ public class GameState
     // top level general method
     public void AttackTakeCountryClick(GameObject selectedObj)
     {
+        if (AttackCanvas.enabled)
+        {
+            TroopAttackEnabled(selectedObj);
+            return;
+        }
+
         //this handles Highlighting (if nothing is highlighted)
         if (highlighted == null)
         {
-            if (selectedObj == null) return;
-            Country country_selected = countryMap[selectedObj.GetComponent<Button>()];
+            if (selectedObj == null ||!selectedObj.name.StartsWith("country")) return;
+            Country countrySelected = countryMap[selectedObj.GetComponent<Button>()];
+
+            if (countrySelected.GetTroops() == 1)
+            {
+                Debug.Log("cannot attack with only 1 troop");
+                return;
+            }
 
             // handles the case  where this turn's player clicked a country not owned by this player
-            if (turnPlayer != country_selected.Owner) return;
-            Highlight(country_selected);
+            if (turnPlayer != countrySelected.Owner) return;
+            Highlight(countrySelected);
             return;
         }
 
         //from here onwards is when smth is highlighted and it about to handle a country click 
         //check if the country being clicked is Attackable, positive index is true, else is false
-
         if (selectedObj == null || !selectedObj.name.StartsWith("country"))
         {
             this.UnHighlight();
@@ -318,12 +349,52 @@ public class GameState
             return;
         }
 
-        //from here is Attacking
-
-        Attack(index); // changes the country's Owner and Color
-        NextTurn(); // changes turns
+        this.AttackCanvas.enabled = true;
+        this.target = country;
 
         return;
+    }
+
+    private void TroopAttackEnabled(GameObject selectedObj)
+    {
+        if (selectedObj == null) return;
+        
+        switch (selectedObj.name)
+        {
+            case "ButtonMinus":
+                TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
+                int num = Int32.Parse(numberOfTroops.text);
+                if (num == 1) return;
+                numberOfTroops.text = "" + (num - 1);
+                return;
+            case "ButtonPlus":
+                TextMeshProUGUI numberOfTroops1 = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
+                int num1 = Int32.Parse(numberOfTroops1.text);
+                if (num1 == 3)
+                {
+                    Debug.Log("max 3 reached");
+                    return;
+                }
+
+                if (num1 == this.highlighted.GetTroops() - 1)
+                {
+                    Debug.Log("not enough troops");
+                    return;
+                }
+
+
+                //if (num1 == 3 || num1 == target.GetTroops() - 1) return;
+                numberOfTroops1.text = "" + (num1 + 1);
+                return;
+            case "Cancel":
+                GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>().text = "1";
+                this.UnHighlight();
+                this.AttackCanvas.enabled = false;
+                return;
+            //case "Confirm":
+                //return;
+            default: return;
+        }
     }
 
     public void FortificationTakeClick(GameObject selectedObj) 
@@ -331,8 +402,6 @@ public class GameState
         if (selectedObj == null) return;
         return;
     }
-
-
 
     public void Highlight(Country country)
     {
@@ -354,16 +423,17 @@ public class GameState
         this.considered = null;
     }
 
-    public void Attack(int index)
+    public void Attack(int defenderIndex)
     {
-        Country attacked = this.considered[index];
-        //remove the Attacked country from considered 
-        this.considered.RemoveAt(index);
+        Country attacker = this.highlighted;
+        Country defender = this.considered[defenderIndex];
 
-        //change the Attacked country color
-        attacked.SetOwner(this.turnPlayer);
+        // remove the Attacked country from considered 
+        this.considered.RemoveAt(defenderIndex);
 
-        //UnHighlight the rest
+        this.AttackCanvas.enabled = true;
+
+        // UnHighlight the rest
         this.UnHighlight();
     }
 
