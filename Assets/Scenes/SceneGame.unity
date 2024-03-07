@@ -6045,7 +6045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fcc06f77a230534bbe690f866857b1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  user_input: {fileID: 1189731724}
+  userInput: {fileID: 1189731724}
 --- !u!1 &900661190
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,19 +2,19 @@ using UnityEngine;
 
 public enum Troop
 {
-    infantry,
-    tanks,
+    Infantry,
+    Tanks,
 }
 
 public class Player
 {
-    public Color color;
-    public int num_of_troops;
+    public Color Color;
+    public int NumberOfTroops;
 
 
     public Player(Color color)
     {
-        this.color = color;
-        this.num_of_troops = 20;
+        this.Color = color;
+        this.NumberOfTroops = 20;
     }
 }

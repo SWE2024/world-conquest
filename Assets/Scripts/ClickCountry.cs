@@ -10,10 +10,4 @@ public class ClickCountry : MonoBehaviour
     {
         btn.alphaHitTestMinimumThreshold = 0.5f;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
