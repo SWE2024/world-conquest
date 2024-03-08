@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ScriptMap2 : MonoBehaviour
+public class Map2 : MonoBehaviour
 {
     public static int PlayerCount; // set before this scene loads
     public static bool AutoPopulateFlag = false; // sees if the setup phase should be skipped

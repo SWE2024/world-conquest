@@ -7,12 +7,10 @@ public class ClickMainMenu : MonoBehaviour
 {
     [SerializeField] Button btnPlay;
     [SerializeField] Button btnExit;
-    [SerializeField] Canvas menuSettings;
 
     // Start is called before the first frame update
     void Start()
     {
-        menuSettings.enabled = false;
         btnPlay.onClick.AddListener(LoadLobby);
         btnExit.onClick.AddListener(ExitGame);
     }
