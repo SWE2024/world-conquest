@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -80,6 +79,18 @@ public class GameState
 
     public static GameState Get() => GameState.instance;
 
+    // returns a color from a random int
+    public static Color IntToColor(int num) => num switch
+    {
+        0 => new Color(0.95f, 0.30f, 0.30f),
+        1 => new Color(0.25f, 0.25f, 0.50f),
+        2 => new Color(0.35f, 0.70f, 0.30f),
+        3 => new Color(0.50f, 0.30f, 0.50f),
+        4 => new Color(0.00f, 0.75f, 0.70f),
+        5 => new Color(0.80f, 0.80f, 0.00f),
+        _ => throw new Exception("color not found"),
+    };
+
     // this generates a of colors that represents the distributed number of countries, 
     // if 5 reds are here red holds five countries
     public List<Color> GenerateListOfColors()
@@ -146,21 +157,6 @@ public class GameState
         return output;
     }
 
-    // returns a color from a int for Randomizing color
-    public static Color IntToColor(int num)
-    {
-        switch (num)
-        {
-            case 0: return new Color(0.95f, 0.30f, 0.30f);
-            case 1: return new Color(0.25f, 0.25f, 0.50f);
-            case 2: return new Color(0.35f, 0.70f, 0.30f);
-            case 3: return new Color(0.50f, 0.30f, 0.50f);
-            case 4: return new Color(0.00f, 0.75f, 0.70f);
-            case 5: return new Color(0.80f, 0.80f, 0.00f);
-            default: throw new Exception("color not found");
-        }
-    }
-
     public void PopulatingTakeCountryClick(GameObject selectedObj)
     {
         if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
@@ -200,81 +196,57 @@ public class GameState
     {
         if (selectedObj == null) return;
 
-        String objName = selectedObj.name;
-
-        if (objName.StartsWith("country"))
+        switch (selectedObj.name)
         {
-            CameraHandler.DisableMovement = true;
-            Country country = countryMap[selectedObj.GetComponent<Button>()];
-            if (country.Owner != turnPlayer) return;
+            case string s when s.StartsWith("country"):
+                CameraHandler.DisableMovement = true;
+                Country country = countryMap[selectedObj.GetComponent<Button>()];
+                if (country.Owner != turnPlayer) return;
 
-            highlighted = country;
-            GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.NumberOfTroops}";
+                highlighted = country;
+                GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.NumberOfTroops}";
 
-            DistributeCanvas.enabled = true;
-            return;
-        }
+                DistributeCanvas.enabled = true;
+                return;
+            case "Confirm":
+                CameraHandler.DisableMovement = false;
 
-        /*
-         * 
-         * 
-         * 
-         * 
-         *  PLEASE REWRITE THIS AS A SWITCH CASE
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
+                int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                this.highlighted.IncreaseTroops(num);
+                this.turnPlayer.NumberOfTroops -= num;
+                this.highlighted = null;
+                this.DistributeCanvas.enabled = false;
+                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
 
-        if (objName == "Confirm")
-        {
-            CameraHandler.DisableMovement = false;
+                if (turnPlayer.NumberOfTroops > 0) return;
 
-            int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
-            this.highlighted.IncreaseTroops(num);
-            this.turnPlayer.NumberOfTroops -= num;
-            this.highlighted = null;
-            this.DistributeCanvas.enabled = false;
-            GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
+                bool check = this.NextPlayerWithTroops();
 
-            if (turnPlayer.NumberOfTroops > 0) return;
+                if (check) return;
 
-            bool check = this.NextPlayerWithTroops();
+                ResetTurn();
+                HandleCountryClick = AttackTakeCountryClick;
+                return;
+            case "Cancel":
+                CameraHandler.DisableMovement = false;
 
-            if (check) return;
-
-            ResetTurn();
-            HandleCountryClick = AttackTakeCountryClick;
-            return;
-        }
-        else if (objName == "Cancel")
-        {
-            CameraHandler.DisableMovement = false;
-
-            this.highlighted = null;
-            GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
-            this.DistributeCanvas.enabled = false;
-            return;
-        }
-        else if (objName == "ButtonPlus")
-        {
-            int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
-            if (num == this.turnPlayer.NumberOfTroops) return;
-            num++;
-            GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num}";
-            return;
-        }
-        else if (objName == "ButtonMinus")
-        {
-            int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
-            if (num == 1) return;
-            num--;
-            GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num}";
-            return;
+                this.highlighted = null;
+                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
+                this.DistributeCanvas.enabled = false;
+                return;
+            case "ButtonPlus":
+                int num1 = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                if (num1 == this.turnPlayer.NumberOfTroops) return;
+                num1++;
+                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num1}";
+                return;
+            case "ButtonMinus":
+                int num2 = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                if (num2 == 1) return;
+                num2--;
+                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num2}";
+                return;
+            default: return;
         }
     }
 
@@ -283,17 +255,17 @@ public class GameState
         Player player = null;
         while (true)
         {
-            if (turnPlayer.NumberOfTroops>0)
+            if (turnPlayer.NumberOfTroops > 0)
             {
-                player=turnPlayer;
+                player = turnPlayer;
                 break;
             }
 
-            if (turnIndex==turnsOrder.Count-1) break;
+            if (turnIndex == turnsOrder.Count - 1) break;
             NextTurn();
         }
 
-        if (player!=null) return true;
+        if (player != null) return true;
         return false;
     }
 
@@ -316,7 +288,7 @@ public class GameState
         //this handles Highlighting (if nothing is highlighted)
         if (highlighted == null)
         {
-            if (selectedObj == null ||!selectedObj.name.StartsWith("country")) return;
+            if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
             Country countrySelected = countryMap[selectedObj.GetComponent<Button>()];
 
             if (countrySelected.GetTroops() == 1)
@@ -358,7 +330,7 @@ public class GameState
     private void TroopAttackEnabled(GameObject selectedObj)
     {
         if (selectedObj == null) return;
-        
+
         switch (selectedObj.name)
         {
             case "ButtonMinus":
@@ -392,12 +364,12 @@ public class GameState
                 this.AttackCanvas.enabled = false;
                 return;
             //case "Confirm":
-                //return;
+            //return;
             default: return;
         }
     }
 
-    public void FortificationTakeClick(GameObject selectedObj) 
+    public void FortificationTakeClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
         return;
