@@ -41,7 +41,7 @@ public class Map1 : MonoBehaviour
         troopDistribution.enabled = false;
         troopAttack.enabled = false;
 
-        Debug.Log($"starting game with {PlayerCount} players");
+        Debug.Log($"EVENT: STARTING GAME: there are {PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
         game = GameState.New(Map1.PlayerCount, troopDistribution, troopAttack);

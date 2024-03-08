@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Rendering.CameraUI;
 
 public class GameState
 {
@@ -69,7 +67,7 @@ public class GameState
         this.square.color = this.GetTurnsColor();
         this.HandleCountryClick = PopulatingCountryClick;
 
-        Debug.Log("ENTERING SETUP PHASE: place troops on unowned countries");
+        Debug.Log("EVENT: ENTERING SETUP PHASE: place troops on unowned countries");
     }
 
     //singleton's constructor method access thru here
@@ -178,7 +176,7 @@ public class GameState
 
         if (populatedCountries == 44)
         {
-            Debug.Log("ENTERING GAME PHASE: all countries are populated");
+            Debug.Log("EVENT: STARTING GAME PHASE: all countries are populated");
             this.ResetTurn();
 
             bool flag = false;
@@ -346,8 +344,7 @@ public class GameState
                 TextMeshProUGUI numberOfTroops1 = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
                 int num1 = Int32.Parse(numberOfTroops1.text);
 
-                if (num1 == 3) return;
-                if (num1 == this.highlighted.GetTroops() - 1) return;
+                if (num1 == 3 || num1 == this.highlighted.GetTroops() - 1) return;
 
                 numberOfTroops1.text = "" + (num1 + 1);
                 return;
