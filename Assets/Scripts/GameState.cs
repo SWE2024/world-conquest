@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Rendering.CameraUI;
 
 public class GameState
 {
@@ -65,8 +67,9 @@ public class GameState
          * GameObject.Find("CurrentPlayer").GetComponent<Image>();
          */
         this.square.color = this.GetTurnsColor();
+        this.HandleCountryClick = PopulatingCountryClick;
 
-        this.HandleCountryClick = PopulatingTakeCountryClick;
+        Debug.Log("ENTERING SETUP PHASE: place troops on unowned countries");
     }
 
     //singleton's constructor method access thru here
@@ -157,7 +160,7 @@ public class GameState
         return output;
     }
 
-    public void PopulatingTakeCountryClick(GameObject selectedObj)
+    public void PopulatingCountryClick(GameObject selectedObj)
     {
         if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
 
@@ -175,7 +178,7 @@ public class GameState
 
         if (populatedCountries == 44)
         {
-            Debug.Log("all countries are populated");
+            Debug.Log("ENTERING GAME PHASE: all countries are populated");
             this.ResetTurn();
 
             bool flag = false;
@@ -186,13 +189,13 @@ public class GameState
                 if (player.NumberOfTroops < 0) player.NumberOfTroops = 0;
             }
 
-            if (flag) HandleCountryClick = DistributingTroopsTakeCountryClick;
-            else HandleCountryClick = AttackTakeCountryClick;
+            if (flag) HandleCountryClick = DistributingTroopsCountryClick;
+            else HandleCountryClick = AttackCountryClick;
             return;
         }
     }
 
-    public void DistributingTroopsTakeCountryClick(GameObject selectedObj)
+    public void DistributingTroopsCountryClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
 
@@ -204,7 +207,7 @@ public class GameState
                 if (country.Owner != turnPlayer) return;
 
                 highlighted = country;
-                GameObject.Find("Remaining").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.NumberOfTroops}";
+                GameObject.Find("RemainingDistribution").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.NumberOfTroops}";
 
                 DistributeCanvas.enabled = true;
                 return;
@@ -225,7 +228,7 @@ public class GameState
                 if (check) return;
 
                 ResetTurn();
-                HandleCountryClick = AttackTakeCountryClick;
+                HandleCountryClick = AttackCountryClick;
                 return;
             case "Cancel":
                 CameraHandler.DisableMovement = false;
@@ -269,7 +272,7 @@ public class GameState
         return false;
     }
 
-    public void ReinforcementTakeClick(GameObject selectedObj)
+    public void ReinforcementCountryClick(GameObject selectedObj)
     {
         if (selectedObj) return;
         return;
@@ -277,7 +280,7 @@ public class GameState
 
     // deal with country click
     // top level general method
-    public void AttackTakeCountryClick(GameObject selectedObj)
+    public void AttackCountryClick(GameObject selectedObj)
     {
         if (AttackCanvas.enabled)
         {
@@ -291,11 +294,7 @@ public class GameState
             if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
             Country countrySelected = countryMap[selectedObj.GetComponent<Button>()];
 
-            if (countrySelected.GetTroops() == 1)
-            {
-                Debug.Log("cannot attack with only 1 troop");
-                return;
-            }
+            if (countrySelected.GetTroops() == 1) return;
 
             // handles the case  where this turn's player clicked a country not owned by this player
             if (turnPlayer != countrySelected.Owner) return;
@@ -322,6 +321,8 @@ public class GameState
         }
 
         this.AttackCanvas.enabled = true;
+        GameObject.Find("RemainingAttack").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Attack: {highlighted.GetTroops() - 1}";
+
         this.target = country;
 
         return;
@@ -336,26 +337,18 @@ public class GameState
             case "ButtonMinus":
                 TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
                 int num = Int32.Parse(numberOfTroops.text);
+
                 if (num == 1) return;
+
                 numberOfTroops.text = "" + (num - 1);
                 return;
             case "ButtonPlus":
                 TextMeshProUGUI numberOfTroops1 = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
                 int num1 = Int32.Parse(numberOfTroops1.text);
-                if (num1 == 3)
-                {
-                    Debug.Log("max 3 reached");
-                    return;
-                }
 
-                if (num1 == this.highlighted.GetTroops() - 1)
-                {
-                    Debug.Log("not enough troops");
-                    return;
-                }
+                if (num1 == 3) return;
+                if (num1 == this.highlighted.GetTroops() - 1) return;
 
-
-                //if (num1 == 3 || num1 == target.GetTroops() - 1) return;
                 numberOfTroops1.text = "" + (num1 + 1);
                 return;
             case "Cancel":
@@ -386,10 +379,7 @@ public class GameState
     {
         this.highlighted.ReverseColorChange();
 
-        foreach (Country country in this.considered)
-        {
-            country.ReverseColorChange();
-        }
+        foreach (Country country in this.considered) country.ReverseColorChange();
 
         this.highlighted = null;
         this.considered = null;
@@ -413,10 +403,7 @@ public class GameState
     {
         this.turnIndex++;
 
-        if (this.turnIndex > (this.turnsOrder.Count - 1))
-        {
-            this.turnIndex = 0;
-        }
+        if (this.turnIndex > (this.turnsOrder.Count - 1)) this.turnIndex = 0;
 
         // Debug.Log($"current player: {this.turnIndex}"); // uncomment for debug
 

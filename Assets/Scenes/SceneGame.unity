@@ -1610,7 +1610,7 @@ GameObject:
   - component: {fileID: 192090623}
   - component: {fileID: 192090622}
   m_Layer: 5
-  m_Name: Remaining
+  m_Name: RemainingDistribution
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9680,7 +9680,7 @@ GameObject:
   - component: {fileID: 1281946829}
   - component: {fileID: 1281946828}
   m_Layer: 5
-  m_Name: Remaining
+  m_Name: RemainingAttack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
