@@ -9,8 +9,8 @@ public enum Troop
 
 public class Player
 {
-    public Color Color;
-    public int NumberOfTroops;
+    Color color;
+    int numberOfTroops;
 
     List<Country> ownedCountries;
 
@@ -18,14 +18,14 @@ public class Player
     {
         switch (Map1.PlayerCount)
         {
-            case 2: NumberOfTroops = 40; break;
-            case 3: NumberOfTroops = 35; break;
-            case 4: NumberOfTroops = 30; break;
-            case 5: NumberOfTroops = 25; break;
-            case 6: NumberOfTroops = 20; break;
+            case 2: this.numberOfTroops = 40; break;
+            case 3: this.numberOfTroops = 35; break;
+            case 4: this.numberOfTroops = 30; break;
+            case 5: this.numberOfTroops = 25; break;
+            case 6: this.numberOfTroops = 20; break;
         }
 
-        Color = color;
+        this.color = color;
         ownedCountries = new List<Country>();
     }
 
@@ -39,5 +39,20 @@ public class Player
         ownedCountries.Remove(country);
     }
 
-    public int GetOwnedCountries() => ownedCountries.Count;
+    public Color GetColor() => color;
+
+    public int GetNumberOfTroops() => numberOfTroops;
+
+    // use getnumberofownedcountries() for the distribution phase
+    public void ChangeNumberOfTroops(int difference)
+    {
+        numberOfTroops += difference;
+    }
+
+    public void SetNumberOfTroops(int troops)
+    {
+        numberOfTroops = troops;
+    }
+
+    public int GetNumberOfOwnedCountries() => ownedCountries.Count;
 }

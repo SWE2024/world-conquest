@@ -5,14 +5,15 @@ using UnityEngine.UI;
 
 public class Country
 {
-    public Button Pointer; //reference to the pointer
-    public List<Country> Neighbors;
-    public Player Owner = null; // may not reflect the button's color
-    public int Troops = 0;
+    public Button Pointer; // reference to the pointer
+    List<Country> Neighbors;
+    Player Owner = null; // may not reflect the button's color
+    int Troops = 0;
 
     public Country(Button button)
     {
         this.Pointer = button;
+        this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = "0";
     }
 
     public void SetNeighbors(List<Country> list)
@@ -21,36 +22,26 @@ public class Country
         Neighbors = list;
     }
 
-    public void SetOwner(Player player)
-    {
-        this.Owner = player;
-        Pointer.GetComponent<Image>().color = player.Color;
-    }
-
     public Player GetOwner() => this.Owner;
 
-    public Color GetColor() => Owner.Color;
+    public Color GetColor() => Owner.GetColor();
 
     public int GetTroops() => this.Troops;
 
-    public void SetTroops(int newTroops)
+    public void SetOwner(Player player)
     {
-        this.Troops = newTroops;
-        this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{Troops}";
+        if (Owner != null) Owner.RemoveCountry(this);
+        this.Owner = player;
+        player.AddCountry(this);
+
+        Pointer.GetComponent<Image>().color = Owner.GetColor();
     }
 
-    public void IncreaseTroops(int increment)
+    public void ChangeTroops(int offset)
     {
-        this.Troops += increment;
+        this.Troops += offset;
         this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{Troops}";
     }
-
-    // this is when a country is taken by order player
-    // public void change_country_color(Color color)
-    // {
-    //     this.color = color;
-    //     pointer.GetComponent<Image>().color = color;
-    // }
 
     // this is for changing button color for Highlighting either to black or white
     private void TempColorChange(Color color)
@@ -58,17 +49,16 @@ public class Country
         Pointer.GetComponent<Image>().color = color;
     }
 
-
     // this is to undo the Highlighting so change to the Owner color from either black or white
     public void ReverseColorChange()
     {
-        Pointer.GetComponent<Image>().color = this.Owner.Color;
+        Pointer.GetComponent<Image>().color = this.Owner.GetColor();
     }
 
     // Highlights the color to grey 
     // also Highlights the Attackable countries which are neighboring countries that do not have the same color as itself
     // returns this Attackable countries in a list for the gameobject instance to handle states
-    public List<Country> Highlight()
+    public List<Country> HighlightNeighbours()
     {
         TempColorChange(Color.grey);
 

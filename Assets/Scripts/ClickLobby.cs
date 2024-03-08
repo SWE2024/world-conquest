@@ -22,12 +22,6 @@ public class ClickButton : MonoBehaviour
         btnPlus.onClick.AddListener(HandlePlus);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     void HandleMinus()
     {
         if (PlayerCount <= 2) { return; }
@@ -45,12 +39,18 @@ public class ClickButton : MonoBehaviour
     void LoadGame()
     {
         Map1.PlayerCount = PlayerCount;
-        SceneManager.LoadScene("assets/scenes/scenegame.unity");
+        Wait.Start(1.5f, () =>
+        {
+            SceneManager.LoadScene("assets/scenes/scenegame.unity");
+        });
     }
 
     void LoadMenu()
     {
         PlayerCount = 2;
-        SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
+        Wait.Start(1.5f, () =>
+        {
+            SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
+        });
     }
 }
