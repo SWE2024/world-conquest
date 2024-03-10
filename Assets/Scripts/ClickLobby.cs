@@ -11,21 +11,21 @@ public class ClickButton : MonoBehaviour
     [SerializeField] Button btnPlus;
     [SerializeField] TextMeshProUGUI number;
 
+    [SerializeField] Image triangleReady;
+    [SerializeField] Image triangleLeave;
+
     public static int PlayerCount = 2; // 2 is the default amount of players
 
     // Start is called before the first frame update
     void Start()
     {
+        triangleReady.enabled = false;
+        triangleReady.enabled = false;
+
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
         btnMinus.onClick.AddListener(HandleMinus);
         btnPlus.onClick.AddListener(HandlePlus);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     void HandleMinus()
@@ -45,12 +45,38 @@ public class ClickButton : MonoBehaviour
     void LoadGame()
     {
         Map1.PlayerCount = PlayerCount;
-        SceneManager.LoadScene("assets/scenes/scenegame.unity");
+        Wait.Start(1.5f, () =>
+        {
+            SceneManager.LoadScene("assets/scenes/scenegame.unity");
+        });
     }
 
     void LoadMenu()
     {
         PlayerCount = 2;
-        SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
+        Wait.Start(1.5f, () =>
+        {
+            SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
+        });
+    }
+
+    public void PointerEnterReady()
+    {
+        triangleReady.enabled = true;
+    }
+
+    public void PointerEnterLeave()
+    {
+        triangleLeave.enabled = true;
+    }
+
+    public void PointerLeaveReady()
+    {
+        triangleReady.enabled = false;
+    }
+
+    public void PointerLeaveLeave()
+    {
+        triangleLeave.enabled = false;
     }
 }

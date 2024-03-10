@@ -11,7 +11,9 @@ public class Map1 : MonoBehaviour
     private static List<List<int>> ListOfNeighbours = Map1Neighbours.ListOfNeighbours;
 
     private GameState game;
-    [SerializeField] Canvas userInput;
+    [SerializeField] Canvas troopDistribution;
+    [SerializeField] Canvas troopAttack;
+    [SerializeField] Canvas diceCanvas;
 
     void AutoPopulate()
     {
@@ -29,7 +31,7 @@ public class Map1 : MonoBehaviour
             country.Pointer.GetComponent<Image>().color = color;
 
             // sets the number of Troops above the country
-            TextMeshProUGUI numberTroopsText = GameObject.Find($"country{i + 1}").GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI numberTroopsText = GameObject.Find($"country{i + 1}map1").GetComponentInChildren<TextMeshProUGUI>();
             numberTroopsText.text = $"{country.GetTroops()}";
         }
     }
@@ -37,12 +39,14 @@ public class Map1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        userInput.enabled = false;
+        troopDistribution.enabled = false;
+        troopAttack.enabled = false;
+        diceCanvas.enabled = false;
 
-        Debug.Log($"starting game with {PlayerCount} players");
+        Debug.Log($"EVENT: STARTING GAME: there are {PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameState.New(Map1.PlayerCount, userInput);
+        game = GameState.New(Map1.PlayerCount, troopDistribution, troopAttack, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
@@ -50,9 +54,8 @@ public class Map1 : MonoBehaviour
         for (int i = 1; i < 45; i++)
         {
             //gets the button
-            Button button = GameObject.Find($"country{i}").GetComponent<Button>();
+            Button button = GameObject.Find($"country{i}map1").GetComponent<Button>();
             Country country = new Country(button);
-            country.SetTroops(0);
 
             //adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);
@@ -82,21 +85,6 @@ public class Map1 : MonoBehaviour
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
             game.HandleCountryClick(selectedObj);
-
-            // if (selectedObj == null) game.HandleCountryClick(null);
-            // else if (selectedObj.name.StartsWith("country"))
-
-            // if (selectedObj != null)
-            // {
-            //     Button selectedBtn = GameObject.Find(selectedObj.name).GetComponent<Button>();
-
-            //     if (selectedBtn != null)
-            //     {
-            //         Country country = countryMap[selectedBtn];
-
-            //         game.HandleCountryClick(country);
-            //     }
-            // }
         }
     }
 }

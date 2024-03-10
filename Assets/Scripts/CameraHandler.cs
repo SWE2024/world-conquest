@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class CameraHandler : MonoBehaviour
 {
-    public static bool InDistributionPhase = false;
+    public static bool DisableMovement = false;
 
     [SerializeField] Camera cam;
     Vector3 dragOrigin;
@@ -25,10 +25,7 @@ public class CameraHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (InDistributionPhase)
-        {
-            return;
-        }
+        if (DisableMovement) return;
 
         PanCamera();
         ZoomCamera();

@@ -5,8 +5,8 @@ public class FPSUpdate : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI fpsText;
     [SerializeField] bool isShown = true;
-    private float fps;
-    private float updateTimer = 0.25f;
+    float fps;
+    float updateTimer = 0.25f;
 
     // Start is called before the first frame update
     void Start()
@@ -19,24 +19,15 @@ public class FPSUpdate : MonoBehaviour
     void Update()
     {
         toggleFpsCounter();
-        if (isShown)
-        {
-            updateFpsCounter(); // updates fps counter every frame
-        }
+        if (isShown) updateFpsCounter(); // updates fps counter every frame
     }
 
     private void toggleFpsCounter()
     {
         if (Input.GetKeyDown(KeyCode.V))
         {
-            if (isShown)
-            {
-                fpsText.enabled = false;
-            }
-            else
-            {
-                fpsText.enabled = true;
-            }
+            if (isShown) fpsText.enabled = false;
+            else fpsText.enabled = true;
 
             isShown = !isShown; // disables frame rate (or enables)
         }
