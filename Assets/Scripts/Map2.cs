@@ -13,6 +13,7 @@ public class Map2 : MonoBehaviour
     private GameState game;
     [SerializeField] Canvas troopDistribution;
     [SerializeField] Canvas troopAttack;
+    [SerializeField] Canvas diceCanvas;
 
     void AutoPopulate()
     {
@@ -40,11 +41,12 @@ public class Map2 : MonoBehaviour
     {
         troopDistribution.enabled = false;
         troopAttack.enabled = false;
+        diceCanvas.enabled = false;
 
         Debug.Log($"EVENT: STARTING GAME: there are {PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameState.New(Map1.PlayerCount, troopDistribution, troopAttack);
+        game = GameState.New(Map1.PlayerCount, troopDistribution, troopAttack, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();

@@ -739,19 +739,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 835893494}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1361842669}
-        m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-        m_MethodName: QuitGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &835893494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,9 +787,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1361842668}
-          m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-          m_MethodName: OnPointerEnter
+        - m_Target: {fileID: 1361842667}
+          m_TargetAssemblyTypeName: ClickButton, Assembly-CSharp
+          m_MethodName: PointerEnterLeave
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -815,9 +803,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1361842668}
-          m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-          m_MethodName: OnPointerLeave
+        - m_Target: {fileID: 1361842667}
+          m_TargetAssemblyTypeName: ClickButton, Assembly-CSharp
+          m_MethodName: PointerLeaveLeave
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1151,8 +1139,6 @@ GameObject:
   - component: {fileID: 1361842672}
   - component: {fileID: 1361842671}
   - component: {fileID: 1361842670}
-  - component: {fileID: 1361842669}
-  - component: {fileID: 1361842668}
   - component: {fileID: 1361842667}
   m_Layer: 5
   m_Name: Lobby
@@ -1178,32 +1164,8 @@ MonoBehaviour:
   btnMinus: {fileID: 827538560}
   btnPlus: {fileID: 1013664335}
   number: {fileID: 1150849827}
---- !u!114 &1361842668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1361842666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa74dafd6895894cb23d840787d69e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  img: {fileID: 1460514236}
---- !u!114 &1361842669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1361842666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7aa74dafd6895894cb23d840787d69e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  img: {fileID: 1907151142}
+  triangleReady: {fileID: 1907151142}
+  triangleLeave: {fileID: 1460514236}
 --- !u!114 &1361842670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1455,7 +1417,7 @@ GameObject:
   - component: {fileID: 1460514237}
   - component: {fileID: 1460514236}
   m_Layer: 5
-  m_Name: ImageTriangleExit
+  m_Name: ImageTriangleLeave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1629,9 +1591,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1361842669}
-          m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-          m_MethodName: OnPointerEnter
+        - m_Target: {fileID: 1361842667}
+          m_TargetAssemblyTypeName: ClickButton, Assembly-CSharp
+          m_MethodName: PointerEnterReady
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1645,9 +1607,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1361842669}
-          m_TargetAssemblyTypeName: ScriptButtonHover, Assembly-CSharp
-          m_MethodName: OnPointerLeave
+        - m_Target: {fileID: 1361842667}
+          m_TargetAssemblyTypeName: ClickButton, Assembly-CSharp
+          m_MethodName: PointerLeaveReady
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

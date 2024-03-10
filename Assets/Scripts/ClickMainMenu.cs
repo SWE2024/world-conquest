@@ -7,10 +7,15 @@ public class ClickMainMenu : MonoBehaviour
 {
     [SerializeField] Button btnPlay;
     [SerializeField] Button btnExit;
+    [SerializeField] Image trianglePlay;
+    [SerializeField] Image triangleExit;
 
     // Start is called before the first frame update
     void Start()
     {
+        trianglePlay.enabled = false;
+        triangleExit.enabled = false;
+
         btnPlay.onClick.AddListener(LoadLobby);
         btnExit.onClick.AddListener(ExitGame);
     }
@@ -35,5 +40,25 @@ public class ClickMainMenu : MonoBehaviour
     {
         yield return new WaitForSeconds(1.5f);
         Application.Quit();
+    }
+
+    public void PointerEnterPlay()
+    {
+        trianglePlay.enabled = true;
+    }
+
+    public void PointerEnterExit()
+    {
+        triangleExit.enabled = true;
+    }
+
+    public void PointerLeavePlay()
+    {
+        trianglePlay.enabled = false;
+    }
+
+    public void PointerLeaveExit()
+    {
+        triangleExit.enabled = false;
     }
 }
