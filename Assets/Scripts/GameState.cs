@@ -180,7 +180,7 @@ public class GameState
 
         NextTurn();
 
-        if (populatedCountries == 44)
+        if (populatedCountries >= 44)
         {
             Debug.Log("EVENT: starting game");
             this.ResetTurn();
