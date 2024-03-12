@@ -1,3 +1,4 @@
+using Microsoft.Win32.SafeHandles;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -10,16 +11,17 @@ public class CameraHandler : MonoBehaviour
 
     [SerializeField] Camera cam;
     Vector3 dragOrigin;
-    float zoomStep, minCamSize, maxCamSize;
+    float zoomStep, minCamSize, maxCamSize, velocity, zoom;
 
     // Start is called before the first frame update
     void Start()
     {
         // change accordingly if the canvas ever changes size
         // higher size means less zoom, etc etc.
-        minCamSize = 300;
-        maxCamSize = 900;
-        zoomStep = 50;
+        minCamSize = 150;
+        maxCamSize = 800;
+        zoomStep = 150;
+        zoom = cam.orthographicSize;
     }
 
     // Update is called once per frame
@@ -56,25 +58,8 @@ public class CameraHandler : MonoBehaviour
 
     private void ZoomCamera()
     {
-        if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-        {
-            ZoomIn();
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0f)
-        {
-            ZoomOut();
-        }
-    }
-
-    private void ZoomIn()
-    {
-        float newSize = cam.orthographicSize - zoomStep;
-        cam.orthographicSize = Mathf.Clamp(newSize, minCamSize, maxCamSize);
-    }
-
-    private void ZoomOut()
-    {
-        float newSize = cam.orthographicSize + zoomStep;
-        cam.orthographicSize = Mathf.Clamp(newSize, minCamSize, maxCamSize);
+        zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomStep;
+        zoom = Mathf.Clamp(zoom, minCamSize, maxCamSize);
+        cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, zoom, ref velocity, 0.1f);
     }
 }
