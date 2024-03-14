@@ -16,7 +16,7 @@ public class Player
 
     public Player(Color color)
     {
-        switch (Map1.PlayerCount)
+        switch (Settings.PlayerCount)
         {
             case 2: this.numberOfTroops = 40; break;
             case 3: this.numberOfTroops = 35; break;
