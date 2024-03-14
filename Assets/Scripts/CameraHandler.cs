@@ -18,9 +18,9 @@ public class CameraHandler : MonoBehaviour
     {
         // change accordingly if the canvas ever changes size
         // higher size means less zoom, etc etc.
-        minCamSize = 150;
+        minCamSize = 100;
         maxCamSize = 800;
-        zoomStep = 150;
+        zoomStep = 200;
         zoom = cam.orthographicSize;
     }
 
@@ -45,19 +45,21 @@ public class CameraHandler : MonoBehaviour
             if (Input.GetMouseButton(0))
             {
                 Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
-                float newLocationX = Mathf.Clamp(cam.transform.position.x + (difference.x * 0.33f), 890, 1670);
-                float newLocationY = Mathf.Clamp(cam.transform.position.y + (difference.y * 0.33f), 320, 940);
+                float newLocationX = Mathf.Clamp(cam.transform.position.x + (difference.x), 890, 1670);
+                float newLocationY = Mathf.Clamp(cam.transform.position.y + (difference.y), 320, 940);
+
                 cam.transform.position = new Vector3(newLocationX, newLocationY, -10);
             }
-        }
-        else
-        {
-            cam.transform.position = new Vector3(1280, 720, -10); // sets camera back to default location when fully zoomed out
         }
     }
 
     private void ZoomCamera()
     {
+        if (cam.orthographicSize >= maxCamSize - 10)
+        {
+            cam.transform.position = new Vector3(1280, 720, -10); // sets camera back to default location when fully zoomed out
+        }
+
         zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomStep;
         zoom = Mathf.Clamp(zoom, minCamSize, maxCamSize);
         cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, zoom, ref velocity, 0.1f);

@@ -4,10 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameState
+public class GameController
 {
     public static System.Random Random = new System.Random();
-    static GameState instance = null;
+    static GameController instance = null;
 
     public delegate void DelegateVar(GameObject selectedObj);
     public DelegateVar HandleCountryClick;
@@ -44,7 +44,7 @@ public class GameState
     bool flagDistributionPhase;
     // bool flagGamePhase; // not required yet
 
-    private GameState(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
+    private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
     {
         this.turnIndex = 0;
         this.populatedCountries = 0;
@@ -57,12 +57,13 @@ public class GameState
         this.DiceCanvas = diceCanvas;
 
         // creates the turns order here
-        this.turnsOrder = GameState.CreateTurns(this.playerCount);
+        this.turnsOrder = GameController.CreateTurns(this.playerCount);
 
         // set the first turn color
         this.turnPlayer = this.turnsOrder[0];
         this.square = GameObject.Find("CurrentColour").GetComponent<Image>();
-        GameObject.Find("EndTurn").GetComponent<Button>().enabled = false;
+        GameObject.Find("EndTurn").GetComponent<Image>().enabled = true;
+        GameObject.Find("EndTurn").GetComponent<Button>().enabled = true;
 
         /*
          * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
@@ -70,19 +71,17 @@ public class GameState
          */
         this.square.color = this.GetTurnsColor();
         this.HandleCountryClick = PopulatingCountryClick;
-
-        Debug.Log("EVENT: entering setup phase");
     }
 
     //singleton's constructor method access thru here
-    public static GameState New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
+    public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
     {
-        if (instance != null) return GameState.instance;
-        GameState.instance = new GameState(playerCount, distributeCanvas, attackCanvas, diceCanvas);
-        return GameState.instance;
+        if (instance != null) return GameController.instance;
+        GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, diceCanvas);
+        return GameController.instance;
     }
 
-    public static GameState Get() => GameState.instance;
+    public static GameController Get() => GameController.instance;
 
     // returns a color from a random int
     public static Color IntToColor(int num) => num switch
@@ -100,8 +99,21 @@ public class GameState
     // if 5 reds are here red holds five countries
     public List<Color> GenerateListOfColors()
     {
-        int numberOfCountries = 44 / this.playerCount;
-        int remainder = 44 % this.playerCount;
+        int numberOfCountries = 0;
+        int remainder = 0;
+
+        switch (Settings.MapNumber)
+        {
+            case 1:
+                numberOfCountries = 44 / this.playerCount;
+                remainder = 44 % this.playerCount;
+                break;
+
+            case 2:
+                numberOfCountries = 27 / this.playerCount;
+                remainder = 27 % this.playerCount;
+                break;
+        }
 
         List<Color> listOfColors = new List<Color>();
         List<Color> copyTurns = new List<Color>();
@@ -114,7 +126,7 @@ public class GameState
 
         for (int i = 0; i < remainder; i++)
         {
-            int index = GameState.Random.Next(copyTurns.Count);
+            int index = GameController.Random.Next(copyTurns.Count);
             listOfColors.Add(copyTurns[index]);
             copyTurns.RemoveAt(index);
         }
@@ -143,7 +155,7 @@ public class GameState
 
         while (list.Count > 0)
         {
-            int index = GameState.Random.Next(list.Count);
+            int index = GameController.Random.Next(list.Count);
             randomized.Add(list[index]);
             list.RemoveAt(index);
         }
@@ -152,7 +164,7 @@ public class GameState
 
         foreach (int color_index in randomized)
         {
-            output.Add(new Player(GameState.IntToColor(color_index)));
+            output.Add(new Player(GameController.IntToColor(color_index)));
         }
 
         return output;
@@ -162,8 +174,6 @@ public class GameState
     {
         this.countryMap = map;
     }
-
-    public static int DiceRoll() => Random.Next(1, 7);
 
     public void PopulatingCountryClick(GameObject selectedObj)
     {
@@ -180,13 +190,14 @@ public class GameState
 
         NextTurn();
 
-        if (populatedCountries >= 44)
+        if (populatedCountries >= countryMap.Count)
         {
-            Debug.Log("EVENT: starting game");
+            Debug.Log("EVENT: all territories owned");
             this.ResetTurn();
 
             flagDistributionPhase = false;
             //flagGamePhase = true;
+            GameObject.Find("EndTurn").GetComponent<Image>().enabled = true;
             GameObject.Find("EndTurn").GetComponent<Button>().enabled = true;
 
             foreach (Player player in turnsOrder)
@@ -434,8 +445,8 @@ public class GameState
     {
         // this method only currently handles ONE dice roll
 
-        int attackerDiceRoll = GameState.DiceRoll();
-        int defenderDiceRoll = GameState.DiceRoll();
+        int attackerDiceRoll = Dice.Roll();
+        int defenderDiceRoll = Dice.Roll();
 
         GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {attackerDiceRoll}";
         GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {defenderDiceRoll}";

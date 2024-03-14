@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class ClickButton : MonoBehaviour
 {
+    [SerializeField] Button btnMap1;
+    [SerializeField] Button btnMap2;
     [SerializeField] Button btnReady;
     [SerializeField] Button btnLeave;
     [SerializeField] Button btnMinus;
@@ -14,37 +16,40 @@ public class ClickButton : MonoBehaviour
     [SerializeField] Image triangleReady;
     [SerializeField] Image triangleLeave;
 
-    public static int PlayerCount = 2; // 2 is the default amount of players
-
     // Start is called before the first frame update
     void Start()
     {
         triangleReady.enabled = false;
         triangleReady.enabled = false;
 
+        btnMap1.onClick.AddListener(Map1);
+        btnMap2.onClick.AddListener(Map2);
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
         btnMinus.onClick.AddListener(HandleMinus);
         btnPlus.onClick.AddListener(HandlePlus);
     }
 
+    void Map1() { Settings.MapNumber = 1; }
+
+    void Map2() { Settings.MapNumber = 2; }
+
     void HandleMinus()
     {
-        if (PlayerCount <= 2) { return; }
-        PlayerCount--;
-        number.text = $"{PlayerCount}";
+        if (Settings.PlayerCount <= 2) { return; }
+        Settings.PlayerCount--;
+        number.text = $"{Settings.PlayerCount}";
     }
 
     void HandlePlus()
     {
-        if (PlayerCount >= 6) { return; }
-        PlayerCount++;
-        number.text = $"{PlayerCount}";
+        if (Settings.PlayerCount >= 6) { return; }
+        Settings.PlayerCount++;
+        number.text = $"{Settings.PlayerCount}";
     }
 
     void LoadGame()
     {
-        Map1.PlayerCount = PlayerCount;
         Wait.Start(1.5f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenegame.unity");
@@ -53,30 +58,18 @@ public class ClickButton : MonoBehaviour
 
     void LoadMenu()
     {
-        PlayerCount = 2;
+        Settings.PlayerCount = 2;
         Wait.Start(1.5f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
         });
     }
 
-    public void PointerEnterReady()
-    {
-        triangleReady.enabled = true;
-    }
+    public void PointerEnterReady() { triangleReady.enabled = true; }
 
-    public void PointerEnterLeave()
-    {
-        triangleLeave.enabled = true;
-    }
+    public void PointerEnterLeave() { triangleLeave.enabled = true; }
 
-    public void PointerLeaveReady()
-    {
-        triangleReady.enabled = false;
-    }
+    public void PointerLeaveReady() { triangleReady.enabled = false; }
 
-    public void PointerLeaveLeave()
-    {
-        triangleLeave.enabled = false;
-    }
+    public void PointerLeaveLeave() { triangleLeave.enabled = false; }
 }
