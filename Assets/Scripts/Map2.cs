@@ -75,7 +75,7 @@ public class Map2 : MonoBehaviour
             game.ListOfCountries[i].SetNeighbors(neighbors);
         }
 
-        game.SetHashmap(countryMap);
+        game.SetCountryMap(countryMap);
     }
 
     // Update is called once per frame

@@ -44,13 +44,6 @@ public class GameState
     bool flagDistributionPhase;
     // bool flagGamePhase; // not required yet
 
-    public static int DiceRoll() => Random.Next(1, 7);
-
-    public void SetHashmap(Dictionary<Button, Country> map)
-    {
-        this.countryMap = map;
-    }
-
     private GameState(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
     {
         this.turnIndex = 0;
@@ -164,6 +157,13 @@ public class GameState
 
         return output;
     }
+
+    public void SetCountryMap(Dictionary<Button, Country> map)
+    {
+        this.countryMap = map;
+    }
+
+    public static int DiceRoll() => Random.Next(1, 7);
 
     public void PopulatingCountryClick(GameObject selectedObj)
     {
