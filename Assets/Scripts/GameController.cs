@@ -379,36 +379,43 @@ public class GameController
     {
         if (selectedObj == null) return;
 
+        TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
+        int num = Int32.Parse(numberOfTroops.text);
+
         switch (selectedObj.name)
         {
             case "Confirm":
                 this.AttackCanvas.enabled = false;
-                this.Attack(attacker, defender);
+                this.Attack(attacker, defender, num);
+
+                if (defender.GetOwner() == attacker.GetOwner())
+                {
+                    // attacker won the fight, handle transferring troops here
+                    Debug.Log("congrats g you won the fight");
+                }
+
                 this.UnHighlight();
+                numberOfTroops.text = "1";
                 return;
 
             case "Cancel":
                 this.AttackCanvas.enabled = false;
                 this.UnHighlight();
-                GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>().text = "1";
+                numberOfTroops.text = "1";
                 return;
 
             case "ButtonPlus":
-                TextMeshProUGUI numberOfTroops1 = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
-                int num1 = Int32.Parse(numberOfTroops1.text);
+                if (num == 3 || num == attacker.GetTroops() - 1) return;
 
-                if (num1 == 3 || num1 == this.attacker.GetTroops() - 1 || num1 == this.defender.GetTroops()) return;
-
-                numberOfTroops1.text = "" + (num1 + 1);
+                num = num + 1;
+                numberOfTroops.text = "" + (num);
                 return;
 
             case "ButtonMinus":
-                TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
-                int num = Int32.Parse(numberOfTroops.text);
-
                 if (num == 1) return;
 
-                numberOfTroops.text = "" + (num - 1);
+                num = num - 1;
+                numberOfTroops.text = "" + (num);
                 return;
 
             default: return;
@@ -441,57 +448,99 @@ public class GameController
         }
     }
 
-    public void Attack(Country attacker, Country defender)
+    public void Attack(Country attacker, Country defender, int num)
     {
-        // this method only currently handles ONE dice roll
+        List<int> atkRolls = new List<int>();
+        List<int> defRolls = new List<int>();
 
-        int attackerDiceRoll = Dice.Roll();
-        int defenderDiceRoll = Dice.Roll();
+        for (int i = 1; i <= num; i++)
+        {
+            int roll = Dice.Roll();
+            atkRolls.Add(roll);
+            GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {roll}";
+        }
 
-        GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {attackerDiceRoll}";
-        GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {defenderDiceRoll}";
+        for (int i = 1; i <= Mathf.Min(Mathf.Min(defender.GetTroops(), 3), num); i++)
+        {
+            int roll = Dice.Roll();
+            defRolls.Add(roll);
+            GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {roll}";
+        }
+
+        int atkWins = 0;
+        int atkLosses = 0;
+
+        if (atkRolls.Count > defRolls.Count)
+        {
+            // handle if there are less defender rolls
+            // take the best rolls from attacker
+            // puts them in a new list of size defender rolls
+
+            atkRolls.Sort();
+            atkRolls.Reverse();
+            List<int> newAtkRolls = new List<int>();
+
+            for (int i = 0; i < defRolls.Count; i++)
+            {
+                newAtkRolls.Add(atkRolls[i]);
+            }
+
+            atkRolls = newAtkRolls;
+        }
+
+        for (int i = 0; i < atkRolls.Count; i++)
+        {
+            GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {atkRolls[i]}";
+            GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {defRolls[i]}";
+
+            if (atkRolls[i] > defRolls[i]) 
+            {
+                // attacker wins the battle
+                atkWins++; 
+                defender.ChangeTroops(-1);
+
+                GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.green;
+                GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.red;
+            }
+            else 
+            {
+                // defender wins the battle
+                atkLosses++;
+                attacker.ChangeTroops(-1);
+
+                GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.red;
+                GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.green;
+            }
+
+            // fights have ended
+
+            string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
+            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
+
+            if (defender.GetTroops() == 0)
+            {
+                GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
+
+                defender.SetOwner(attacker.GetOwner());
+            }
+        }
 
         this.DiceCanvas.enabled = true;
-
-        if (attackerDiceRoll > defenderDiceRoll && defender.GetTroops() == 1) // attacker successfully invades
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Attacker Won Invasion!";
-
-            // int transferredTroops = gameobject get numberoftransferredtroops etc etc etc
-            // defender.ChangeTroops(-1);
-            // attacker.ChangeTroops(-transferredTroops);
-            // defender.ChangeTroops(transferredTroops);
-
-            defender.SetOwner(turnPlayer);
-            attacker.ChangeTroops(-1);
-            Debug.Log($"EVENT: attacker successfully invaded the country");
-        }
-
-        else if (attackerDiceRoll > defenderDiceRoll) // attacker takes troops
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Defender Lost 1 Troop(s)";
-
-            defender.ChangeTroops(-1);
-            Debug.Log($"EVENT: defender loses one troop");
-        }
-
-        else // defender wins
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Attacker Lost 1 Troop(s)";
-
-            attacker.ChangeTroops(-1);
-            Debug.Log($"EVENT: attacker loses one troop");
-        }
 
         Wait.Start(4f, () =>
         {
             this.DiceCanvas.enabled = false;
+
+            // reset the UI for the next attack
+
+            for (int i = 1; i <= 3; i++)
+            {
+                GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = "";
+                GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = "";
+                GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().color = Color.white;
+                GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().color = Color.white;
+            }
+            GameObject.Find($"WinnerText").GetComponent<TextMeshProUGUI>().text = "";
         });
     }
 
@@ -500,8 +549,6 @@ public class GameController
         this.turnIndex++;
 
         if (this.turnIndex > (this.turnsOrder.Count - 1)) this.turnIndex = 0;
-
-        // Debug.Log($"current player: {this.turnIndex}"); // uncomment for debug
 
         turnPlayer = turnsOrder[turnIndex];
         if (turnPlayer.GetNumberOfOwnedCountries() == 0 && !flagDistributionPhase)
