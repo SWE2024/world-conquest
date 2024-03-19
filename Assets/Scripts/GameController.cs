@@ -10,11 +10,14 @@ public class GameController
     static GameController instance = null;
 
     public delegate void DelegateVar(GameObject selectedObj);
-    public DelegateVar HandleCountryClick;
+    public DelegateVar HandleObjectClick;
     public Canvas DistributeCanvas;
     public Canvas AttackCanvas;
+    public Canvas TransferCanvas;
     public Canvas DiceCanvas;
     public List<Country> ListOfCountries = new List<Country>();
+
+    Country[] recentFight = new Country[2];
 
     int playerCount;
 
@@ -44,7 +47,7 @@ public class GameController
     bool flagDistributionPhase;
     // bool flagGamePhase; // not required yet
 
-    private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
+    private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
         this.turnIndex = 0;
         this.populatedCountries = 0;
@@ -54,6 +57,7 @@ public class GameController
         this.playerCount = playerCount;
         this.DistributeCanvas = distributeCanvas;
         this.AttackCanvas = attackCanvas;
+        this.TransferCanvas = transferCanvas;
         this.DiceCanvas = diceCanvas;
 
         // creates the turns order here
@@ -70,14 +74,14 @@ public class GameController
          * GameObject.Find("CurrentPlayer").GetComponent<Image>();
          */
         this.square.color = this.GetTurnsColor();
-        this.HandleCountryClick = PopulatingCountryClick;
+        this.HandleObjectClick = PopulatingCountryClick;
     }
 
     //singleton's constructor method access thru here
-    public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas diceCanvas)
+    public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
         if (instance != null) return GameController.instance;
-        GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, diceCanvas);
+        GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, transferCanvas, diceCanvas);
         return GameController.instance;
     }
 
@@ -205,8 +209,8 @@ public class GameController
                 if (player.GetNumberOfTroops() > 0) flagDistributionPhase = true;
             }
 
-            if (flagDistributionPhase) HandleCountryClick = DistributingTroopsCountryClick;
-            else HandleCountryClick = AttackCountryClick;
+            if (flagDistributionPhase) HandleObjectClick = DistributingTroopsCountryClick;
+            else HandleObjectClick = HandleGameClick;
         }
     }
 
@@ -249,7 +253,7 @@ public class GameController
                 if (check) return;
 
                 ResetTurn();
-                HandleCountryClick = AttackCountryClick;
+                HandleObjectClick = HandleGameClick;
                 return;
 
             case "Cancel":
@@ -315,11 +319,17 @@ public class GameController
 
     // deal with country click
     // top level general method
-    public void AttackCountryClick(GameObject selectedObj)
+    public void HandleGameClick(GameObject selectedObj)
     {
         if (AttackCanvas.enabled)
         {
-            TroopAttackEnabled(selectedObj);
+            HandleAttackClick(selectedObj);
+            return;
+        }
+
+        if (TransferCanvas.enabled)
+        {
+            HandleTransferClick(selectedObj);
             return;
         }
 
@@ -370,55 +380,109 @@ public class GameController
         }
 
         this.AttackCanvas.enabled = true;
+        CameraHandler.DisableMovement = true;
+
         GameObject.Find("RemainingAttack").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Attack: {attacker.GetTroops() - 1}\r\n(choose how many dice to roll)";
 
         this.defender = clickedCountry;
     }
 
-    private void TroopAttackEnabled(GameObject selectedObj)
+    private void HandleAttackClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
+
+        TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
+        int num = Int32.Parse(numberOfTroops.text);
 
         switch (selectedObj.name)
         {
             case "Confirm":
                 this.AttackCanvas.enabled = false;
-                this.Attack(attacker, defender);
+                this.Attack(attacker, defender, num);
+
+                if (attacker.GetOwner() == defender.GetOwner())
+                {
+                    recentFight[0] = attacker;
+                    recentFight[1] = defender;
+                    Wait.Start(4f, () => { 
+                        this.TransferCanvas.enabled = true;
+                        GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Transfer: {recentFight[0].GetTroops() - 1}"; ;
+                    });
+                }
+
                 this.UnHighlight();
+                numberOfTroops.text = "1";
+                CameraHandler.DisableMovement = false;
                 return;
 
             case "Cancel":
                 this.AttackCanvas.enabled = false;
                 this.UnHighlight();
-                GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>().text = "1";
+                numberOfTroops.text = "1";
+                CameraHandler.DisableMovement = false;
                 return;
 
             case "ButtonPlus":
-                TextMeshProUGUI numberOfTroops1 = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
-                int num1 = Int32.Parse(numberOfTroops1.text);
+                if (num == 3 || num == attacker.GetTroops() - 1) return;
 
-                if (num1 == 3 || num1 == this.attacker.GetTroops() - 1 || num1 == this.defender.GetTroops()) return;
-
-                numberOfTroops1.text = "" + (num1 + 1);
+                num++;
+                numberOfTroops.text = "" + num;
                 return;
 
             case "ButtonMinus":
-                TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
-                int num = Int32.Parse(numberOfTroops.text);
-
                 if (num == 1) return;
 
-                numberOfTroops.text = "" + (num - 1);
+                num--;
+                numberOfTroops.text = "" + num;
                 return;
 
             default: return;
         }
     }
 
-    public void FortificationTakeClick(GameObject selectedObj)
+    private void HandleTransferClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
-        return;
+
+        int available = recentFight[0].GetTroops() - 1;
+
+        TextMeshProUGUI troopsLeft = GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>();
+        troopsLeft.text = $"Troops Left To Transfer: {available}";
+
+        TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToTransfer").GetComponent<TextMeshProUGUI>();
+        int num = Int32.Parse(numberOfTroops.text);
+
+        switch (selectedObj.name)
+        {
+            case "Confirm":
+                this.TransferCanvas.enabled = false;
+
+                this.Transfer(recentFight[0], recentFight[1], num);
+
+                numberOfTroops.text = "1";
+                return;
+
+            case "Cancel":
+                this.TransferCanvas.enabled = false;
+                numberOfTroops.text = "1";
+                return;
+
+            case "ButtonPlus":
+                if (num == available) return;
+
+                num++;
+                numberOfTroops.text = "" + num;
+                return;
+
+            case "ButtonMinus":
+                if (num == 1) return;
+
+                num--;
+                numberOfTroops.text = "" + num;
+                return;
+
+            default: return;
+        }
     }
 
     public void Highlight(Country country)
@@ -441,58 +505,106 @@ public class GameController
         }
     }
 
-    public void Attack(Country attacker, Country defender)
+    public void Attack(Country attacker, Country defender, int num)
     {
-        // this method only currently handles ONE dice roll
+        List<int> atkRolls = new List<int>();
+        List<int> defRolls = new List<int>();
 
-        int attackerDiceRoll = Dice.Roll();
-        int defenderDiceRoll = Dice.Roll();
+        for (int i = 1; i <= num; i++)
+        {
+            int roll = Dice.Roll();
+            atkRolls.Add(roll);
+            GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {roll}";
+        }
 
-        GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {attackerDiceRoll}";
-        GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {defenderDiceRoll}";
+        for (int i = 1; i <= Mathf.Min(Mathf.Min(defender.GetTroops(), 3), num); i++)
+        {
+            int roll = Dice.Roll();
+            defRolls.Add(roll);
+            GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {roll}";
+        }
+
+        int atkWins = 0;
+        int atkLosses = 0;
+
+        if (atkRolls.Count > defRolls.Count)
+        {
+            // handle if there are less defender rolls
+            // take the best rolls from attacker
+            // puts them in a new list of size defender rolls
+
+            atkRolls.Sort();
+            atkRolls.Reverse();
+            List<int> newAtkRolls = new List<int>();
+
+            for (int i = 0; i < defRolls.Count; i++)
+            {
+                newAtkRolls.Add(atkRolls[i]);
+            }
+
+            atkRolls = newAtkRolls;
+        }
+
+        for (int i = 0; i < atkRolls.Count; i++)
+        {
+            GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().text = $"Attacker Rolls - {atkRolls[i]}";
+            GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().text = $"Defender Rolls - {defRolls[i]}";
+
+            if (atkRolls[i] > defRolls[i])
+            {
+                // attacker wins the battle
+                atkWins++;
+                defender.ChangeTroops(-1);
+
+                GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.green;
+                GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.red;
+            }
+            else
+            {
+                // defender wins the battle
+                atkLosses++;
+                attacker.ChangeTroops(-1);
+
+                GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.red;
+                GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.green;
+            }
+
+            // fights have ended
+
+            string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
+            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
+
+            if (defender.GetTroops() == 0)
+            {
+                GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
+
+                defender.SetOwner(attacker.GetOwner());
+            }
+        }
 
         this.DiceCanvas.enabled = true;
-
-        if (attackerDiceRoll > defenderDiceRoll && defender.GetTroops() == 1) // attacker successfully invades
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Attacker Won Invasion!";
-
-            // int transferredTroops = gameobject get numberoftransferredtroops etc etc etc
-            // defender.ChangeTroops(-1);
-            // attacker.ChangeTroops(-transferredTroops);
-            // defender.ChangeTroops(transferredTroops);
-
-            defender.SetOwner(turnPlayer);
-            attacker.ChangeTroops(-1);
-            Debug.Log($"EVENT: attacker successfully invaded the country");
-        }
-
-        else if (attackerDiceRoll > defenderDiceRoll) // attacker takes troops
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Defender Lost 1 Troop(s)";
-
-            defender.ChangeTroops(-1);
-            Debug.Log($"EVENT: defender loses one troop");
-        }
-
-        else // defender wins
-        {
-            GameObject.Find("AttackerDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.red;
-            GameObject.Find("DefenderDiceRoll").GetComponent<TextMeshProUGUI>().color = Color.green;
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"Attacker Lost 1 Troop(s)";
-
-            attacker.ChangeTroops(-1);
-            Debug.Log($"EVENT: attacker loses one troop");
-        }
 
         Wait.Start(4f, () =>
         {
             this.DiceCanvas.enabled = false;
+
+            // reset the UI for the next attack
+
+            for (int i = 1; i <= 3; i++)
+            {
+                GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = "";
+                GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().text = "";
+                GameObject.Find($"AttackerDiceRoll{i}").GetComponent<TextMeshProUGUI>().color = Color.white;
+                GameObject.Find($"DefenderDiceRoll{i}").GetComponent<TextMeshProUGUI>().color = Color.white;
+            }
+            GameObject.Find($"WinnerText").GetComponent<TextMeshProUGUI>().text = "";
         });
+    }
+
+    public void Transfer(Country from, Country to, int num)
+    {
+        from.ChangeTroops(-num);
+        to.ChangeTroops(num);
     }
 
     public void NextTurn()
@@ -500,8 +612,6 @@ public class GameController
         this.turnIndex++;
 
         if (this.turnIndex > (this.turnsOrder.Count - 1)) this.turnIndex = 0;
-
-        // Debug.Log($"current player: {this.turnIndex}"); // uncomment for debug
 
         turnPlayer = turnsOrder[turnIndex];
         if (turnPlayer.GetNumberOfOwnedCountries() == 0 && !flagDistributionPhase)
