@@ -12,6 +12,7 @@ public class Map : MonoBehaviour
 
     [SerializeField] Canvas troopDistribution;
     [SerializeField] Canvas troopAttack;
+    [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
 
     void AutoPopulate()
@@ -48,7 +49,7 @@ public class Map : MonoBehaviour
         Debug.Log($"EVENT: starting game with {Settings.PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameController.New(Settings.PlayerCount, troopDistribution, troopAttack, diceCanvas);
+        game = GameController.New(Settings.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
@@ -97,6 +98,7 @@ public class Map : MonoBehaviour
 
         troopDistribution.enabled = false;
         troopAttack.enabled = false;
+        troopTransfer.enabled = false;
         diceCanvas.enabled = false;
     }
 
@@ -106,7 +108,7 @@ public class Map : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
-            game.HandleCountryClick(selectedObj);
+            game.HandleObjectClick(selectedObj);
         }
     }
 }
