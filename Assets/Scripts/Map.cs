@@ -43,13 +43,13 @@ public class Map : MonoBehaviour
         int otherMap = 0;
         int otherCountries = 0;
 
-        if (Settings.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1Neighbours.ListOfNeighbours; }
-        if (Settings.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2Neighbours.ListOfNeighbours; }
+        if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1Neighbours.ListOfNeighbours; }
+        if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2Neighbours.ListOfNeighbours; }
 
-        Debug.Log($"EVENT: starting game with {Settings.PlayerCount} players");
+        Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
-        game = GameController.New(Settings.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
+        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
@@ -57,7 +57,7 @@ public class Map : MonoBehaviour
         for (int i = 1; i <= numberOfCountries; i++)
         {
             // gets the country objects
-            GameObject obj = GameObject.Find($"country{i}map{Settings.MapNumber}");
+            GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
             Country country = new Country(button);
 
@@ -78,7 +78,7 @@ public class Map : MonoBehaviour
             obj.GetComponentInChildren<TextMeshProUGUI>().enabled = false;
         }
 
-        GameObject.Find($"connectionsmap{Settings.MapNumber}").GetComponent<Image>().enabled = true;
+        GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;
         GameObject.Find($"connectionsmap{otherMap}").GetComponent<Image>().enabled = false;
 
         // sets Neighbors for each country 

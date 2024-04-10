@@ -30,22 +30,22 @@ public class ClickButton : MonoBehaviour
         btnPlus.onClick.AddListener(HandlePlus);
     }
 
-    void Map1() { Settings.MapNumber = 1; }
+    void Map1() { Preferences.MapNumber = 1; }
 
-    void Map2() { Settings.MapNumber = 2; }
+    void Map2() { Preferences.MapNumber = 2; }
 
     void HandleMinus()
     {
-        if (Settings.PlayerCount <= 2) { return; }
-        Settings.PlayerCount--;
-        number.text = $"{Settings.PlayerCount}";
+        if (Preferences.PlayerCount <= 2) { return; }
+        Preferences.PlayerCount--;
+        number.text = $"{Preferences.PlayerCount}";
     }
 
     void HandlePlus()
     {
-        if (Settings.PlayerCount >= 6) { return; }
-        Settings.PlayerCount++;
-        number.text = $"{Settings.PlayerCount}";
+        if (Preferences.PlayerCount >= 6) { return; }
+        Preferences.PlayerCount++;
+        number.text = $"{Preferences.PlayerCount}";
     }
 
     void LoadGame()
@@ -58,7 +58,7 @@ public class ClickButton : MonoBehaviour
 
     void LoadMenu()
     {
-        Settings.PlayerCount = 2;
+        Preferences.PlayerCount = 2;
         Wait.Start(1.5f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");

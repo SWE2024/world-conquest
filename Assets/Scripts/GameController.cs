@@ -106,7 +106,7 @@ public class GameController
         int numberOfCountries = 0;
         int remainder = 0;
 
-        switch (Settings.MapNumber)
+        switch (Preferences.MapNumber)
         {
             case 1:
                 numberOfCountries = 44 / this.playerCount;
