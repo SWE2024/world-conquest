@@ -459,13 +459,16 @@ public class GameController
             case "Confirm":
                 this.TransferCanvas.enabled = false;
 
-                this.Transfer(recentFight[0], recentFight[1], num);
+                this.Transfer(recentFight[0], recentFight[1], num); // transfer num troops to new country
 
                 numberOfTroops.text = "1";
                 return;
 
             case "Cancel":
                 this.TransferCanvas.enabled = false;
+
+                this.Transfer(recentFight[0], recentFight[1], 1); // transfer 1 troop regardless
+
                 numberOfTroops.text = "1";
                 return;
 
