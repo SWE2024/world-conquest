@@ -6,19 +6,15 @@ using System.Collections.Generic;
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
-    [SerializeField] Button volUp;
-    [SerializeField] Button volDown;
-
-    public static ScriptAudio menuMusic;
-
-    float currentVolume = 0.15f;
+    Button volUp;
+    Button volDown;
 
     void Awake()
     {
         GameObject[] musicObj = GameObject.FindGameObjectsWithTag("GameMusic");
         if (musicObj.Length > 1)
         {
-            Destroy(this.gameObject);
+            Destroy(this.gameObject); // ensures only one music track plays at a time
         }
         DontDestroyOnLoad(this.gameObject);
     }
@@ -26,7 +22,11 @@ public class ScriptAudio : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        music.volume = currentVolume;
+        music = GameObject.Find("Music").GetComponent<AudioSource>();
+        music.volume = Preferences.CurrentVolume;
+
+        volUp = GameObject.Find("VolumeUp").GetComponent<Button>();
+        volDown = GameObject.Find("VolumeDown").GetComponent<Button>();
 
         volUp.onClick.AddListener(IncreaseVol);
         volDown.onClick.AddListener(DecreaseVol);
@@ -36,13 +36,8 @@ public class ScriptAudio : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
-            if (music.volume == 0f) music.volume = currentVolume;
+            if (music.volume == 0f) music.volume = Preferences.CurrentVolume;
             else music.volume = 0f;
-        }
-
-        if (SceneManager.GetActiveScene().name == "SceneGame")
-        {
-            music.Stop();
         }
     }
 
@@ -51,7 +46,7 @@ public class ScriptAudio : MonoBehaviour
         if (music.volume < 0.5f)
         {
             music.volume += 0.05f;
-            currentVolume = music.volume;
+            Preferences.CurrentVolume = music.volume;
         }
     }
 
@@ -60,7 +55,7 @@ public class ScriptAudio : MonoBehaviour
         if (music.volume > 0f)
         {
             music.volume -= 0.05f;
-            currentVolume = music.volume;
+            Preferences.CurrentVolume = music.volume;
         }
     }
 }
