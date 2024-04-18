@@ -1,24 +1,15 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
-    [SerializeField] Button volUp;
-    [SerializeField] Button volDown;
-
-    public static ScriptAudio menuMusic;
-
-    float currentVolume = 0.15f;
 
     void Awake()
     {
         GameObject[] musicObj = GameObject.FindGameObjectsWithTag("GameMusic");
         if (musicObj.Length > 1)
         {
-            Destroy(this.gameObject);
+            Destroy(this.gameObject); // ensures only one music track plays at a time
         }
         DontDestroyOnLoad(this.gameObject);
     }
@@ -26,41 +17,34 @@ public class ScriptAudio : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        music.volume = currentVolume;
-
-        volUp.onClick.AddListener(IncreaseVol);
-        volDown.onClick.AddListener(DecreaseVol);
+        music = GameObject.Find("Music").GetComponent<AudioSource>();
+        music.volume = Preferences.CurrentVolume;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
-            if (music.volume == 0f) music.volume = currentVolume;
+            if (music.volume == 0f) music.volume = Preferences.CurrentVolume;
             else music.volume = 0f;
         }
+    }
 
-        if (SceneManager.GetActiveScene().name == "SceneGame")
+    public static void IncreaseVol()
+    {
+        if (GameObject.Find("Music").GetComponent<AudioSource>().volume < 1f)
         {
-            music.Stop();
+            GameObject.Find("Music").GetComponent<AudioSource>().volume += 0.1f;
+            Preferences.CurrentVolume = GameObject.Find("Music").GetComponent<AudioSource>().volume;
         }
     }
 
-    void IncreaseVol()
+    public static void DecreaseVol()
     {
-        if (music.volume < 0.5f)
+        if (GameObject.Find("Music").GetComponent<AudioSource>().volume > 0f)
         {
-            music.volume += 0.05f;
-            currentVolume = music.volume;
-        }
-    }
-
-    void DecreaseVol()
-    {
-        if (music.volume > 0f)
-        {
-            music.volume -= 0.05f;
-            currentVolume = music.volume;
+            GameObject.Find("Music").GetComponent<AudioSource>().volume -= 0.1f;
+            Preferences.CurrentVolume = GameObject.Find("Music").GetComponent<AudioSource>().volume;
         }
     }
 }

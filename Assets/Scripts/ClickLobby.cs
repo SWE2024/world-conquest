@@ -16,6 +16,8 @@ public class ClickButton : MonoBehaviour
     [SerializeField] Image triangleReady;
     [SerializeField] Image triangleLeave;
 
+    [SerializeField] AudioClip gameMusic;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -53,6 +55,9 @@ public class ClickButton : MonoBehaviour
         Wait.Start(1.5f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenegame.unity");
+            AudioSource music = GameObject.Find("Music").GetComponent<AudioSource>(); // switches music based on scene
+            music.clip = gameMusic;
+            music.Play();
         });
     }
 

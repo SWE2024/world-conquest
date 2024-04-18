@@ -22,6 +22,12 @@ public class ClickMainMenu : MonoBehaviour
 
     void LoadLobby()
     {
+        // reset preferences to default values in case they have been changed
+        Preferences.PlayerCount = 2;
+        Preferences.MapNumber = 1;
+        Preferences.AutoPopulateFlag = false;
+
+        // load the game scene
         StartCoroutine(SwitchScene());
     }
 
