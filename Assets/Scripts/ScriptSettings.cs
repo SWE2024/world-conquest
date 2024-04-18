@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScriptSettingsMenu : MonoBehaviour
+public class ScriptSettings : MonoBehaviour
 {
     [SerializeField] Button btnSettingsEnter;
     [SerializeField] Button btnSettingsLeave;

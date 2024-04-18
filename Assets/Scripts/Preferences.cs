@@ -1,4 +1,4 @@
-public static class Settings
+public static class Preferences
 {
     public static int PlayerCount = 2; // default
     public static int MapNumber = 1; // default

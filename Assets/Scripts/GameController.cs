@@ -106,7 +106,7 @@ public class GameController
         int numberOfCountries = 0;
         int remainder = 0;
 
-        switch (Settings.MapNumber)
+        switch (Preferences.MapNumber)
         {
             case 1:
                 numberOfCountries = 44 / this.playerCount;
@@ -210,13 +210,15 @@ public class GameController
             }
 
             if (flagDistributionPhase) HandleObjectClick = DistributingTroopsCountryClick;
-            else HandleObjectClick = HandleGameClick;
+            else HandleObjectClick = CountryClick;
         }
     }
 
     public void DistributingTroopsCountryClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
+
+        TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
 
         switch (selectedObj.name)
         {
@@ -239,12 +241,12 @@ public class GameController
             case "Confirm":
                 CameraHandler.DisableMovement = false;
 
-                int num = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                int num = Int32.Parse(numberOfTroops.GetComponent<TextMeshProUGUI>().text);
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
                 this.attacker = null;
                 this.DistributeCanvas.enabled = false;
-                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
+                numberOfTroops.text = "1";
 
                 if (turnPlayer.GetNumberOfTroops() > 0) return;
 
@@ -253,39 +255,39 @@ public class GameController
                 if (check) return;
 
                 ResetTurn();
-                HandleObjectClick = HandleGameClick;
+                HandleObjectClick = CountryClick;
                 return;
 
             case "Cancel":
                 CameraHandler.DisableMovement = false;
 
                 this.attacker = null;
-                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = "1";
+                numberOfTroops.text = "1";
                 this.DistributeCanvas.enabled = false;
                 return;
 
             case "ButtonPlus":
-                int num1 = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                int num1 = Int32.Parse(numberOfTroops.text);
                 if (num1 == this.turnPlayer.GetNumberOfTroops())
                 {
                     num1 = 1;
-                    GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num1}";
+                    numberOfTroops.text = $"{num1}";
                     return;
                 }
                 num1++;
-                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num1}";
+                numberOfTroops.text = $"{num1}";
                 return;
 
             case "ButtonMinus":
-                int num2 = Int32.Parse(GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text);
+                int num2 = Int32.Parse(numberOfTroops.text);
                 if (num2 == 1)
                 {
                     num2 = this.turnPlayer.GetNumberOfTroops();
-                    GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num2}";
+                    numberOfTroops.text = $"{num2}";
                     return;
                 }
                 num2--;
-                GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>().text = $"{num2}";
+                numberOfTroops.text = $"{num2}";
                 return;
 
             default: return;
@@ -319,7 +321,7 @@ public class GameController
 
     // deal with country click
     // top level general method
-    public void HandleGameClick(GameObject selectedObj)
+    public void CountryClick(GameObject selectedObj)
     {
         if (AttackCanvas.enabled)
         {
@@ -475,7 +477,12 @@ public class GameController
                 return;
 
             case "ButtonMinus":
-                if (num == 1) return;
+                if (num == 1)
+                {
+                    num = available;
+                    numberOfTroops.text = "" + num;
+                    return;
+                }
 
                 num--;
                 numberOfTroops.text = "" + num;
