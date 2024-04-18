@@ -46,7 +46,7 @@ public class Map : MonoBehaviour
         if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1Neighbours.ListOfNeighbours; }
         if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2Neighbours.ListOfNeighbours; }
 
-        Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
+        // Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
 
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);

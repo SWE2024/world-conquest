@@ -80,7 +80,7 @@ public class GameController
     //singleton's constructor method access thru here
     public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
-        if (instance != null) return GameController.instance;
+        //if (instance != null) return GameController.instance; // find a better way of joining a game that already exists, this does not work
         GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, transferCanvas, diceCanvas);
         return GameController.instance;
     }
@@ -196,11 +196,11 @@ public class GameController
 
         if (populatedCountries >= countryMap.Count)
         {
-            Debug.Log("EVENT: all territories owned");
+            // Debug.Log("EVENT: all territories owned");
             this.ResetTurn();
 
             flagDistributionPhase = false;
-            //flagGamePhase = true;
+            // flagGamePhase = true;
             GameObject.Find("EndTurn").GetComponent<Image>().enabled = true;
             GameObject.Find("EndTurn").GetComponent<Button>().enabled = true;
 
@@ -583,9 +583,13 @@ public class GameController
 
             if (defender.GetTroops() == 0)
             {
+                GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
-
                 defender.SetOwner(attacker.GetOwner());
+            } 
+            else
+            {
+                GameObject.Find("SoundDefeat").GetComponent<AudioSource>().Play();
             }
         }
 
@@ -623,7 +627,7 @@ public class GameController
         turnPlayer = turnsOrder[turnIndex];
         if (turnPlayer.GetNumberOfOwnedCountries() == 0 && !flagDistributionPhase)
         {
-            Debug.Log($"EVENT: skipped player {turnIndex - 1}");
+            // Debug.Log($"EVENT: skipped player {turnIndex - 1}");
             NextTurn(); // ignores players who lost
         }
 

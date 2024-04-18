@@ -1,13 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.Collections.Generic;
 
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
-    Button volUp;
-    Button volDown;
 
     void Awake()
     {
@@ -24,12 +19,6 @@ public class ScriptAudio : MonoBehaviour
     {
         music = GameObject.Find("Music").GetComponent<AudioSource>();
         music.volume = Preferences.CurrentVolume;
-
-        volUp = GameObject.Find("VolumeUp").GetComponent<Button>();
-        volDown = GameObject.Find("VolumeDown").GetComponent<Button>();
-
-        volUp.onClick.AddListener(IncreaseVol);
-        volDown.onClick.AddListener(DecreaseVol);
     }
 
     void Update()
@@ -41,21 +30,21 @@ public class ScriptAudio : MonoBehaviour
         }
     }
 
-    void IncreaseVol()
+    public static void IncreaseVol()
     {
-        if (music.volume < 0.5f)
+        if (GameObject.Find("Music").GetComponent<AudioSource>().volume < 1f)
         {
-            music.volume += 0.05f;
-            Preferences.CurrentVolume = music.volume;
+            GameObject.Find("Music").GetComponent<AudioSource>().volume += 0.1f;
+            Preferences.CurrentVolume = GameObject.Find("Music").GetComponent<AudioSource>().volume;
         }
     }
 
-    void DecreaseVol()
+    public static void DecreaseVol()
     {
-        if (music.volume > 0f)
+        if (GameObject.Find("Music").GetComponent<AudioSource>().volume > 0f)
         {
-            music.volume -= 0.05f;
-            Preferences.CurrentVolume = music.volume;
+            GameObject.Find("Music").GetComponent<AudioSource>().volume -= 0.1f;
+            Preferences.CurrentVolume = GameObject.Find("Music").GetComponent<AudioSource>().volume;
         }
     }
 }
