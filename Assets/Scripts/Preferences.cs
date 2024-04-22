@@ -4,4 +4,5 @@ public static class Preferences
     public static int MapNumber = 1; // default
     public static bool AutoPopulateFlag = false; // sees if the setup phase should be skipped
     public static float CurrentVolume = 0.5f;
+    public static bool isShownFPS = true;
 }

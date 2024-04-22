@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GameMusic
   - GameSettings
+  - GameFPS
   layers:
   - Default
   - TransparentFX

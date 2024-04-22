@@ -3,6 +3,7 @@ using UnityEngine;
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
+    [SerializeField] bool isMuted = false;
 
     void Awake()
     {
@@ -25,8 +26,10 @@ public class ScriptAudio : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
-            if (music.volume == 0f) music.volume = Preferences.CurrentVolume;
+            if (isMuted) music.volume = Preferences.CurrentVolume;
             else music.volume = 0f;
+
+            isMuted = !isMuted;
         }
     }
 
