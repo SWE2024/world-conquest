@@ -33,7 +33,7 @@ public class ClickMainMenu : MonoBehaviour
 
     private IEnumerator SwitchScene()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.75f);
         SceneManager.LoadScene("assets/scenes/scenelobby.unity");
     }
 
@@ -44,7 +44,7 @@ public class ClickMainMenu : MonoBehaviour
 
     private IEnumerator CloseGame()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.75f);
         Application.Quit();
     }
 

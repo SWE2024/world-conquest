@@ -75,7 +75,7 @@ public class ScriptSettings : MonoBehaviour
 
     void ReturnToLobby()
     {
-        Wait.Start(1.5f, () =>
+        Wait.Start(0.75f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
             AudioSource music = GameObject.Find("Music").GetComponent<AudioSource>(); // switches music based on scene
@@ -91,7 +91,7 @@ public class ScriptSettings : MonoBehaviour
 
     private IEnumerator CloseGame()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.75f);
         Application.Quit();
     }
 }
