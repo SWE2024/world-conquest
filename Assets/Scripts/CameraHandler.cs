@@ -1,10 +1,8 @@
-using Microsoft.Win32.SafeHandles;
-using System;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
+/// <summary>
+/// <c>CameraHandler</c> controls all movement of the camera, including panning and zooming.
+/// </summary>
 public class CameraHandler : MonoBehaviour
 {
     public static bool DisableMovement = false;
@@ -33,13 +31,16 @@ public class CameraHandler : MonoBehaviour
         ZoomCamera();
     }
 
+    /// <summary>
+    /// <c>PanCamera</c> moves the camera when the user drags the mouse.
+    /// </summary>
     private void PanCamera()
     {
-        if (cam.orthographicSize < maxCamSize) // prevents moving out further than the game
+        if (cam.orthographicSize < maxCamSize) // prevents moving out further than the game board
         {
             if (Input.GetMouseButtonDown(0))
             {
-                dragOrigin = cam.ScreenToWorldPoint(Input.mousePosition);
+                dragOrigin = cam.ScreenToWorldPoint(Input.mousePosition); // get the location of the first click
             }
 
             if (Input.GetMouseButton(0))
@@ -47,20 +48,23 @@ public class CameraHandler : MonoBehaviour
                 Vector3 difference = dragOrigin - cam.ScreenToWorldPoint(Input.mousePosition);
                 float newLocationX = Mathf.Clamp(cam.transform.position.x + (difference.x), 890, 1670);
                 float newLocationY = Mathf.Clamp(cam.transform.position.y + (difference.y), 320, 940);
-
+                // transform the camera by the original position to the new location
                 cam.transform.position = new Vector3(newLocationX, newLocationY, -10);
             }
         }
     }
 
+    /// <summary>
+    /// <c>ZoomCamera</c> zooms the camera with the mouse scroll wheel.
+    /// </summary>
     private void ZoomCamera()
     {
-        if (cam.orthographicSize >= maxCamSize - 10)
+        if (cam.orthographicSize >= maxCamSize - 10) // prevents zooming out further than intended
         {
-            cam.transform.position = new Vector3(1280, 720, -10); // sets camera back to default location when fully zoomed out
+            cam.transform.position = new Vector3(1280, 720, -10); // sets camera back to default location
         }
 
-        zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomStep;
+        zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomStep; // zoom out by the zoomstep and amount of scrolls
         zoom = Mathf.Clamp(zoom, minCamSize, maxCamSize);
         cam.orthographicSize = Mathf.SmoothDamp(cam.orthographicSize, zoom, ref velocity, 0.1f);
     }

@@ -43,8 +43,8 @@ public class Map : MonoBehaviour
         int otherMap = 0;
         int otherCountries = 0;
 
-        if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1Neighbours.ListOfNeighbours; }
-        if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2Neighbours.ListOfNeighbours; }
+        if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1.ListOfNeighbours; }
+        if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
 
         // Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
 

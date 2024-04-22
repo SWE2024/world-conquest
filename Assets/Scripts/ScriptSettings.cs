@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// <c>ScriptSettings</c> handles the in-game settings menu.
+/// </summary>
 public class ScriptSettings : MonoBehaviour
 {
     [SerializeField] Button btnSettingsEnter;
@@ -16,6 +19,8 @@ public class ScriptSettings : MonoBehaviour
 
     [SerializeField] AudioClip clipMenu;
     [SerializeField] AudioClip clipGame;
+
+    bool isOpen = false;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +48,21 @@ public class ScriptSettings : MonoBehaviour
         }
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isOpen) OpenSettingsMenu();
+            else CloseSettingsMenu();
+
+            isOpen = !isOpen;
+        }
+    }
+
+    /// <summary>
+    /// <c>OpenSettingsMenu</c> enables the settings menu canvas to show the buttons.
+    /// </summary>
     void OpenSettingsMenu()
     {
         buttons.enabled = true;
@@ -53,6 +73,9 @@ public class ScriptSettings : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>CloseSettingsMenu</c> disables the settings menu canvas to show the game.
+    /// </summary>
     void CloseSettingsMenu()
     {
         buttons.enabled = false;
@@ -63,16 +86,25 @@ public class ScriptSettings : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>IncreaseVol</c> calls IncreaseVol.
+    /// </summary>
     void IncreaseVol()
     {
         ScriptAudio.IncreaseVol();
     }
 
+    /// <summary>
+    /// <c>DecreaseVol</c> calls DecreaseVol.
+    /// </summary>
     void DecreaseVol()
     {
         ScriptAudio.DecreaseVol();
     }
 
+    /// <summary>
+    /// <c>ReturnToLobby</c> closes / ends your game and reloads the main menu scene.
+    /// </summary>
     void ReturnToLobby()
     {
         Wait.Start(0.75f, () =>
@@ -84,6 +116,9 @@ public class ScriptSettings : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// <c>ExitGame</c> closes the entire application.
+    /// </summary>
     void ExitGame()
     {
         StartCoroutine(CloseGame());
