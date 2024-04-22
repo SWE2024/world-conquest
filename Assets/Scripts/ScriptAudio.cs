@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// <c>ScriptAudio</c> handles the in-game audio.
+/// </summary>
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
@@ -33,6 +36,9 @@ public class ScriptAudio : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>IncreaseVol</c> increases the game music.
+    /// </summary>
     public static void IncreaseVol()
     {
         if (GameObject.Find("Music").GetComponent<AudioSource>().volume < 1f)
@@ -42,6 +48,9 @@ public class ScriptAudio : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>DecreaseVol</c> decreases the game music.
+    /// </summary>
     public static void DecreaseVol()
     {
         if (GameObject.Find("Music").GetComponent<AudioSource>().volume > 0f)

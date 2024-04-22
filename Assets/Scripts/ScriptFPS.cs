@@ -1,8 +1,10 @@
 using TMPro;
 using UnityEngine;
 
-
-public class FPSUpdate : MonoBehaviour
+/// <summary>
+/// <c>ScriptFPS</c> controls the screen FPS counter and the display refresh rate.
+/// </summary>
+public class ScriptFPS : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI fpsText;
     float fps;
@@ -23,6 +25,9 @@ public class FPSUpdate : MonoBehaviour
         if (Preferences.isShownFPS) updateFpsCounter(); // updates fps counter every frame
     }
 
+    /// <summary>
+    /// <c>toggleFpsCounter</c> show / hides the FPS counter.
+    /// </summary>
     private void toggleFpsCounter()
     {
         if (Input.GetKeyDown(KeyCode.V))
@@ -34,24 +39,20 @@ public class FPSUpdate : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>toggleFpsCounter</c> toggles fullscreen mode (window is resizable).
+    /// </summary>
     private void toggleFullscreen()
     {
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (!Screen.fullScreen)
-            {
-                Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height,
-                    FullScreenMode.ExclusiveFullScreen, Screen.currentResolution.refreshRateRatio);
-            }
-            else
-            {
-                Screen.SetResolution(Screen.currentResolution.width / 2, Screen.currentResolution.height / 2,
-                    FullScreenMode.Windowed, Screen.currentResolution.refreshRateRatio);
-            }
             Screen.fullScreen = !Screen.fullScreen;
         }
     }
 
+    /// <summary>
+    /// <c>updateFpsCounter</c> changes the number displayed in the FPS counter.
+    /// </summary>
     private void updateFpsCounter()
     {
         updateTimer -= Time.deltaTime; // take away time since last frame

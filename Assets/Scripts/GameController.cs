@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// <c>GameController</c> handles the logic of the local version of the game.
+/// </summary>
 public class GameController
 {
     public static System.Random Random = new System.Random();
