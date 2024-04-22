@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 
-public class Map2Neighbours
+/// <summary>
+/// <c>Map2</c> contains the list of neighbouring countries for map 2.
+/// </summary>
+public class Map2
 {
     public static List<List<int>> ListOfNeighbours = new List<List<int>> {
         new List<int> {

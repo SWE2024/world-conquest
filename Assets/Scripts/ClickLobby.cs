@@ -52,7 +52,7 @@ public class ClickButton : MonoBehaviour
 
     void LoadGame()
     {
-        Wait.Start(1.5f, () =>
+        Wait.Start(0.75f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenegame.unity");
             AudioSource music = GameObject.Find("Music").GetComponent<AudioSource>(); // switches music based on scene
@@ -64,7 +64,7 @@ public class ClickButton : MonoBehaviour
     void LoadMenu()
     {
         Preferences.PlayerCount = 2;
-        Wait.Start(1.5f, () =>
+        Wait.Start(0.75f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");
         });

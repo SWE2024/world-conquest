@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DocstringExample : MonoBehaviour
+public class DocstringEx : MonoBehaviour
 {
     /// <summary>
     /// <c>Method/Class Name</c> this is an example of a docstring.

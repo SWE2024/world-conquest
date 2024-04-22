@@ -1,8 +1,12 @@
 using UnityEngine;
 
+/// <summary>
+/// <c>ScriptAudio</c> handles the in-game audio.
+/// </summary>
 public class ScriptAudio : MonoBehaviour
 {
     [SerializeField] AudioSource music;
+    [SerializeField] bool isMuted = false;
 
     void Awake()
     {
@@ -25,11 +29,16 @@ public class ScriptAudio : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.M))
         {
-            if (music.volume == 0f) music.volume = Preferences.CurrentVolume;
+            if (isMuted) music.volume = Preferences.CurrentVolume;
             else music.volume = 0f;
+
+            isMuted = !isMuted;
         }
     }
 
+    /// <summary>
+    /// <c>IncreaseVol</c> increases the game music.
+    /// </summary>
     public static void IncreaseVol()
     {
         if (GameObject.Find("Music").GetComponent<AudioSource>().volume < 1f)
@@ -39,6 +48,9 @@ public class ScriptAudio : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// <c>DecreaseVol</c> decreases the game music.
+    /// </summary>
     public static void DecreaseVol()
     {
         if (GameObject.Find("Music").GetComponent<AudioSource>().volume > 0f)
