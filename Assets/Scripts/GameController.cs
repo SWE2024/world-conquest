@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -28,7 +28,8 @@ public class GameController
     Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
     // these are related to the turns
-    Image square;
+    TextMeshProUGUI currentPlayerName;
+    Image currentPlayerColor;
     Player turnPlayer;
 
     // this holds the order of turn represented by color
@@ -68,15 +69,13 @@ public class GameController
 
         // set the first turn color
         this.turnPlayer = this.turnsOrder[0];
-        this.square = GameObject.Find("CurrentColour").GetComponent<Image>();
+        this.currentPlayerName = GameObject.Find("CurrentPlayer").GetComponent<TextMeshProUGUI>();
+        this.currentPlayerColor = GameObject.Find("CurrentColour").GetComponent<Image>();
         GameObject.Find("EndTurn").GetComponent<Image>().enabled = true;
         GameObject.Find("EndTurn").GetComponent<Button>().enabled = true;
 
-        /*
-         * USE THIS LINE TO CHANGE THE PROFILE PICTURE CIRCLE:
-         * GameObject.Find("CurrentPlayer").GetComponent<Image>();
-         */
-        this.square.color = this.GetTurnsColor();
+        this.currentPlayerName.text = "currently:\n" + this.GetTurnsName();
+        this.currentPlayerColor.color = this.GetTurnsColor();
         this.HandleObjectClick = PopulatingCountryClick;
     }
 
@@ -171,7 +170,7 @@ public class GameController
 
         foreach (int color_index in randomized)
         {
-            output.Add(new Player(GameController.IntToColor(color_index)));
+            output.Add(new Player("Player" + (color_index + 1), GameController.IntToColor(color_index)));
         }
 
         return output;
@@ -194,6 +193,9 @@ public class GameController
         country.ChangeTroops(1);
         turnPlayer.ChangeNumberOfTroops(-1);
         populatedCountries++;
+
+        Killfeed.Update($"{country.GetName()}: Now owned by {turnPlayer.GetName()}");
+
 
         NextTurn();
 
@@ -586,9 +588,11 @@ public class GameController
 
             string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
             GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
+            Killfeed.Update($"{defender.GetName()}: {attacker.GetOwner().GetName()} ¤ {defender.GetOwner().GetName()} (↓{atkWins})");
 
             if (defender.GetTroops() == 0)
             {
+                Killfeed.Update($"{defender.GetName()}: Now owned by {turnPlayer.GetName()}");
                 GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());
@@ -636,16 +640,19 @@ public class GameController
             // Debug.Log($"EVENT: skipped player {turnIndex - 1}");
             NextTurn(); // ignores players who lost
         }
-
-        square.GetComponent<Image>().color = GetTurnsColor();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "currently:\n" + this.GetTurnsName();
+        currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
     }
 
     public void ResetTurn()
     {
         turnIndex = 0;
         turnPlayer = turnsOrder[0];
-        square.GetComponent<Image>().color = GetTurnsColor();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "currently:\n" + this.GetTurnsName();
+        currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
     }
 
+    public string GetTurnsName() => turnPlayer.GetName();
+    
     public Color GetTurnsColor() => turnPlayer.GetColor();
 }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class Country
 {
+    string Name;
     public Button Pointer; // reference to the pointer
     List<Country> Neighbors;
     Player Owner = null; // may not reflect the button's color
@@ -14,6 +15,7 @@ public class Country
     {
         this.Pointer = button;
         this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = "0";
+        this.Name = "Country";
     }
 
     public void SetNeighbors(List<Country> list)
@@ -21,6 +23,8 @@ public class Country
         if (Neighbors != null) return;
         Neighbors = list;
     }
+
+    public string GetName() => this.Name;
 
     public Player GetOwner() => this.Owner;
 

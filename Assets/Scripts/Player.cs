@@ -9,12 +9,13 @@ public enum Troop
 
 public class Player
 {
+    string name;
     Color color;
     int numberOfTroops;
 
     List<Country> ownedCountries;
 
-    public Player(Color color)
+    public Player(string name, Color color)
     {
         switch (Preferences.PlayerCount)
         {
@@ -25,6 +26,7 @@ public class Player
             case 6: this.numberOfTroops = 20; break;
         }
 
+        this.name = name;
         this.color = color;
         ownedCountries = new List<Country>();
     }
@@ -38,6 +40,8 @@ public class Player
     {
         ownedCountries.Remove(country);
     }
+
+    public string GetName() => name;
 
     public Color GetColor() => color;
 
