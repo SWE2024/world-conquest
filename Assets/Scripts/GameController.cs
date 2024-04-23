@@ -194,7 +194,7 @@ public class GameController
         turnPlayer.ChangeNumberOfTroops(-1);
         populatedCountries++;
 
-        Killfeed.Update($"{country.GetName()}: Now owned by {turnPlayer.GetName()}");
+        Killfeed.Update($"{country.GetName()} is now owned by {turnPlayer.GetName()}");
 
 
         NextTurn();
@@ -588,11 +588,11 @@ public class GameController
 
             string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
             GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
-            Killfeed.Update($"{defender.GetName()}: {attacker.GetOwner().GetName()} ¤ {defender.GetOwner().GetName()} (↓{atkWins})");
+            Killfeed.Update($"{attacker.GetOwner().GetName()} is attacking {defender.GetName()} (↓{atkWins})");
 
             if (defender.GetTroops() == 0)
             {
-                Killfeed.Update($"{defender.GetName()}: Now owned by {turnPlayer.GetName()}");
+                Killfeed.Update($"{defender.GetName()} is now owned by {turnPlayer.GetName()}");
                 GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());

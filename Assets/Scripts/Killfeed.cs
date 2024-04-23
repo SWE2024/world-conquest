@@ -12,7 +12,7 @@ public class Killfeed : MonoBehaviour
         }
         else
         {
-            Wait.Start(8f, () => RemoveFirstLine()); // clear item from killfeed after 8s
+            Wait.Start(6f, () => RemoveFirstLine()); // clear item from killfeed after 6s
         }
     }
 
