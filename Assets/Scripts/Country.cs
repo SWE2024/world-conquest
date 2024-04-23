@@ -11,11 +11,11 @@ public class Country
     Player Owner = null; // may not reflect the button's color
     int Troops = 0;
 
-    public Country(Button button)
+    public Country(Button button, string name)
     {
         this.Pointer = button;
         this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = "0";
-        this.Name = "Country";
+        this.Name = name;
     }
 
     public void SetNeighbors(List<Country> list)

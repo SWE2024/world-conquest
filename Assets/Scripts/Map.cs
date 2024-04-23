@@ -33,6 +33,16 @@ public class Map : MonoBehaviour
             // sets the number of Troops above the country
             TextMeshProUGUI numberTroopsText = GameObject.Find($"country{i + 1}map1").GetComponentInChildren<TextMeshProUGUI>();
             numberTroopsText.text = $"{country.GetTroops()}";
+
+            // sets the country name above the country
+            TextMeshProUGUI countryNameText = (TextMeshProUGUI)GameObject.Find($"country{i + 1}map1").GetComponentAtIndex(2);
+            TextMeshProUGUI[] attributes = GameObject.Find($"country{i + 1}map1").GetComponentsInChildren<TextMeshProUGUI>();
+
+            foreach (TextMeshProUGUI t in attributes)
+            {
+                Debug.Log(t.name);
+            }
+            //countryNameText.text = country.GetName();
         }
     }
 
@@ -46,20 +56,20 @@ public class Map : MonoBehaviour
         if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1.ListOfNeighbours; }
         if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
 
-        // Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
-
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
+        System.Random rnd = new System.Random();
+
         for (int i = 1; i <= numberOfCountries; i++)
         {
             // gets the country objects
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
-            Country country = new Country(button);
+            Country country = new Country(button, MapNames.ListOfNames[rnd.Next(0, MapNames.ListOfNames.Count)]);
 
             // adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);
