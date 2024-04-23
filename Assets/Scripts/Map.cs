@@ -15,6 +15,7 @@ public class Map : MonoBehaviour
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
 
+    /* unused
     void AutoPopulate()
     {
         //this is the list of distributed colors which will be Randomly picked
@@ -33,18 +34,9 @@ public class Map : MonoBehaviour
             // sets the number of Troops above the country
             TextMeshProUGUI numberTroopsText = GameObject.Find($"country{i + 1}map1").GetComponentInChildren<TextMeshProUGUI>();
             numberTroopsText.text = $"{country.GetTroops()}";
-
-            // sets the country name above the country
-            TextMeshProUGUI countryNameText = (TextMeshProUGUI)GameObject.Find($"country{i + 1}map1").GetComponentAtIndex(2);
-            TextMeshProUGUI[] attributes = GameObject.Find($"country{i + 1}map1").GetComponentsInChildren<TextMeshProUGUI>();
-
-            foreach (TextMeshProUGUI t in attributes)
-            {
-                Debug.Log(t.name);
-            }
-            //countryNameText.text = country.GetName();
         }
     }
+    */
 
     // Start is called before the first frame update
     void Start()
@@ -81,11 +73,13 @@ public class Map : MonoBehaviour
 
         for (int i = 1; i <= otherCountries; i++)
         {
-            // disables the button for the other map
+            // disables the other map's elements
             GameObject obj = GameObject.Find($"country{i}map{otherMap}");
+
             obj.GetComponent<Button>().enabled = false;
             obj.GetComponent<Image>().enabled = false;
-            obj.GetComponentInChildren<TextMeshProUGUI>().enabled = false;
+            obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().enabled = false;
+            obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>().enabled = false;
         }
 
         GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;

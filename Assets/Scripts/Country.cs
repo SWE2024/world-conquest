@@ -14,8 +14,9 @@ public class Country
     public Country(Button button, string name)
     {
         this.Pointer = button;
-        this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = "0";
         this.Name = name;
+        this.Pointer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{this.Troops}";
+        this.Pointer.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = this.Name;
     }
 
     public void SetNeighbors(List<Country> list)
@@ -32,6 +33,12 @@ public class Country
 
     public int GetTroops() => this.Troops;
 
+    public void SetName(string name)
+    {
+        this.Name = name;
+        this.Pointer.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = this.Name;
+    }
+
     public void SetOwner(Player player)
     {
         if (Owner != null) Owner.RemoveCountry(this);
@@ -44,7 +51,7 @@ public class Country
     public void ChangeTroops(int offset)
     {
         this.Troops += offset;
-        this.Pointer.GetComponentInChildren<TextMeshProUGUI>().text = $"{Troops}";
+        this.Pointer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{this.Troops}";
     }
 
     // this is for changing button color for Highlighting either to black or white
