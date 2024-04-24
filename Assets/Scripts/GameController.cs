@@ -200,7 +200,7 @@ public class GameController
         else
         {
             this.ResetTurn();
-            
+
             this.currentPhase.text = "setup phase";
             HandleObjectClick = SetupTroopsPhase;
 
@@ -427,21 +427,22 @@ public class GameController
         }
 
         Country clickedCountry = countryMap[selectedObj.GetComponent<Button>()];
-        int index = considered.IndexOf(clickedCountry);
 
-        //if clicked country is unAttackable, UnHighlights and returns
-        if (index < 0)
+        if (clickedCountry == attacker)
         {
-            UnHighlight();
+            this.UnHighlight();
             return;
         }
 
-        this.AttackCanvas.enabled = true;
-        CameraHandler.DisableMovement = true;
-
-        GameObject.Find("RemainingAttack").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Attack: {attacker.GetTroops() - 1}\r\n(choose how many dice to roll)";
-
-        this.defender = clickedCountry;
+        //if clicked country is unattackable, unhighlights and returns
+        if (considered.Contains(clickedCountry))
+        {
+            this.AttackCanvas.enabled = true;
+            CameraHandler.DisableMovement = true;
+            GameObject.Find("RemainingAttack").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Attack: {attacker.GetTroops() - 1}\r\n(choose how many dice to roll)";
+            this.defender = clickedCountry;
+        }
+        return;
     }
 
     public void FortifyPhase(GameObject selectedObj)
@@ -502,14 +503,13 @@ public class GameController
             return;
         }
 
-        if (clickedCountry.GetOwner() == turnPlayer && clickedCountry != attacker)
+        if (considered.Contains(clickedCountry))
         {
             this.defender = clickedCountry;
             this.TransferCanvas.enabled = true;
             GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Transfer: {attacker.GetTroops() - 1}"; ;
             CameraHandler.DisableMovement = true;
         }
-
         return;
     }
 
