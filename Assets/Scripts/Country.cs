@@ -25,6 +25,8 @@ public class Country
         Neighbors = list;
     }
 
+    public List<Country> GetNeighbors() => Neighbors;
+
     public string GetName() => this.Name;
 
     public Player GetOwner() => this.Owner;
@@ -69,15 +71,31 @@ public class Country
     // Highlights the color to grey 
     // also Highlights the Attackable countries which are neighboring countries that do not have the same color as itself
     // returns this Attackable countries in a list for the gameobject instance to handle states
-    public List<Country> HighlightNeighbours()
+    public List<Country> HighlightEnemyNeighbours()
     {
         TempColorChange(Color.grey);
 
         List<Country> output = new List<Country>();
 
-        foreach (Country neighbor in Neighbors)
+        foreach (Country neighbor in GetNeighbors())
         {
             if (neighbor.Owner == this.Owner) continue;
+
+            neighbor.TempColorChange(Color.white);
+            output.Add(neighbor);
+        }
+        return output;
+    }
+
+    public List<Country> HighlightFriendlyNeighbours()
+    {
+        TempColorChange(Color.grey);
+
+        List<Country> output = new List<Country>();
+
+        foreach (Country neighbor in GetNeighbors())
+        {
+            if (neighbor.Owner != this.Owner) continue;
 
             neighbor.TempColorChange(Color.white);
             output.Add(neighbor);
