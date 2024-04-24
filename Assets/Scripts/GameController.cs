@@ -49,9 +49,6 @@ public class GameController
 
     int turnIndex; // indicates who is playing
     int populatedCountries;
-    bool flagDraftPhase = false;
-    bool flagAttackPhase = false;
-    bool flagFortifyPhase = false;
     bool flagFinishedSetup = false;
 
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
@@ -253,7 +250,6 @@ public class GameController
                     ResetTurn();
 
                     // phase changing to attack
-                    this.flagDraftPhase = false;
                     this.currentPhase.text = "attack phase";
                     HandleObjectClick = AttackPhase;
                     return;
@@ -304,8 +300,6 @@ public class GameController
             turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
         }
 
-        this.flagDraftPhase = true;
-
         if (selectedObj == null) return;
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
@@ -316,6 +310,7 @@ public class GameController
                 CameraHandler.DisableMovement = true;
                 Country country = countryMap[selectedObj.GetComponent<Button>()];
 
+                if (turnPlayer != country.GetOwner()) return;
                 attacker = country;
 
                 GameObject.Find("RemainingDistribution").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.GetNumberOfTroops()}";
@@ -339,7 +334,6 @@ public class GameController
                 if (check) return;
 
                 // phase changing to attack
-                this.flagDraftPhase = false;
                 this.currentPhase.text = "attack phase";
                 HandleObjectClick = AttackPhase;
                 return;
@@ -383,8 +377,6 @@ public class GameController
     // attack phase
     public void AttackPhase(GameObject selectedObj)
     {
-        this.flagAttackPhase = true;
-
         if (AttackCanvas.enabled)
         {
             HandleAttackClick(selectedObj);
@@ -407,7 +399,6 @@ public class GameController
         if (selectedObj.name == "EndPhase")
         {
             this.UnHighlight();
-            this.flagAttackPhase = false;
             this.currentPhase.text = "fortify phase";
             HandleObjectClick = FortifyPhase;
             return;
@@ -455,10 +446,6 @@ public class GameController
 
     public void FortifyPhase(GameObject selectedObj)
     {
-        this.flagFortifyPhase = true;
-
-        if (selectedObj == null) return;
-
         if (TransferCanvas.enabled)
         {
             HandleFortifyClick(selectedObj);
@@ -475,7 +462,8 @@ public class GameController
         if (selectedObj.name == "EndPhase")
         {
             this.UnHighlight();
-            this.flagFortifyPhase = false;
+            this.currentPhase.text = "draft phase";
+            HandleObjectClick = DraftPhase;
             NextTurn();
             return;
         }
@@ -488,6 +476,12 @@ public class GameController
 
             // handles the case where the current player clicks a different player's country
             if (turnPlayer != countrySelected.GetOwner()) return;
+
+            // handles the case where you have no troops to transfer
+            if (countrySelected.GetTroops() < 2) return;
+
+            attacker = countrySelected;
+
             HighlightFriendly(countrySelected);
             return;
         }
@@ -501,6 +495,12 @@ public class GameController
         }
 
         Country clickedCountry = countryMap[selectedObj.GetComponent<Button>()];
+
+        if (clickedCountry == attacker)
+        {
+            this.UnHighlight();
+            return;
+        }
 
         if (clickedCountry.GetOwner() == turnPlayer && clickedCountry != attacker)
         {
@@ -549,7 +549,7 @@ public class GameController
                 {
                     recentFight[0] = attacker;
                     recentFight[1] = defender;
-                    Wait.Start(4f, () =>
+                    Wait.Start(3f, () =>
                     {
                         this.TransferCanvas.enabled = true;
                         GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>().text = $"Troops Available For Transfer: {recentFight[0].GetTroops() - 1}"; ;
@@ -659,7 +659,6 @@ public class GameController
                 this.Transfer(this.attacker, this.defender, num); // transfer num troops to new country
                 this.UnHighlight();
 
-                this.flagFortifyPhase = false;
                 NextTurn();
                 this.currentPhase.text = "draft phase";
                 HandleObjectClick = DraftPhase;
@@ -796,19 +795,15 @@ public class GameController
             if (defender.GetTroops() == 0)
             {
                 Killfeed.Update($"{defender.GetName()} is now owned by {turnPlayer.GetName()}");
-                GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());
             }
-            else
-            {
-                GameObject.Find("SoundDefeat").GetComponent<AudioSource>().Play();
-            }
+            GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
         }
 
         this.DiceCanvas.enabled = true;
 
-        Wait.Start(4f, () =>
+        Wait.Start(3f, () =>
         {
             this.DiceCanvas.enabled = false;
 

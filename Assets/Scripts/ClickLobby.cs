@@ -26,6 +26,7 @@ public class ClickButton : MonoBehaviour
 
         btnMap1.onClick.AddListener(Map1);
         btnMap2.onClick.AddListener(Map2);
+
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
         btnMinus.onClick.AddListener(HandleMinus);

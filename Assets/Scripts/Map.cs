@@ -61,7 +61,7 @@ public class Map : MonoBehaviour
             // gets the country objects
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
-            Country country = new Country(button, MapNames.ListOfNames[rnd.Next(0, MapNames.ListOfNames.Count)]);
+            Country country = new Country(button, button.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text);
 
             // adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);
