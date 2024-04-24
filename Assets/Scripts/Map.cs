@@ -15,6 +15,7 @@ public class Map : MonoBehaviour
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
 
+    /* unused
     void AutoPopulate()
     {
         //this is the list of distributed colors which will be Randomly picked
@@ -35,6 +36,7 @@ public class Map : MonoBehaviour
             numberTroopsText.text = $"{country.GetTroops()}";
         }
     }
+    */
 
     // Start is called before the first frame update
     void Start()
@@ -46,20 +48,20 @@ public class Map : MonoBehaviour
         if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1.ListOfNeighbours; }
         if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
 
-        // Debug.Log($"EVENT: starting game with {Preferences.PlayerCount} players");
-
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
+        System.Random rnd = new System.Random();
+
         for (int i = 1; i <= numberOfCountries; i++)
         {
             // gets the country objects
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
-            Country country = new Country(button);
+            Country country = new Country(button, button.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text);
 
             // adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);
@@ -71,11 +73,13 @@ public class Map : MonoBehaviour
 
         for (int i = 1; i <= otherCountries; i++)
         {
-            // disables the button for the other map
+            // disables the other map's elements
             GameObject obj = GameObject.Find($"country{i}map{otherMap}");
+
             obj.GetComponent<Button>().enabled = false;
             obj.GetComponent<Image>().enabled = false;
-            obj.GetComponentInChildren<TextMeshProUGUI>().enabled = false;
+            obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().enabled = false;
+            obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>().enabled = false;
         }
 
         GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;

@@ -22,10 +22,11 @@ public class ClickButton : MonoBehaviour
     void Start()
     {
         triangleReady.enabled = false;
-        triangleReady.enabled = false;
+        triangleLeave.enabled = false;
 
         btnMap1.onClick.AddListener(Map1);
         btnMap2.onClick.AddListener(Map2);
+
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
         btnMinus.onClick.AddListener(HandleMinus);
