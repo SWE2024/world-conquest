@@ -73,7 +73,7 @@ public class GameController
         GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
         GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
 
-        this.currentPlayerName.text = "current turn\n" + this.GetTurnsName();
+        this.currentPlayerName.text = "playing:\n" + this.GetTurnsName();
         this.currentPlayerColor.color = this.GetTurnsColor();
         this.currentPhase.text = "setup phase";
         this.HandleObjectClick = SetupPhase;
@@ -838,7 +838,7 @@ public class GameController
             Killfeed.Update($"{turnPlayer.GetName()} skipped because they are no longer in the game");
             NextTurn(); // ignores players who have lost
         }
-        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "current turn\n" + this.GetTurnsName();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
     }
 
@@ -846,7 +846,7 @@ public class GameController
     {
         turnIndex = 0;
         turnPlayer = turnsOrder[0];
-        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "current turn\n" + this.GetTurnsName();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
     }
 
