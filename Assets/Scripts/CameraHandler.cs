@@ -39,7 +39,7 @@ public class CameraHandler : MonoBehaviour
     /// </summary>
     private void PanCamera()
     {
-        if (cam.orthographicSize < maxCamSize) // prevents moving out further than the game board
+        if (cam.orthographicSize < maxCamSize - 10) // prevents moving out further than the game board
         {
             if (Input.GetMouseButtonDown(0))
             {
