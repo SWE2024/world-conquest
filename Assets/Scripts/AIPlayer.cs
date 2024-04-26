@@ -51,27 +51,26 @@ public class AIPlayer : Player
         }
         else if (GameController.Get().flagSetupDeployPhase)
         {
-            bool flagDone = false;
-            while (!flagDone)
+            Wait.Start(Random.Range(1, 2), () => // wait 1 to 2 seconds to take a country so it looks like a real player
             {
-                foreach (var kvp in GameController.Get().countryMap)
+                bool flagDone = false;
+                while (!flagDone)
                 {
-                    if (kvp.Value.GetOwner() == this && this.GetNumberOfTroops() >= 1)
+                    var kvp = GameController.Get().countryMap.ElementAt(Random.Range(0, GameController.Get().countryMap.Count - 1));
+
+                    if (kvp.Value.GetOwner() == this)
                     {
-                        int troopsToDistribute = Random.Range(1, this.GetNumberOfTroops());
+                        kvp.Value.ChangeTroops(this.GetNumberOfTroops());
+                        this.ChangeNumberOfTroops(-this.GetNumberOfTroops());
 
-                        kvp.Value.ChangeTroops(troopsToDistribute);
-                        this.ChangeNumberOfTroops(-troopsToDistribute);
+                        Killfeed.Update($"{this.GetName()}: transferred {this.GetNumberOfTroops()} to {kvp.Value.GetName()}");
 
-                        Killfeed.Update($"{this.GetName()}: transferred {troopsToDistribute} to {kvp.Value.GetName()}");
-                    }
-                    else 
-                    { 
-                        flagDone = true; 
+                        GameController.Get().NextTurn();
+                        flagDone = true;
+                        return;
                     }
                 }
-            }
-            GameController.Get().NextTurn();
+            });
             return;
         }
         else
