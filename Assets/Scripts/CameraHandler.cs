@@ -28,7 +28,7 @@ public class CameraHandler : MonoBehaviour
     void Update()
     {
         if (DisableMovement) return;
-        if (Input.mousePosition.y < 305) return; // prevents movement in killfeed
+        if (Input.mousePosition.y < 305) return; // prevents movement while in killfeed
 
         PanCamera();
         ZoomCamera();
@@ -39,7 +39,7 @@ public class CameraHandler : MonoBehaviour
     /// </summary>
     private void PanCamera()
     {
-        if (cam.orthographicSize < maxCamSize - 10) // prevents moving out further than the game board
+        if (cam.orthographicSize < maxCamSize - 15) // prevents moving out further than the game board
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -62,7 +62,7 @@ public class CameraHandler : MonoBehaviour
     /// </summary>
     private void ZoomCamera()
     {
-        if (cam.orthographicSize >= maxCamSize - 10) // prevents zooming out further than intended
+        if (cam.orthographicSize >= maxCamSize - 15) // prevents zooming out further than intended
         {
             Vector3 reset = Vector3.Lerp(cam.transform.position, new Vector3(1280, 720, -10), 5f * Time.deltaTime);
             cam.transform.position = reset; // smooths camera back to default location

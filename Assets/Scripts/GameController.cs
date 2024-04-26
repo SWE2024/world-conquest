@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
@@ -72,8 +73,6 @@ public class GameController
         this.currentPhase = GameObject.Find("GamePhase").GetComponent<TextMeshProUGUI>();
         this.currentPlayerName = GameObject.Find("CurrentPlayer").GetComponent<TextMeshProUGUI>();
         this.currentPlayerColor = GameObject.Find("CurrentColour").GetComponent<Image>();
-        GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
-        GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
 
         this.currentPlayerName.text = "playing:\n" + this.GetTurnsName();
         this.currentPlayerColor.color = this.GetTurnsColor();
@@ -246,7 +245,7 @@ public class GameController
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
 
-                Killfeed.Update($"{turnPlayer.GetName()}: transferred {num} to {attacker.GetName()}");
+                Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troops to {attacker.GetName()}");
 
 
                 this.attacker = null;
@@ -315,11 +314,6 @@ public class GameController
 
     public void DraftPhase(GameObject selectedObj)
     {
-        if (turnPlayer.GetNumberOfTroops() == 0)
-        {
-            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
-        }
-
         if (selectedObj == null) return;
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
@@ -434,7 +428,7 @@ public class GameController
 
             // handles the case where the current player clicks a different player's country
             if (turnPlayer != countrySelected.GetOwner()) return;
-            Highlight(countrySelected);
+            HighlightEnemy(countrySelected);
             return;
         }
 
@@ -715,7 +709,7 @@ public class GameController
         }
     }
 
-    public void Highlight(Country country)
+    public void HighlightEnemy(Country country)
     {
         this.attacker = country;
         this.considered = country.HighlightEnemyNeighbours();
@@ -844,6 +838,8 @@ public class GameController
     {
         from.ChangeTroops(-num);
         to.ChangeTroops(num);
+
+        Killfeed.Update($"{turnPlayer.GetName()}: transferred {num} troops from {from.GetName()} to {to.GetName()}");
     }
 
     public void NextTurn()
@@ -860,6 +856,11 @@ public class GameController
         }
         currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
+
+        if (turnPlayer.GetNumberOfTroops() == 0 && !flagSetupPhase && !flagSetupDeployPhase)
+        {
+            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
+        }
 
         if (turnPlayer is AIPlayer) turnPlayer.TakeTurn();
     }
