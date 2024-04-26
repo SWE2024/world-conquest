@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// <c>CameraHandler</c> controls all movement of the camera, including panning and zooming.
@@ -8,6 +9,7 @@ public class CameraHandler : MonoBehaviour
     public static bool DisableMovement = false;
 
     [SerializeField] Camera cam;
+    [SerializeField] RectTransform zone;
     Vector3 dragOrigin;
     float zoomStep, minCamSize, maxCamSize, velocity, zoom;
 
@@ -26,6 +28,7 @@ public class CameraHandler : MonoBehaviour
     void Update()
     {
         if (DisableMovement) return;
+        if (Input.mousePosition.y < 305) return; // prevents movement while in killfeed
 
         PanCamera();
         ZoomCamera();
@@ -36,7 +39,7 @@ public class CameraHandler : MonoBehaviour
     /// </summary>
     private void PanCamera()
     {
-        if (cam.orthographicSize < maxCamSize) // prevents moving out further than the game board
+        if (cam.orthographicSize < maxCamSize - 15) // prevents moving out further than the game board
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -59,9 +62,10 @@ public class CameraHandler : MonoBehaviour
     /// </summary>
     private void ZoomCamera()
     {
-        if (cam.orthographicSize >= maxCamSize - 10) // prevents zooming out further than intended
+        if (cam.orthographicSize >= maxCamSize - 15) // prevents zooming out further than intended
         {
-            cam.transform.position = new Vector3(1280, 720, -10); // sets camera back to default location
+            Vector3 reset = Vector3.Lerp(cam.transform.position, new Vector3(1280, 720, -10), 5f * Time.deltaTime);
+            cam.transform.position = reset; // smooths camera back to default location
         }
 
         zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomStep; // zoom out by the zoomstep and amount of scrolls

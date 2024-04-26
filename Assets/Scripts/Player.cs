@@ -17,7 +17,7 @@ public class Player
 
     public Player(string name, Color color)
     {
-        switch (Preferences.PlayerCount)
+        switch (Preferences.PlayerCount + Preferences.AgentCount)
         {
             case 2: this.numberOfTroops = 40; break;
             case 3: this.numberOfTroops = 35; break;
@@ -41,13 +41,16 @@ public class Player
         ownedCountries.Remove(country);
     }
 
+    public List<Country> GetCountries() => ownedCountries;
+
+    public int GetNumberOfOwnedCountries() => ownedCountries.Count;
+
     public string GetName() => name;
 
     public Color GetColor() => color;
 
     public int GetNumberOfTroops() => numberOfTroops;
 
-    // use getnumberofownedcountries() for the distribution phase
     public void ChangeNumberOfTroops(int difference)
     {
         numberOfTroops += difference;
@@ -58,5 +61,5 @@ public class Player
         numberOfTroops = troops;
     }
 
-    public int GetNumberOfOwnedCountries() => ownedCountries.Count;
+    virtual public void TakeTurn() { }
 }

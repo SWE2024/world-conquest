@@ -9,7 +9,6 @@ using UnityEngine.UI;
 /// </summary>
 public class GameController
 {
-    public static System.Random Random = new System.Random();
     static GameController instance = null;
 
     public delegate void DelegateVar(GameObject selectedObj);
@@ -25,13 +24,13 @@ public class GameController
     int playerCount;
 
     //this is map to get the country instance that holds the button that is clicked
-    Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
+    public Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
     // these are related to the turns
-    TextMeshProUGUI currentPhase;
-    TextMeshProUGUI currentPlayerName;
-    Image currentPlayerColor;
-    Player turnPlayer;
+    public TextMeshProUGUI currentPhase;
+    public TextMeshProUGUI currentPlayerName;
+    public Image currentPlayerColor;
+    public Player turnPlayer;
 
     // this holds the order of turn represented by color
     List<Player> turnsOrder;
@@ -48,8 +47,10 @@ public class GameController
     List<Country> considered = null;
 
     int turnIndex; // indicates who is playing
-    int populatedCountries;
-    bool flagFinishedSetup = false;
+    public int populatedCountries;
+    public bool flagSetupPhase = true;
+    public bool flagSetupDeployPhase = false;
+    public bool flagFinishedSetup = false;
 
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
@@ -63,17 +64,15 @@ public class GameController
         this.DiceCanvas = diceCanvas;
 
         // creates the turns order here
-        this.turnsOrder = GameController.CreateTurns(this.playerCount);
+        this.turnsOrder = GameController.CreateTurns();
 
         // set the first turn color
         this.turnPlayer = this.turnsOrder[0];
         this.currentPhase = GameObject.Find("GamePhase").GetComponent<TextMeshProUGUI>();
         this.currentPlayerName = GameObject.Find("CurrentPlayer").GetComponent<TextMeshProUGUI>();
         this.currentPlayerColor = GameObject.Find("CurrentColour").GetComponent<Image>();
-        GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
-        GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
 
-        this.currentPlayerName.text = "current turn\n" + this.GetTurnsName();
+        this.currentPlayerName.text = "playing:\n" + this.GetTurnsName();
         this.currentPlayerColor.color = this.GetTurnsColor();
         this.currentPhase.text = "setup phase";
         this.HandleObjectClick = SetupPhase;
@@ -132,7 +131,7 @@ public class GameController
 
         for (int i = 0; i < remainder; i++)
         {
-            int index = GameController.Random.Next(copyTurns.Count);
+            int index = UnityEngine.Random.Range(0, copyTurns.Count - 1);
             listOfColors.Add(copyTurns[index]);
             copyTurns.RemoveAt(index);
         }
@@ -152,25 +151,34 @@ public class GameController
     }
 
     // generate the Randomized a color list to track turns
-    private static List<Player> CreateTurns(int playerCount)
+    private static List<Player> CreateTurns()
     {
-        List<int> list = new List<int>();
-        List<int> randomized = new List<int>();
+        List<int> listOfPlayers = new List<int>();
+        List<int> listOfAgents = new List<int>();
+        // List<int> randomized = new List<int>();
 
-        for (int i = 0; i < playerCount; i++) list.Add(i);
+        for (int i = 0; i < Preferences.PlayerCount; i++) listOfPlayers.Add(i);
+        for (int i = Preferences.PlayerCount; i < Preferences.PlayerCount + Preferences.AgentCount; i++) listOfAgents.Add(i);
 
+        /* randomly orders players
         while (list.Count > 0)
         {
             int index = GameController.Random.Next(list.Count);
             randomized.Add(list[index]);
             list.RemoveAt(index);
         }
+        */
+
+        List<int> listOfPlayersAndAgents = new List<int>();
+        listOfPlayersAndAgents.AddRange(listOfPlayers);
+        listOfPlayersAndAgents.AddRange(listOfAgents);
 
         List<Player> output = new List<Player>();
 
-        foreach (int color_index in randomized)
+        foreach (int color_index in listOfPlayersAndAgents) // used to be color_index in randomized
         {
-            output.Add(new Player("Player" + (color_index + 1), GameController.IntToColor(color_index)));
+            if (color_index >= Preferences.PlayerCount) output.Add(new AIPlayer("(AI) Agent" + (color_index + 1), GameController.IntToColor(color_index)));
+            else output.Add(new Player("Player" + (color_index + 1), GameController.IntToColor(color_index)));
         }
 
         return output;
@@ -194,22 +202,21 @@ public class GameController
         turnPlayer.ChangeNumberOfTroops(-1);
         populatedCountries++;
 
-        Killfeed.Update($"{country.GetName()} is now owned by {turnPlayer.GetName()}");
+        Killfeed.Update($"{turnPlayer.GetName()}: now owns {country.GetName()}");
 
         if (populatedCountries < countryMap.Count) NextTurn();
         else
         {
             this.ResetTurn();
 
-            this.currentPhase.text = "setup phase";
-            HandleObjectClick = SetupTroopsPhase;
-
-            GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
-            GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
+            this.currentPhase.text = "deploy phase";
+            flagSetupPhase = false;
+            flagSetupDeployPhase = true;
+            HandleObjectClick = SetupDeployPhase;
         }
     }
 
-    public void SetupTroopsPhase(GameObject selectedObj)
+    public void SetupDeployPhase(GameObject selectedObj)
     {
         if (selectedObj == null) return;
 
@@ -235,23 +242,33 @@ public class GameController
                 int num = Int32.Parse(numberOfTroops.GetComponent<TextMeshProUGUI>().text);
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
+
+                Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
+
+
                 this.attacker = null;
                 this.DistributeCanvas.enabled = false;
                 numberOfTroops.text = "1";
 
                 if (turnPlayer.GetNumberOfTroops() > 0) return;
-                if (turnPlayer.GetNumberOfTroops() == 0)
+                if (turnPlayer.GetNumberOfTroops() <= 0)
                 {
                     NextTurn();
                 }
 
-                if (turnPlayer.GetNumberOfTroops() == 0)
+                if (turnPlayer.GetNumberOfTroops() <= 0) // if the next player still has 0
                 {
                     ResetTurn();
 
                     // phase changing to attack
                     this.currentPhase.text = "attack phase";
+
+                    flagSetupDeployPhase = false;
+                    flagFinishedSetup = true;
                     HandleObjectClick = AttackPhase;
+
+                    GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
+                    GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
                     return;
                 }
 
@@ -295,11 +312,6 @@ public class GameController
 
     public void DraftPhase(GameObject selectedObj)
     {
-        if (turnPlayer.GetNumberOfTroops() == 0)
-        {
-            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
-        }
-
         if (selectedObj == null) return;
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
@@ -414,7 +426,7 @@ public class GameController
 
             // handles the case where the current player clicks a different player's country
             if (turnPlayer != countrySelected.GetOwner()) return;
-            Highlight(countrySelected);
+            HighlightEnemy(countrySelected);
             return;
         }
 
@@ -695,7 +707,7 @@ public class GameController
         }
     }
 
-    public void Highlight(Country country)
+    public void HighlightEnemy(Country country)
     {
         this.attacker = country;
         this.considered = country.HighlightEnemyNeighbours();
@@ -790,11 +802,11 @@ public class GameController
 
             string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
             GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
-            Killfeed.Update($"{turnPlayer.GetName()} is attacking {defender.GetName()} (↓{atkWins})");
+            Killfeed.Update($"{turnPlayer.GetName()}: attacking {defender.GetName()} (↓{atkWins})");
 
             if (defender.GetTroops() == 0)
             {
-                Killfeed.Update($"{defender.GetName()} is now owned by {turnPlayer.GetName()}");
+                Killfeed.Update($"{turnPlayer.GetName()}: now owns {defender.GetName()}");
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());
             }
@@ -824,6 +836,8 @@ public class GameController
     {
         from.ChangeTroops(-num);
         to.ChangeTroops(num);
+
+        Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) from {from.GetName()} to {to.GetName()}");
     }
 
     public void NextTurn()
@@ -833,20 +847,27 @@ public class GameController
         if (this.turnIndex > (this.turnsOrder.Count - 1)) this.turnIndex = 0;
 
         turnPlayer = turnsOrder[turnIndex];
-        if (turnPlayer.GetNumberOfOwnedCountries() == 0 && this.flagFinishedSetup)
+        if (turnPlayer.GetNumberOfOwnedCountries() == 0 && flagFinishedSetup)
         {
-            Killfeed.Update($"{turnPlayer.GetName()} skipped because they are no longer in the game");
+            Killfeed.Update($"{turnPlayer.GetName()}: skipped as they are no longer in the game");
             NextTurn(); // ignores players who have lost
         }
-        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "current turn\n" + this.GetTurnsName();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
+
+        if (turnPlayer.GetNumberOfTroops() == 0 && !flagSetupPhase && !flagSetupDeployPhase)
+        {
+            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
+        }
+
+        if (turnPlayer is AIPlayer) turnPlayer.TakeTurn();
     }
 
     public void ResetTurn()
     {
         turnIndex = 0;
         turnPlayer = turnsOrder[0];
-        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "current turn\n" + this.GetTurnsName();
+        currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
     }
 

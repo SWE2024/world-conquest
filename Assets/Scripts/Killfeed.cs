@@ -1,5 +1,7 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// <c>Killfeed</c> controls the bottom right section of the screen (killfeed).
@@ -12,17 +14,12 @@ public class Killfeed : MonoBehaviour
     /// <param name="text">The string you would like to add to the killfeed.</param>
     public static void Update(string text)
     {
-        GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>().text += text + "\n";
-        if (GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>().text.Split('\n').Length > 5)
-        {
-            RemoveFirstLine();
-        }
-        else
-        {
-            Wait.Start(6f, () => RemoveFirstLine()); // clear item from killfeed after 6 seconds
-        }
+        TextMeshProUGUI killfeed = GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>();
+        killfeed.text = $"({DateTime.Now.ToLongTimeString()}) {text}\n" + killfeed.text;
+        //Wait.Start(6f, () => RemoveFirstLine()); // clear item from killfeed after 6 seconds
     }
 
+    /* unused
     /// <summary>
     /// <c>RemoveFirstLine</c> gets the top line of the killfeed and removes it.
     /// </summary>
@@ -32,4 +29,5 @@ public class Killfeed : MonoBehaviour
         string removeFirstLine = s.Substring(s.IndexOf('\n') + 1);
         GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>().text = removeFirstLine;
     }
+    */
 }
