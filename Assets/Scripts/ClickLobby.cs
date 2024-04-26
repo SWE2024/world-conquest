@@ -88,6 +88,7 @@ public class ClickButton : MonoBehaviour
     void LoadMenu()
     {
         Preferences.PlayerCount = 2;
+        Preferences.AgentCount = 1;
         Wait.Start(0.75f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");

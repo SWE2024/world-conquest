@@ -15,7 +15,7 @@ public class Killfeed : MonoBehaviour
     public static void Update(string text)
     {
         TextMeshProUGUI killfeed = GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>();
-        killfeed.text = $"{DateTime.Now.ToLongTimeString()}: {text}\n" + killfeed.text;
+        killfeed.text = $"({DateTime.Now.ToLongTimeString()}) {text}\n" + killfeed.text;
         //Wait.Start(6f, () => RemoveFirstLine()); // clear item from killfeed after 6 seconds
     }
 

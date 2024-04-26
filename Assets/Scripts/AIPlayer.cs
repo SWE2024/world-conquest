@@ -11,7 +11,7 @@ public class AIPlayer : Player
     {
         if (GameController.Get().flagSetupPhase) // AI takes a setup claiming a single country
         {
-            Wait.Start(Random.Range(1, 2), () => // wait 1 to 2 seconds to take a country so it looks like a real player
+            Wait.Start(Random.Range(1, 2), () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
                 while (true)
                 {
@@ -25,18 +25,17 @@ public class AIPlayer : Player
                         GameController.Get().populatedCountries++;
 
                         Killfeed.Update($"{this.GetName()}: now owns {kvp.Value.GetName()}");
-
-                        if (GameController.Get().populatedCountries == GameController.Get().countryMap.Count)
-                        {
-                            GameController.Get().ResetTurn();
-                            GameController.Get().currentPhase.text = "deploy phase";
-                            GameController.Get().flagSetupPhase = false;
-                            GameController.Get().flagSetupDeployPhase = true;
-                            GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
-                            return;
-                        }
-
                         GameController.Get().NextTurn();
+                        return;
+                    }
+
+                    if (GameController.Get().populatedCountries == GameController.Get().countryMap.Count)
+                    {
+                        GameController.Get().currentPhase.text = "deploy phase";
+                        GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
+                        GameController.Get().flagSetupPhase = false;
+                        GameController.Get().flagSetupDeployPhase = true;
+                        GameController.Get().ResetTurn();
                         return;
                     }
                 }
@@ -60,16 +59,16 @@ public class AIPlayer : Player
                         selected.ChangeTroops(troops);
                         this.ChangeNumberOfTroops(-troops);
 
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troops to {selected.GetName()}");
+                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
 
                         GameController.Get().NextTurn();
 
                         if (GameController.Get().turnPlayer.GetNumberOfTroops() == 0) // next player has not troops to deploy
                         {
-                            GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
                             GameController.Get().currentPhase.text = "attack phase";
                             GameController.Get().flagSetupDeployPhase = false;
                             GameController.Get().HandleObjectClick = GameController.Get().AttackPhase;
+                            GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
 
                             GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                             GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -101,32 +100,17 @@ public class AIPlayer : Player
                         selected.ChangeTroops(troops);
                         this.ChangeNumberOfTroops(-troops);
 
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troops to {selected.GetName()}");
+                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
 
                         flagDone = true;
                     }
                 }
+                Killfeed.Update($"{this.GetName()}: attack and fortify not yet implemented");
+                GameController.Get().currentPhase.text = "draft phase";
+                GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
+                GameController.Get().NextTurn();
                 return;
             });
-
-            GameController.Get().currentPhase.text = "attack phase";
-            GameController.Get().HandleObjectClick = GameController.Get().AttackPhase;
-            Wait.Start(Random.Range(6, 8), () => // wait 2 to 4 more seconds to attack countries so it looks like a real player
-            {
-                Killfeed.Update($"{this.GetName()}: attack not implemented");
-                return;
-            });
-
-            GameController.Get().currentPhase.text = "fortify phase";
-            GameController.Get().HandleObjectClick = GameController.Get().FortifyPhase;
-            Wait.Start(Random.Range(9, 10), () => // wait 1 to 2 more seconds to fortify a country so it looks like a real player
-            {
-                Killfeed.Update($"{this.GetName()} fortify not implemented");
-                return;
-            });
-
-            GameController.Get().currentPhase.text = "draft phase";
-            GameController.Get().NextTurn();
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
@@ -179,7 +177,7 @@ public class GameController
 
         foreach (int color_index in listOfPlayersAndAgents) // used to be color_index in randomized
         {
-            if (color_index >= Preferences.PlayerCount) output.Add(new AIPlayer("AIAgent" + (color_index + 1), GameController.IntToColor(color_index)));
+            if (color_index >= Preferences.PlayerCount) output.Add(new AIPlayer("(AI) Agent" + (color_index + 1), GameController.IntToColor(color_index)));
             else output.Add(new Player("Player" + (color_index + 1), GameController.IntToColor(color_index)));
         }
 
@@ -245,7 +243,7 @@ public class GameController
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
 
-                Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troops to {attacker.GetName()}");
+                Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
 
 
                 this.attacker = null;
@@ -839,7 +837,7 @@ public class GameController
         from.ChangeTroops(-num);
         to.ChangeTroops(num);
 
-        Killfeed.Update($"{turnPlayer.GetName()}: transferred {num} troops from {from.GetName()} to {to.GetName()}");
+        Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) from {from.GetName()} to {to.GetName()}");
     }
 
     public void NextTurn()
