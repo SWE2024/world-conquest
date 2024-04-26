@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
@@ -204,7 +205,7 @@ public class GameController
         turnPlayer.ChangeNumberOfTroops(-1);
         populatedCountries++;
 
-        Killfeed.Update($"{country.GetName()}: now owned by {turnPlayer.GetName()}");
+        Killfeed.Update($"{turnPlayer.GetName()}: now owns {country.GetName()}");
 
         if (populatedCountries < countryMap.Count) NextTurn();
         else
@@ -212,12 +213,9 @@ public class GameController
             this.ResetTurn();
 
             this.currentPhase.text = "deploy phase";
-            HandleObjectClick = SetupDeployPhase;
             flagSetupPhase = false;
             flagSetupDeployPhase = true;
-
-            GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
-            GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
+            HandleObjectClick = SetupDeployPhase;
         }
     }
 
@@ -267,9 +265,13 @@ public class GameController
 
                     // phase changing to attack
                     this.currentPhase.text = "attack phase";
-                    HandleObjectClick = AttackPhase;
+
                     flagSetupDeployPhase = false;
                     flagFinishedSetup = true;
+                    HandleObjectClick = AttackPhase;
+
+                    GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
+                    GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
                     return;
                 }
 
@@ -808,11 +810,11 @@ public class GameController
 
             string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
             GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
-            Killfeed.Update($"{turnPlayer.GetName()} is attacking {defender.GetName()} (↓{atkWins})");
+            Killfeed.Update($"{turnPlayer.GetName()}: attacking {defender.GetName()} (↓{atkWins})");
 
             if (defender.GetTroops() == 0)
             {
-                Killfeed.Update($"{defender.GetName()}: now owned by {turnPlayer.GetName()}");
+                Killfeed.Update($"{turnPlayer.GetName()}: now owns {defender.GetName()}");
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());
             }
@@ -853,7 +855,7 @@ public class GameController
         turnPlayer = turnsOrder[turnIndex];
         if (turnPlayer.GetNumberOfOwnedCountries() == 0 && flagFinishedSetup)
         {
-            Killfeed.Update($"{turnPlayer.GetName()} skipped because they are no longer in the game");
+            Killfeed.Update($"{turnPlayer.GetName()}: skipped as they are no longer in the game");
             NextTurn(); // ignores players who have lost
         }
         currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();

@@ -12,10 +12,11 @@ public class AIPlayer : Player
         {
             Wait.Start(Random.Range(1, 2), () => // wait 1 to 2 seconds to take a country so it looks like a real player
             {
-                while (true)
+                bool flagDone = false;
+                while (!flagDone)
                 {
                     var kvp = GameController.Get().countryMap.ElementAt(Random.Range(0, GameController.Get().countryMap.Count - 1));
-                    
+
                     if (kvp.Value.GetOwner() == null)
                     {
                         kvp.Value.SetOwner(this);
@@ -23,7 +24,7 @@ public class AIPlayer : Player
                         this.ChangeNumberOfTroops(-1);
                         GameController.Get().populatedCountries++;
 
-                        Killfeed.Update($"{kvp.Value.GetName()}: now owned by {this.GetName()}");
+                        Killfeed.Update($"{this.GetName()}: now owns {kvp.Value.GetName()}");
 
                         if (GameController.Get().populatedCountries < GameController.Get().countryMap.Count)
                         {
@@ -33,14 +34,15 @@ public class AIPlayer : Player
                         {
                             GameController.Get().ResetTurn();
                             GameController.Get().currentPhase.text = "deploy phase";
-                            GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
                             GameController.Get().flagSetupPhase = false;
                             GameController.Get().flagSetupDeployPhase = true;
+                            GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
 
                             GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                             GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
-                        }
 
+                            flagDone = true;
+                        }
                         return;
                     }
                 }
@@ -49,27 +51,27 @@ public class AIPlayer : Player
         }
         else if (GameController.Get().flagSetupDeployPhase)
         {
-            Wait.Start(Random.Range(2, 5), () => // wait 2 to 5 seconds to take a country so it looks like a real player
+            bool flagDone = false;
+            while (!flagDone)
             {
-                while(GetNumberOfTroops() > 0)
+                foreach (var kvp in GameController.Get().countryMap)
                 {
-                    foreach (var kvp in GameController.Get().countryMap)
+                    if (kvp.Value.GetOwner() == this && this.GetNumberOfTroops() >= 1)
                     {
-                        if (kvp.Value.GetOwner() == this)
-                        {
-                            int troopsToDistribute = Random.Range(1, GetNumberOfTroops());
+                        int troopsToDistribute = Random.Range(1, this.GetNumberOfTroops());
 
-                            kvp.Value.ChangeTroops(troopsToDistribute);
-                            this.ChangeNumberOfTroops(-troopsToDistribute);
+                        kvp.Value.ChangeTroops(troopsToDistribute);
+                        this.ChangeNumberOfTroops(-troopsToDistribute);
 
-                            Killfeed.Update($"{this.GetName()}: transferred {troopsToDistribute} to {kvp.Value.GetName()}");
-
-                            GameController.Get().NextTurn();
-                            return;
-                        }
+                        Killfeed.Update($"{this.GetName()}: transferred {troopsToDistribute} to {kvp.Value.GetName()}");
+                    }
+                    else 
+                    { 
+                        flagDone = true; 
                     }
                 }
-            });
+            }
+            GameController.Get().NextTurn();
             return;
         }
         else
