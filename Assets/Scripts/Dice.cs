@@ -9,5 +9,5 @@ public class Dice
     /// <returns>
     /// A random number that is between 1 and 6.
     /// </returns>
-    public static int Roll() => GameController.Random.Next(1, 7);
+    public static int Roll() => UnityEngine.Random.Range(1, 6);
 }

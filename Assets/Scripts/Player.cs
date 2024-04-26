@@ -59,4 +59,6 @@ public class Player
     }
 
     public int GetNumberOfOwnedCountries() => ownedCountries.Count;
+
+    virtual public void TakeTurn() { }
 }

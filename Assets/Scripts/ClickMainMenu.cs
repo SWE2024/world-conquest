@@ -24,6 +24,7 @@ public class ClickMainMenu : MonoBehaviour
     {
         // reset preferences to default values in case they have been changed
         Preferences.PlayerCount = 2;
+        Preferences.AgentCount = 0;
         Preferences.MapNumber = 1;
         Preferences.AutoPopulateFlag = false;
 

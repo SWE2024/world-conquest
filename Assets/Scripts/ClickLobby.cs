@@ -9,9 +9,14 @@ public class ClickButton : MonoBehaviour
     [SerializeField] Button btnMap2;
     [SerializeField] Button btnReady;
     [SerializeField] Button btnLeave;
-    [SerializeField] Button btnMinus;
-    [SerializeField] Button btnPlus;
-    [SerializeField] TextMeshProUGUI number;
+
+    [SerializeField] Button btnMinusPlayer;
+    [SerializeField] Button btnPlusPlayer;
+    [SerializeField] TextMeshProUGUI numberPlayers;
+
+    [SerializeField] Button btnMinusAgent;
+    [SerializeField] Button btnPlusAgent;
+    [SerializeField] TextMeshProUGUI numberAgents;
 
     [SerializeField] Image triangleReady;
     [SerializeField] Image triangleLeave;
@@ -29,26 +34,44 @@ public class ClickButton : MonoBehaviour
 
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
-        btnMinus.onClick.AddListener(HandleMinus);
-        btnPlus.onClick.AddListener(HandlePlus);
+
+        btnMinusPlayer.onClick.AddListener(HandleMinusPlayer);
+        btnPlusPlayer.onClick.AddListener(HandlePlusPlayer);
+
+        btnMinusAgent.onClick.AddListener(HandleMinusAgent);
+        btnPlusAgent.onClick.AddListener(HandlePlusAgent);
     }
 
     void Map1() { Preferences.MapNumber = 1; }
 
     void Map2() { Preferences.MapNumber = 2; }
 
-    void HandleMinus()
+    void HandleMinusPlayer()
     {
-        if (Preferences.PlayerCount <= 2) { return; }
+        if ((Preferences.PlayerCount <= 2 && Preferences.AgentCount == 0) || (Preferences.PlayerCount == 1)) { return; }
         Preferences.PlayerCount--;
-        number.text = $"{Preferences.PlayerCount}";
+        numberPlayers.text = $"{Preferences.PlayerCount}";
     }
 
-    void HandlePlus()
+    void HandlePlusPlayer()
     {
-        if (Preferences.PlayerCount >= 6) { return; }
+        if (Preferences.PlayerCount + Preferences.AgentCount >= 6) { return; }
         Preferences.PlayerCount++;
-        number.text = $"{Preferences.PlayerCount}";
+        numberPlayers.text = $"{Preferences.PlayerCount}";
+    }
+
+    void HandleMinusAgent()
+    {
+        if (Preferences.AgentCount <= 0) { return; }
+        Preferences.AgentCount--;
+        numberAgents.text = $"{Preferences.AgentCount}";
+    }
+
+    void HandlePlusAgent()
+    {
+        if (Preferences.AgentCount + Preferences.PlayerCount >= 6) { return; }
+        Preferences.AgentCount++;
+        numberAgents.text = $"{Preferences.AgentCount}";
     }
 
     void LoadGame()
