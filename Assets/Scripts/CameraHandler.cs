@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// <c>CameraHandler</c> controls all movement of the camera, including panning and zooming.
@@ -18,7 +17,7 @@ public class CameraHandler : MonoBehaviour
     {
         // change accordingly if the canvas ever changes size
         // higher size means less zoom, etc etc.
-        minCamSize = 100;
+        minCamSize = 200;
         maxCamSize = 800;
         zoomStep = 200;
         zoom = cam.orthographicSize;

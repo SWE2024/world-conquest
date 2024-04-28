@@ -13,7 +13,9 @@ public class AIPlayer : Player
         {
             Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
-                if (GameController.Get().populatedCountries >= GameController.Get().countryMap.Count - 5) // do not randomly find a country if not many left
+                // IMPORTANT! the following line prevents resource wastage / crashing
+                // do not randomly look for a country if not many are left unclaimed
+                if (GameController.Get().populatedCountries >= GameController.Get().countryMap.Count - 5)
                 {
                     foreach (var v in GameController.Get().countryMap)
                     {
@@ -99,28 +101,19 @@ public class AIPlayer : Player
             GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
             Wait.Start(Random.Range(2, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
             {
-                bool flagDone = false;
                 List<Country> ownedCountries = this.GetCountries();
 
-                while (!flagDone)
-                {
-                    Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
+                Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
+                int troops = this.GetNumberOfTroops();
+                selected.ChangeTroops(troops);
+                this.ChangeNumberOfTroops(-troops);
 
-                    if (selected.GetOwner() == this)
-                    {
-                        int troops = this.GetNumberOfTroops();
-                        selected.ChangeTroops(troops);
-                        this.ChangeNumberOfTroops(-troops);
+                Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
 
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-                        flagDone = true;
-                    }
-                }
                 Killfeed.Update($"{this.GetName()}: attack and fortify not yet implemented");
 
                 //
-                // implement the other phases here
+                // implement the other phases
                 //
 
                 GameController.Get().currentPhase.text = "draft phase";
