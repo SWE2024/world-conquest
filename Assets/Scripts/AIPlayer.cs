@@ -129,7 +129,7 @@ public class AIPlayer : Player
                         {
                             if (neighborCountry.GetOwner() != this)
                             {
-                                if (GameController.Get().Attack(selectedCountry, neighborCountry, Math.Min(selectedCountry.GetTroops(), 3)))
+                                if (GameController.Get().Attack(selectedCountry, neighborCountry, Math.Min(selectedCountry.GetTroops(), 3), 1))
                                 {
                                     Wait.Start(2f, () =>
                                     {

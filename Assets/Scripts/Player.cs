@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Troop
@@ -59,6 +60,10 @@ public class Player
     public void SetNumberOfTroops(int troops)
     {
         numberOfTroops = troops;
+    }
+
+    public void getNewTroops() {
+        this.numberOfTroops += this.ownedCountries.Count / 3;
     }
 
     virtual public void TakeTurn() { }

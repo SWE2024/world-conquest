@@ -56,7 +56,7 @@ public class Country
     }
 
     // this is for changing button color for Highlighting either to black or white
-    private void TempColorChange(Color color)
+    public void TempColorChange(Color color)
     {
         Pointer.GetComponent<Image>().color = color;
     }
