@@ -856,7 +856,12 @@ public class GameController
             turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
         }
 
-        if (turnPlayer is AIPlayer) turnPlayer.TakeTurn();
+        if (turnPlayer is AIPlayer)
+        {
+            DisableButtons();
+            turnPlayer.TakeTurn();
+        }
+        else EnableButtons();
     }
 
     public void ResetTurn()
@@ -865,9 +870,31 @@ public class GameController
         turnPlayer = turnsOrder[0];
         currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
+
+        EnableButtons();
     }
 
     public string GetTurnsName() => turnPlayer.GetName();
 
     public Color GetTurnsColor() => turnPlayer.GetColor();
+
+    private void EnableButtons()
+    {
+        foreach (var kvp in countryMap)
+        {
+            kvp.Key.enabled = true; // make buttons clickable again
+        }
+        GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
+        GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
+    }
+
+    private void DisableButtons()
+    {
+        foreach (var kvp in countryMap)
+        {
+            kvp.Key.enabled = false; // make buttons unclickable so the AI is not bugged
+        }
+        GameObject.Find("EndPhase").GetComponent<Image>().enabled = false;
+        GameObject.Find("EndPhase").GetComponent<Button>().enabled = false;
+    }
 }
