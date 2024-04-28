@@ -206,6 +206,10 @@ public class GameController
 
     public void SetupPhase(GameObject selectedObj)
     {
+        if (selectedObj != null) Debug.Log(countryMap[selectedObj.GetComponent<Button>()].GetName());
+        
+
+
         Debug.Log("in setup phase");
         if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
 
@@ -403,7 +407,6 @@ public class GameController
 
     public void AttackPhase(GameObject selectedObj)
     {
-        Debug.Log("attack phase func ran");
         if (AttackCanvas.enabled)
         {
             Debug.Log("clause attack");
@@ -968,7 +971,7 @@ public class GameController
         Action<List<Country>, Country> recurse = null;
         recurse = (visited, country) => {
             visited.Add(country);
-            country.TempColorChange(Color.gray);
+            country.TempColorChange(Color.white);
 
             foreach(Country neighbor in country.GetNeighbors()) {
                 if (neighbor.GetOwner() != attacker.GetOwner() || visited.Contains(neighbor)) continue;
@@ -977,7 +980,7 @@ public class GameController
         };
 
         recurse(visited, this.attacker);
-        this.attacker.TempColorChange(Color.white);
+        this.attacker.TempColorChange(Color.grey);
         this.considered = visited;
     }
 

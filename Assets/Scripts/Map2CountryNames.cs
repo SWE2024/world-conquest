@@ -1,0 +1,32 @@
+using System.Collections.Generic;
+public class Map2CountryNames {
+    public static Dictionary<int, string> CountryNameMap  = new Dictionary<int, string>  {
+        { 1, "Pefronia"},
+        { 2, "Uthoegro"},
+        { 3, "Quscea"},
+        { 4, "Priuyare"},
+        { 5, "Ospela"},
+        { 6, "usnal"},
+        { 7, "wheok pla"},
+        { 8, "cebraunia"},
+        { 9, "modra"},
+        { 10, "udreau"},
+        { 11, "ospitan"},
+        { 12, "vothaostan"},
+        { 13, "xocroesal"},
+        { 14, "astrus"},
+        { 15, "straulia"},
+        { 16, "ublya"},
+        { 17, "nosturg"},
+        { 18, "ethein"},
+        { 19, "spiedan"},
+        { 20, "josmad"},
+        { 21, "ascurg"},
+        { 22, "uskaevania"},
+        { 23, "xesnana"},
+        { 24, "noplain"},
+        { 25, "ashai"},
+        { 26, "oshurg"},
+        { 27, "swuca"},
+    };
+}
