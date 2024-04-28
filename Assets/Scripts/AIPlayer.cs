@@ -11,81 +11,93 @@ public class AIPlayer : Player
     {
         if (GameController.Get().flagSetupPhase) // AI takes a setup claiming a single country
         {
-            Wait.Start(Random.Range(1, 2), () => // wait 0 to 2 seconds to take a country so it looks like a real player
+            Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
-                while (true)
+                if (GameController.Get().populatedCountries >= GameController.Get().countryMap.Count - 5) // do not randomly find a country if not many left
                 {
-                    var kvp = GameController.Get().countryMap.ElementAt(Random.Range(0, GameController.Get().countryMap.Count - 1));
-
-                    if (kvp.Value.GetOwner() == null)
+                    foreach (var v in GameController.Get().countryMap)
                     {
-                        kvp.Value.SetOwner(this);
-                        kvp.Value.ChangeTroops(1);
-                        this.ChangeNumberOfTroops(-1);
-                        GameController.Get().populatedCountries++;
+                        if (v.Value.GetOwner() == null)
+                        {
+                            v.Value.SetOwner(this);
+                            v.Value.ChangeTroops(1);
+                            this.ChangeNumberOfTroops(-1);
+                            GameController.Get().populatedCountries++;
 
-                        Killfeed.Update($"{this.GetName()}: now owns {kvp.Value.GetName()}");
-                        GameController.Get().NextTurn();
-                        return;
+                            Killfeed.Update($"{this.GetName()}: now owns {v.Value.GetName()}");
+
+                            if (GameController.Get().populatedCountries == GameController.Get().countryMap.Count)
+                            {
+                                GameController.Get().currentPhase.text = "deploy phase";
+                                GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
+                                GameController.Get().flagSetupPhase = false;
+                                GameController.Get().flagSetupDeployPhase = true;
+                                GameController.Get().ResetTurn();
+                                return;
+                            }
+
+                            GameController.Get().NextTurn();
+                            return;
+                        }
                     }
-
-                    if (GameController.Get().populatedCountries == GameController.Get().countryMap.Count)
+                }
+                else
+                {
+                    while (true) // loops until finding an unowned country
                     {
-                        GameController.Get().currentPhase.text = "deploy phase";
-                        GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
-                        GameController.Get().flagSetupPhase = false;
-                        GameController.Get().flagSetupDeployPhase = true;
-                        GameController.Get().ResetTurn();
-                        return;
+                        var kvp = GameController.Get().countryMap.ElementAt(Random.Range(0, GameController.Get().countryMap.Count - 1));
+
+                        if (kvp.Value.GetOwner() == null)
+                        {
+                            kvp.Value.SetOwner(this);
+                            kvp.Value.ChangeTroops(1);
+                            this.ChangeNumberOfTroops(-1);
+                            GameController.Get().populatedCountries++;
+
+                            Killfeed.Update($"{this.GetName()}: now owns {kvp.Value.GetName()}");
+
+                            GameController.Get().NextTurn();
+                            return;
+                        }
                     }
                 }
             });
-            return;
         }
         else if (GameController.Get().flagSetupDeployPhase) // AI takes a setup deploy turn
         {
-            Wait.Start(Random.Range(2, 4), () => // wait 2 to 4 seconds to take a country so it looks like a real player
+            Wait.Start(Random.Range(2, 3), () => // wait 2 to 4 seconds to take a country so it looks like a real player
             {
-                bool flagDone = false;
                 List<Country> ownedCountries = this.GetCountries();
+                Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
 
-                while (!flagDone)
+                int troops = this.GetNumberOfTroops();
+                selected.ChangeTroops(troops);
+                this.ChangeNumberOfTroops(-troops);
+
+                Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
+
+                GameController.Get().NextTurn();
+
+                if (GameController.Get().turnPlayer.GetNumberOfTroops() == 0) // next player has no troops to deploy
                 {
-                    Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
+                    GameController.Get().currentPhase.text = "draft phase";
+                    GameController.Get().flagSetupDeployPhase = false;
+                    GameController.Get().flagFinishedSetup = true;
+                    GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
+                    GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
 
-                    if (selected.GetOwner() == this)
-                    {
-                        int troops = this.GetNumberOfTroops();
-                        selected.ChangeTroops(troops);
-                        this.ChangeNumberOfTroops(-troops);
-
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-
-                        GameController.Get().NextTurn();
-
-                        if (GameController.Get().turnPlayer.GetNumberOfTroops() == 0) // next player has not troops to deploy
-                        {
-                            GameController.Get().currentPhase.text = "attack phase";
-                            GameController.Get().flagSetupDeployPhase = false;
-                            GameController.Get().HandleObjectClick = GameController.Get().AttackPhase;
-                            GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
-
-                            GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
-                            GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
-                        }
-
-                        flagDone = true;
-                    }
+                    GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
+                    GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
                 }
+
                 return;
             });
-            return;
         }
         else // AI player takes a normal turn
         {
             GameController.Get().currentPhase.text = "draft phase";
             GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
-            Wait.Start(Random.Range(2, 4), () => // wait 2 to 4 seconds to draft to a country so it looks like a real player
+            Wait.Start(Random.Range(2, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
             {
                 bool flagDone = false;
                 List<Country> ownedCountries = this.GetCountries();
@@ -101,11 +113,16 @@ public class AIPlayer : Player
                         this.ChangeNumberOfTroops(-troops);
 
                         Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-
+                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
                         flagDone = true;
                     }
                 }
                 Killfeed.Update($"{this.GetName()}: attack and fortify not yet implemented");
+
+                //
+                // implement the other phases here
+                //
+
                 GameController.Get().currentPhase.text = "draft phase";
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();

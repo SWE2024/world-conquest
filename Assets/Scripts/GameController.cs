@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,9 +49,9 @@ public class GameController
 
     int turnIndex; // indicates who is playing
     public int populatedCountries;
-    public bool flagSetupPhase = true;
-    public bool flagSetupDeployPhase = false;
-    public bool flagFinishedSetup = false;
+    public bool flagSetupPhase;
+    public bool flagSetupDeployPhase;
+    public bool flagFinishedSetup;
 
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
@@ -71,6 +72,10 @@ public class GameController
         this.currentPhase = GameObject.Find("GamePhase").GetComponent<TextMeshProUGUI>();
         this.currentPlayerName = GameObject.Find("CurrentPlayer").GetComponent<TextMeshProUGUI>();
         this.currentPlayerColor = GameObject.Find("CurrentColour").GetComponent<Image>();
+
+        flagSetupPhase = true;
+        flagSetupDeployPhase = false;
+        flagFinishedSetup = false;
 
         this.currentPlayerName.text = "playing:\n" + this.GetTurnsName();
         this.currentPlayerColor.color = this.GetTurnsColor();
@@ -260,12 +265,12 @@ public class GameController
                 {
                     ResetTurn();
 
-                    // phase changing to attack
-                    this.currentPhase.text = "attack phase";
+                    // phase changing to draft
+                    this.currentPhase.text = "draft phase";
 
                     flagSetupDeployPhase = false;
                     flagFinishedSetup = true;
-                    HandleObjectClick = AttackPhase;
+                    HandleObjectClick = DraftPhase;
 
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -335,15 +340,14 @@ public class GameController
                 int num = Int32.Parse(numberOfTroops.GetComponent<TextMeshProUGUI>().text);
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
+
+                Killfeed.Update($"{this.turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
+
                 this.attacker = null;
                 this.DistributeCanvas.enabled = false;
                 numberOfTroops.text = "1";
 
                 if (turnPlayer.GetNumberOfTroops() > 0) return;
-
-                bool check = this.NextPlayerWithTroops();
-
-                if (check) return;
 
                 // phase changing to attack
                 this.currentPhase.text = "attack phase";
@@ -386,7 +390,6 @@ public class GameController
         }
     }
 
-    // attack phase
     public void AttackPhase(GameObject selectedObj)
     {
         if (AttackCanvas.enabled)
@@ -523,25 +526,6 @@ public class GameController
             CameraHandler.DisableMovement = true;
         }
         return;
-    }
-
-    public bool NextPlayerWithTroops()
-    {
-        Player player = null;
-        while (true)
-        {
-            if (turnPlayer.GetNumberOfTroops() > 0)
-            {
-                player = turnPlayer;
-                break;
-            }
-
-            if (turnIndex == turnsOrder.Count - 1) break;
-            NextTurn();
-        }
-
-        if (player != null) return true;
-        return false;
     }
 
     private void HandleAttackClick(GameObject selectedObj)
@@ -860,7 +844,12 @@ public class GameController
             turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
         }
 
-        if (turnPlayer is AIPlayer) turnPlayer.TakeTurn();
+        if (turnPlayer is AIPlayer)
+        {
+            DisableButtons();
+            turnPlayer.TakeTurn();
+        }
+        else EnableButtons();
     }
 
     public void ResetTurn()
@@ -869,9 +858,54 @@ public class GameController
         turnPlayer = turnsOrder[0];
         currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
+
+        if (turnPlayer.GetNumberOfTroops() == 0 && !flagSetupPhase && !flagSetupDeployPhase)
+        {
+            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
+        }
+
+        EnableButtons();
+    }
+
+    public bool NextPlayerWithTroops() // not quite sure why this function exists
+    {
+        Player player = null;
+        while (true)
+        {
+            if (turnPlayer.GetNumberOfTroops() > 0)
+            {
+                player = turnPlayer;
+                break;
+            }
+
+            if (turnIndex == turnsOrder.Count - 1) break;
+            NextTurn();
+        }
+
+        return player != null;
     }
 
     public string GetTurnsName() => turnPlayer.GetName();
 
     public Color GetTurnsColor() => turnPlayer.GetColor();
+
+    private void EnableButtons()
+    {
+        foreach (var kvp in countryMap)
+        {
+            kvp.Key.enabled = true; // make buttons clickable again
+        }
+        GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
+        GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
+    }
+
+    private void DisableButtons()
+    {
+        foreach (var kvp in countryMap)
+        {
+            kvp.Key.enabled = false; // make buttons unclickable so the AI is not bugged
+        }
+        GameObject.Find("EndPhase").GetComponent<Image>().enabled = false;
+        GameObject.Find("EndPhase").GetComponent<Button>().enabled = false;
+    }
 }
