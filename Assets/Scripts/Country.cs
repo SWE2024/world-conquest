@@ -16,7 +16,6 @@ public class Country
         this.Pointer = button;
         this.Name = name;
         this.Pointer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{this.Troops}";
-        // this.Pointer.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = this.Name; // not currently required
     }
 
     public void SetNeighbors(List<Country> list)
@@ -87,7 +86,7 @@ public class Country
         return output;
     }
 
-    public List<Country> HighlightFriendlyNeighbours()
+    public List<Country> HighlightFriendlyNeighbours() // currently only finds 1 layer of neighbors
     {
         TempColorChange(Color.grey);
 

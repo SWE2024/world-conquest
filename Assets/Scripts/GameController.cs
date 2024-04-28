@@ -341,10 +341,6 @@ public class GameController
 
                 if (turnPlayer.GetNumberOfTroops() > 0) return;
 
-                bool check = this.NextPlayerWithTroops();
-
-                if (check) return;
-
                 // phase changing to attack
                 this.currentPhase.text = "attack phase";
                 HandleObjectClick = AttackPhase;
