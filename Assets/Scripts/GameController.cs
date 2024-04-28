@@ -207,6 +207,7 @@ public class GameController
         turnPlayer.ChangeNumberOfTroops(-1);
         populatedCountries++;
 
+        GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
         Killfeed.Update($"{turnPlayer.GetName()}: now owns {country.GetName()}");
 
         if (populatedCountries < countryMap.Count) NextTurn();
@@ -248,8 +249,8 @@ public class GameController
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
 
+                GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
                 Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
-
 
                 this.attacker = null;
                 this.DistributeCanvas.enabled = false;
@@ -341,6 +342,7 @@ public class GameController
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
 
+                GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
                 Killfeed.Update($"{this.turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
 
                 this.attacker = null;
@@ -718,8 +720,10 @@ public class GameController
         }
     }
 
-    public void Attack(Country attacker, Country defender, int num)
+    public bool Attack(Country attacker, Country defender, int num)
     {
+        bool outcome = false;
+
         List<int> atkRolls = new List<int>();
         List<int> defRolls = new List<int>();
 
@@ -793,11 +797,12 @@ public class GameController
                 Killfeed.Update($"{turnPlayer.GetName()}: now owns {defender.GetName()}");
                 GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
                 defender.SetOwner(attacker.GetOwner());
+                outcome = true;
             }
             GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
         }
 
-        this.DiceCanvas.enabled = true;
+        if (turnPlayer is not AIPlayer) this.DiceCanvas.enabled = true;
 
         Wait.Start(3f, () =>
         {
@@ -814,6 +819,8 @@ public class GameController
             }
             GameObject.Find($"WinnerText").GetComponent<TextMeshProUGUI>().text = "";
         });
+
+        return outcome;
     }
 
     public void Transfer(Country from, Country to, int num)
@@ -821,6 +828,7 @@ public class GameController
         from.ChangeTroops(-num);
         to.ChangeTroops(num);
 
+        GameObject.Find("SoundTransfer").GetComponent<AudioSource>().Play();
         Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) from {from.GetName()} to {to.GetName()}");
     }
 
