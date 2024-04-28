@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -264,12 +265,12 @@ public class GameController
                 {
                     ResetTurn();
 
-                    // phase changing to attack
-                    this.currentPhase.text = "attack phase";
+                    // phase changing to draft
+                    this.currentPhase.text = "draft phase";
 
                     flagSetupDeployPhase = false;
                     flagFinishedSetup = true;
-                    HandleObjectClick = AttackPhase;
+                    HandleObjectClick = DraftPhase;
 
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -339,6 +340,9 @@ public class GameController
                 int num = Int32.Parse(numberOfTroops.GetComponent<TextMeshProUGUI>().text);
                 this.attacker.ChangeTroops(num);
                 this.turnPlayer.ChangeNumberOfTroops(-num);
+
+                Killfeed.Update($"{this.turnPlayer.GetName()}: sent {num} troop(s) to {attacker.GetName()}");
+
                 this.attacker = null;
                 this.DistributeCanvas.enabled = false;
                 numberOfTroops.text = "1";
@@ -854,6 +858,11 @@ public class GameController
         turnPlayer = turnsOrder[0];
         currentPlayerName.GetComponent<TextMeshProUGUI>().text = "playing:\n" + this.GetTurnsName();
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
+
+        if (turnPlayer.GetNumberOfTroops() == 0 && !flagSetupPhase && !flagSetupDeployPhase)
+        {
+            turnPlayer.SetNumberOfTroops(Math.Max(3, turnPlayer.GetNumberOfOwnedCountries() / 3));
+        }
 
         EnableButtons();
     }
