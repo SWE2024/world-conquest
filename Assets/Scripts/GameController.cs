@@ -48,9 +48,9 @@ public class GameController
 
     int turnIndex; // indicates who is playing
     public int populatedCountries;
-    public bool flagSetupPhase = true;
-    public bool flagSetupDeployPhase = false;
-    public bool flagFinishedSetup = false;
+    public bool flagSetupPhase;
+    public bool flagSetupDeployPhase;
+    public bool flagFinishedSetup;
 
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas transferCanvas, Canvas diceCanvas)
     {
@@ -71,6 +71,10 @@ public class GameController
         this.currentPhase = GameObject.Find("GamePhase").GetComponent<TextMeshProUGUI>();
         this.currentPlayerName = GameObject.Find("CurrentPlayer").GetComponent<TextMeshProUGUI>();
         this.currentPlayerColor = GameObject.Find("CurrentColour").GetComponent<Image>();
+
+        flagSetupPhase = true;
+        flagSetupDeployPhase = false;
+        flagFinishedSetup = false;
 
         this.currentPlayerName.text = "playing:\n" + this.GetTurnsName();
         this.currentPlayerColor.color = this.GetTurnsColor();
@@ -382,7 +386,6 @@ public class GameController
         }
     }
 
-    // attack phase
     public void AttackPhase(GameObject selectedObj)
     {
         if (AttackCanvas.enabled)
@@ -519,25 +522,6 @@ public class GameController
             CameraHandler.DisableMovement = true;
         }
         return;
-    }
-
-    public bool NextPlayerWithTroops()
-    {
-        Player player = null;
-        while (true)
-        {
-            if (turnPlayer.GetNumberOfTroops() > 0)
-            {
-                player = turnPlayer;
-                break;
-            }
-
-            if (turnIndex == turnsOrder.Count - 1) break;
-            NextTurn();
-        }
-
-        if (player != null) return true;
-        return false;
     }
 
     private void HandleAttackClick(GameObject selectedObj)
@@ -872,6 +856,24 @@ public class GameController
         currentPlayerColor.GetComponent<Image>().color = GetTurnsColor();
 
         EnableButtons();
+    }
+
+    public bool NextPlayerWithTroops() // not quite sure why this function exists
+    {
+        Player player = null;
+        while (true)
+        {
+            if (turnPlayer.GetNumberOfTroops() > 0)
+            {
+                player = turnPlayer;
+                break;
+            }
+
+            if (turnIndex == turnsOrder.Count - 1) break;
+            NextTurn();
+        }
+
+        return player != null;
     }
 
     public string GetTurnsName() => turnPlayer.GetName();

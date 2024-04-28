@@ -11,7 +11,7 @@ public class AIPlayer : Player
     {
         if (GameController.Get().flagSetupPhase) // AI takes a setup claiming a single country
         {
-            Wait.Start(Random.Range(1, 2), () => // wait 0 to 2 seconds to take a country so it looks like a real player
+            Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
                 while (true) // loops until finding an unowned country
                 {
