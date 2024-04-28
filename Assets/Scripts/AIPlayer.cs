@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,7 +14,9 @@ public class AIPlayer : Player
         {
             Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
-                if (GameController.Get().populatedCountries >= GameController.Get().countryMap.Count - 5) // do not randomly find a country if not many left
+                // IMPORTANT! the following line prevents resource wastage / crashing
+                // do not randomly look for a country if not many are left unclaimed
+                if (GameController.Get().populatedCountries >= GameController.Get().countryMap.Count - 5)
                 {
                     foreach (var v in GameController.Get().countryMap)
                     {
@@ -24,6 +27,7 @@ public class AIPlayer : Player
                             this.ChangeNumberOfTroops(-1);
                             GameController.Get().populatedCountries++;
 
+                            GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
                             Killfeed.Update($"{this.GetName()}: now owns {v.Value.GetName()}");
 
                             if (GameController.Get().populatedCountries == GameController.Get().countryMap.Count)
@@ -45,7 +49,7 @@ public class AIPlayer : Player
                 {
                     while (true) // loops until finding an unowned country
                     {
-                        var kvp = GameController.Get().countryMap.ElementAt(Random.Range(0, GameController.Get().countryMap.Count - 1));
+                        var kvp = GameController.Get().countryMap.ElementAt(UnityEngine.Random.Range(0, GameController.Get().countryMap.Count - 1));
 
                         if (kvp.Value.GetOwner() == null)
                         {
@@ -54,6 +58,7 @@ public class AIPlayer : Player
                             this.ChangeNumberOfTroops(-1);
                             GameController.Get().populatedCountries++;
 
+                            GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
                             Killfeed.Update($"{this.GetName()}: now owns {kvp.Value.GetName()}");
 
                             GameController.Get().NextTurn();
@@ -65,15 +70,16 @@ public class AIPlayer : Player
         }
         else if (GameController.Get().flagSetupDeployPhase) // AI takes a setup deploy turn
         {
-            Wait.Start(Random.Range(2, 3), () => // wait 2 to 4 seconds to take a country so it looks like a real player
+            Wait.Start(UnityEngine.Random.Range(2, 3), () => // wait 2 to 4 seconds to take a country so it looks like a real player
             {
                 List<Country> ownedCountries = this.GetCountries();
-                Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
+                Country selected = ownedCountries.ElementAt(UnityEngine.Random.Range(0, ownedCountries.Count - 1));
 
                 int troops = this.GetNumberOfTroops();
                 selected.ChangeTroops(troops);
                 this.ChangeNumberOfTroops(-troops);
 
+                GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
                 Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
 
                 GameController.Get().NextTurn();
@@ -97,36 +103,72 @@ public class AIPlayer : Player
         {
             GameController.Get().currentPhase.text = "draft phase";
             GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
-            Wait.Start(Random.Range(2, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
+            Wait.Start(UnityEngine.Random.Range(2, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
             {
-                bool flagDone = false;
                 List<Country> ownedCountries = this.GetCountries();
 
-                while (!flagDone)
+                Country selected = ownedCountries.ElementAt(UnityEngine.Random.Range(0, ownedCountries.Count - 1));
+                int troops = this.GetNumberOfTroops();
+                selected.ChangeTroops(troops);
+                this.ChangeNumberOfTroops(-troops);
+
+                GameObject.Find("SoundDraft").GetComponent<AudioSource>().Play();
+                Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
+                GameController.Get().currentPhase.text = "attack phase";
+                GameController.Get().HandleObjectClick = GameController.Get().AttackPhase;
+            });
+
+            Wait.Start(UnityEngine.Random.Range(4, 5), () => // wait to attack a country so it looks like a real player
+            {
+                for (int i = 0; i < this.GetNumberOfOwnedCountries(); i++)
                 {
-                    Country selected = ownedCountries.ElementAt(Random.Range(0, ownedCountries.Count - 1));
-
-                    if (selected.GetOwner() == this)
+                    Country selectedCountry = this.GetCountries()[i];
+                    if (selectedCountry.GetTroops() > 1)
                     {
-                        int troops = this.GetNumberOfTroops();
-                        selected.ChangeTroops(troops);
-                        this.ChangeNumberOfTroops(-troops);
-
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-                        Killfeed.Update($"{this.GetName()}: sent {troops} troop(s) to {selected.GetName()}");
-                        flagDone = true;
+                        foreach (Country neighborCountry in selectedCountry.GetNeighbors())
+                        {
+                            if (neighborCountry.GetOwner() != this)
+                            {
+                                if (GameController.Get().Attack(selectedCountry, neighborCountry, Math.Min(selectedCountry.GetTroops(), 3)))
+                                {
+                                    Wait.Start(2f, () =>
+                                    {
+                                        GameController.Get().Transfer(selectedCountry, neighborCountry, Math.Max(1, (selectedCountry.GetTroops() - 1) / 2));
+                                    });
+                                }
+                                GameController.Get().currentPhase.text = "fortify phase";
+                                GameController.Get().HandleObjectClick = GameController.Get().FortifyPhase;
+                                return;
+                            }
+                        }
                     }
                 }
-                Killfeed.Update($"{this.GetName()}: attack and fortify not yet implemented");
+            });
 
-                //
-                // implement the other phases here
-                //
+            Wait.Start(UnityEngine.Random.Range(8, 9), () => // wait to fortify a country so it looks like a real player
+            {
+                for (int i = 0; i < GetNumberOfOwnedCountries(); i++)
+                {
+                    Country owned = this.GetCountries()[i];
+                    if (owned.GetTroops() > 1)
+                    {
+                        foreach (Country neighbor in owned.GetNeighbors())
+                        {
+                            if (neighbor.GetOwner() == this)
+                            {
+                                GameController.Get().Transfer(owned, neighbor, owned.GetTroops() / 2);
+                                return;
+                            }
+                        }
+                    }
+                }
+            });
 
+            Wait.Start(9f, () =>
+            {
                 GameController.Get().currentPhase.text = "draft phase";
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();
-                return;
             });
         }
     }
