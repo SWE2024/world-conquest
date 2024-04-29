@@ -39,8 +39,8 @@ public class GameController
 
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
-    public Country attacker = null;
-    public Country defender = null;
+    Country attacker = null;
+    Country defender = null;
 
     // represent the same state as above, if it holds a list of country a country is highlighted (can be empty but still means highlighted)
     // if not highlighted, holds null
