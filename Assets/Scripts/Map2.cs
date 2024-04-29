@@ -1,10 +1,41 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// <c>Map2</c> contains the list of neighbouring countries for map 2.
+/// <c>Map2</c> contains the list of country names and neighbouring countries for map 2.
 /// </summary>
 public class Map2
 {
+    public static Dictionary<int, string> CountryNameMap = new Dictionary<int, string>()
+    {
+        { 1, "Pefronia"},
+        { 2, "Uthoegro"},
+        { 3, "Quscea"},
+        { 4, "Priuyare"},
+        { 5, "Ospela"},
+        { 6, "Usnal"},
+        { 7, "Wheok Pla"},
+        { 8, "Cebraunia"},
+        { 9, "Modra"},
+        { 10, "Udreau"},
+        { 11, "Ospitan"},
+        { 12, "Vothaostan"},
+        { 13, "Xocroesal"},
+        { 14, "Astrus"},
+        { 15, "Straulia"},
+        { 16, "Ublya"},
+        { 17, "Nosturg"},
+        { 18, "Ethein"},
+        { 19, "Xpiedan"},
+        { 20, "Josmad"},
+        { 21, "Xscurg"},
+        { 22, "Uskaevania"},
+        { 23, "Xesnana"},
+        { 24, "Noplain"},
+        { 25, "Ashai"},
+        { 26, "Oshurg"},
+        { 27, "Swuca"},
+    };
+
     public static List<List<int>> ListOfNeighbours = new List<List<int>> {
         new List<int> {
             2, 3, 4, 5

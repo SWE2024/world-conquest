@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ public class AIPlayer : Player
 
     override public void TakeTurn()
     {
-        if (GameController.Get().flagSetupPhase) // AI takes a setup claiming a single country
+        if (GameController.Get().HandleObjectClick.GetMethodInfo().Name.Equals("SetupPhase")) // AI takes a setup claiming a single country
         {
             Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
@@ -34,8 +35,6 @@ public class AIPlayer : Player
                             {
                                 GameController.Get().currentPhase.text = "deploy phase";
                                 GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
-                                GameController.Get().flagSetupPhase = false;
-                                GameController.Get().flagSetupDeployPhase = true;
                                 GameController.Get().ResetTurn();
                                 return;
                             }
@@ -68,7 +67,7 @@ public class AIPlayer : Player
                 }
             });
         }
-        else if (GameController.Get().flagSetupDeployPhase) // AI takes a setup deploy turn
+        else if (GameController.Get().HandleObjectClick.GetMethodInfo().Name.Equals("SetupDeployPhase")) // AI takes a setup deploy turn
         {
             Wait.Start(UnityEngine.Random.Range(2, 3), () => // wait 2 to 4 seconds to take a country so it looks like a real player
             {
@@ -87,10 +86,9 @@ public class AIPlayer : Player
                 if (GameController.Get().turnPlayer.GetNumberOfTroops() == 0) // next player has no troops to deploy
                 {
                     GameController.Get().currentPhase.text = "draft phase";
-                    GameController.Get().flagSetupDeployPhase = false;
-                    GameController.Get().flagFinishedSetup = true;
                     GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                     GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
+                    GameController.Get().turnPlayer.GetNewTroops();
 
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -169,6 +167,7 @@ public class AIPlayer : Player
                 GameController.Get().currentPhase.text = "draft phase";
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();
+                GameController.Get().turnPlayer.GetNewTroops();
             });
         }
     }
