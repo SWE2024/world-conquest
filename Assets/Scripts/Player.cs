@@ -12,7 +12,7 @@ public class Player
     int numberOfTroops;
 
     List<Country> ownedCountries;
-    List<Card> ownedCards;
+    public List<Card> ownedCards;
 
     public Player(string name, Color color)
     {

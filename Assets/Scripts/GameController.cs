@@ -345,6 +345,16 @@ public class GameController
                 return;
 
             case "CardInventoryButton":
+                for (int i = 0; i < turnPlayer.ownedCards.Count && i < 6; i++) {
+                    Button slot = GameObject.Find($"slot{i+1}").GetComponent<Button>();
+                    slot.GetComponent<Image>().sprite = turnPlayer.ownedCards[i].GetSprite();
+                }
+
+                for (int i = 1; i < 4; i++) {
+                    GameObject.Find($"trade{i}").GetComponent<Image>().enabled = false;
+                    GameObject.Find($"trade{i}").GetComponent<Button>().enabled = false;
+                    GameObject.Find($"trade{i}").GetComponent<Image>().sprite = null;
+                }
                 this.CardInventory.enabled = true;
                 return;
 
@@ -559,9 +569,6 @@ public class GameController
     private void HandleCardClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
-
-        
-
         switch (selectedObj.name)
         {
             case "Trade":
@@ -569,6 +576,60 @@ public class GameController
                 return;
             case "CardInventoryButtonClose":
                 this.CardInventory.enabled = false;
+                for(int i = 1; i < 4; i++) {
+                    Button current_trade = GameObject.Find($"trade{i}").GetComponent<Button>();
+                    current_trade.GetComponent<Image>().sprite = null;
+                    current_trade.GetComponent<Image>().enabled = false;
+                    current_trade.GetComponent<Button>().enabled = false;
+                }
+                return;
+
+            case "slot1":
+            case "slot2":
+            case "slot3":
+            case "slot4":
+            case "slot5":
+            case "slot6":
+                Debug.Log("came slot");
+                Button trade = null;
+                for(int i = 1; i < 4; i++) {
+                    Button current_trade = GameObject.Find($"trade{i}").GetComponent<Button>();
+                    if (current_trade.GetComponent<Image>().sprite == null) 
+                    {
+                        trade = current_trade;
+                        break;
+                    }
+                }
+                if (trade == null) return;
+                trade.GetComponent<Image>().sprite = selectedObj.GetComponent<Button>().GetComponent<Image>().sprite;
+                trade.GetComponent<Image>().enabled = true;
+                trade.GetComponent<Button>().enabled = true;
+
+                selectedObj.GetComponent<Button>().GetComponent<Image>().enabled = false;
+                selectedObj.GetComponent<Button>().enabled = false;
+                return;
+            
+            case "trade1":
+            case "trade2":
+            case "trade3":
+                Debug.Log("came trade");
+                Button trade_slot = selectedObj.GetComponent<Button>();
+                for (int i = 1; i < 7; i++) {
+                    Button current_slot = GameObject.Find($"slot{i}").GetComponent<Button>();
+                    if (!current_slot.GetComponent<Image>().enabled) {
+                        current_slot.GetComponent<Image>().sprite = trade_slot.GetComponent<Image>().sprite;
+                        current_slot.GetComponent<Image>().enabled = true;
+                        current_slot.GetComponent<Button>().enabled = true;
+
+                        
+                        trade_slot.GetComponent<Image>().enabled = false;
+                        trade_slot.GetComponent<Button>().enabled = false;
+                        trade_slot.GetComponent<Image>().sprite = null;
+                        return;
+
+                    }
+
+                }
                 return;
             default: return;
         }
