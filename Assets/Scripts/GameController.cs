@@ -27,6 +27,7 @@ public class GameController
 
     //this is map to get the country instance that holds the button that is clicked
     public Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
+    public List<Sprite> cardList = new List<Sprite>();
 
     // these are related to the turns
     public TextMeshProUGUI currentPhase;

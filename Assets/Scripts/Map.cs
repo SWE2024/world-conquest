@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -107,6 +109,36 @@ public class Map : MonoBehaviour
         troopAttack.enabled = false;
         troopTransfer.enabled = false;
         diceCanvas.enabled = false;
+
+        Object[] loadedMap1Sprites = Resources.LoadAll("cards/map1", typeof(Sprite));
+        Object[] loadedMap2Sprites = Resources.LoadAll("cards/map2", typeof(Sprite));
+
+        Debug.Log(loadedMap1Sprites.Count());
+
+        List<Sprite> listOfSprites = new List<Sprite>();
+        foreach (Object o in loadedMap1Sprites)
+        {
+            Sprite s = (Sprite)o;
+            listOfSprites.Add(s);
+        }
+                
+        // make the cards unclickable in their transparent areas
+        for (int i = 1; i <= 3; i++)
+        {
+            GameObject.Find($"trade{i}").GetComponent<Image>().sprite = listOfSprites[i];
+            GameObject.Find($"trade{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        }
+        for (int i = 1; i <= 6; i++)
+        {
+            GameObject.Find($"slot{i}").GetComponent<Image>().sprite = listOfSprites[i];
+            GameObject.Find($"slot{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        }
+        
+
+
+
+
+
     }
 
     // Update is called once per frame
