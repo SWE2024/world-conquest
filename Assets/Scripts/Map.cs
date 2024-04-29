@@ -12,6 +12,7 @@ public class Map : MonoBehaviour
 
     [SerializeField] Canvas troopDistribution;
     [SerializeField] Canvas troopAttack;
+    [SerializeField] Canvas troopDefend;
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
 
@@ -49,19 +50,21 @@ public class Map : MonoBehaviour
         if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
 
         //initializes the gamestate instance which is singleton
-        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopTransfer, diceCanvas);
+        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
-        System.Random rnd = new System.Random();
-
         for (int i = 1; i <= numberOfCountries; i++)
         {
-            // gets the country objects
+            // creates the country objects
+            string name = "";
+            if (Preferences.MapNumber == 1) name = (Map1.CountryNameMap[i]);
+            else name = (Map2.CountryNameMap[i]);
+
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
-            Country country = new Country(button, button.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text);
+            Country country = new Country(button, name);
 
             // adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,9 +57,9 @@ public class Player
         numberOfTroops += difference;
     }
 
-    public void SetNumberOfTroops(int troops)
+    public void GetNewTroops()
     {
-        numberOfTroops = troops;
+        this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
     }
 
     virtual public void TakeTurn() { }
