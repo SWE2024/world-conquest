@@ -8,6 +8,9 @@ public enum Troop
     Tanks,
 }
 
+/// <summary>
+/// <c>Player</c> holds all relevant methods for a local player.
+/// </summary>
 public class Player
 {
     string name;
@@ -32,11 +35,17 @@ public class Player
         ownedCountries = new List<Country>();
     }
 
+    /// <summary>
+    /// <c>AddCountry</c> adds a newly owned country to the <c>ownedCountries</c> list.
+    /// </summary>
     public void AddCountry(Country country)
     {
         ownedCountries.Add(country);
     }
 
+    /// <summary>
+    /// <c>RemoveCountry</c> removes a country from the <c>ownedCountries</c> list if it is not longer owned.
+    /// </summary>
     public void RemoveCountry(Country country)
     {
         ownedCountries.Remove(country);
@@ -52,15 +61,21 @@ public class Player
 
     public int GetNumberOfTroops() => numberOfTroops;
 
+    /// <summary>
+    /// <c>ChangeNumberOfTroops</c> removes or adds new troops. Use a negative <c>difference</c> to remove troops.
+    /// </summary>
     public void ChangeNumberOfTroops(int difference)
     {
         numberOfTroops += difference;
     }
 
+    /// <summary>
+    /// <c>GetNewTroops</c> used at the beginning of the draft phase to calculate how many troops the player should have.
+    /// </summary>
     public void GetNewTroops()
     {
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
     }
 
-    virtual public void TakeTurn() { }
+    virtual public void TakeTurn() { } // only implemented in AIPlayer.cs
 }

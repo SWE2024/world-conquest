@@ -5,10 +5,16 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// <c>AIPlayer</c> a variation of <c>Player</c> that runs autonomously and makes intelligent game decisions.
+/// </summary>
 public class AIPlayer : Player
 {
     public AIPlayer(string name, Color color) : base(name, color) { }
 
+    /// <summary>
+    /// <c>TakeTurn</c> allows the AI to play for a whole game turn (setup OR draft, attack, fortify).
+    /// </summary>
     override public void TakeTurn()
     {
         if (GameController.Get().HandleObjectClick.GetMethodInfo().Name.Equals("SetupPhase")) // AI takes a setup claiming a single country
