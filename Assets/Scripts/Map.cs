@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,6 +16,7 @@ public class Map : MonoBehaviour
     [SerializeField] Canvas troopDefend;
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
+    [SerializeField] Canvas cardInventory;
 
     /* unused
     void AutoPopulate()
@@ -52,7 +52,7 @@ public class Map : MonoBehaviour
         if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
 
         //initializes the gamestate instance which is singleton
-        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas);
+        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas, cardInventory);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
@@ -115,30 +115,46 @@ public class Map : MonoBehaviour
 
         Debug.Log(loadedMap1Sprites.Count());
 
-        List<Sprite> listOfSprites = new List<Sprite>();
-        foreach (Object o in loadedMap1Sprites)
+        Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>("cards/map1");
+        foreach (Sprite s in allSpriteAssets)
         {
-            Sprite s = (Sprite)o;
-            listOfSprites.Add(s);
+            string name;
+            Type card_type;
+            if (s.name == "wildcard") 
+            {
+                name = null;
+                card_type = Type.wildcard;
+            } 
+            else 
+            {
+                name = s.name.Split("_")[0];
+                card_type = (Type)Type.Parse(typeof(Type), s.name.Split('_')[1]);
+            }
+
+            Country country = null;
+            foreach (Country country_ins in game.ListOfCountries)
+            {
+                if (country_ins.GetName() == name) 
+                {
+                    country = country_ins;
+                    break;
+                }
+            }
+            Card c = new Card(country, card_type, s);
+            game.ListOfCards.Add(c);
         }
                 
         // make the cards unclickable in their transparent areas
         for (int i = 1; i <= 3; i++)
         {
-            GameObject.Find($"trade{i}").GetComponent<Image>().sprite = listOfSprites[i];
+            GameObject.Find($"trade{i}").GetComponent<Image>().sprite = game.ListOfCards[Random.Range(0, numberOfCountries - 1)].GetSprite();
             GameObject.Find($"trade{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
         for (int i = 1; i <= 6; i++)
         {
-            GameObject.Find($"slot{i}").GetComponent<Image>().sprite = listOfSprites[i];
+            GameObject.Find($"slot{i}").GetComponent<Image>().sprite = game.ListOfCards[Random.Range(0, numberOfCountries - 1)].GetSprite();
             GameObject.Find($"slot{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
-        
-
-
-
-
-
     }
 
     // Update is called once per frame

@@ -19,7 +19,9 @@ public class GameController
     public Canvas DefendCanvas;
     public Canvas TransferCanvas;
     public Canvas DiceCanvas;
+    public Canvas CardInventory;
     public List<Country> ListOfCountries = new List<Country>();
+    public List<Card> ListOfCards = new List<Card>();
 
     Country[] recentFight = new Country[2];
 
@@ -52,7 +54,7 @@ public class GameController
     int turnIndex; // indicates who is playing
     public int populatedCountries;
 
-    private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas)
+    private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas, Canvas cardInventory)
     {
         this.turnIndex = 0;
         this.populatedCountries = 0;
@@ -63,12 +65,16 @@ public class GameController
         this.DefendCanvas = defendCanvas;
         this.TransferCanvas = transferCanvas;
         this.DiceCanvas = diceCanvas;
+        this.CardInventory = cardInventory;
 
         this.DistributeCanvas.enabled = false;
         this.AttackCanvas.enabled = false;
         this.DefendCanvas.enabled = false;
         this.TransferCanvas.enabled = false;
         this.DiceCanvas.enabled = false;
+        this.CardInventory.enabled = false;
+        GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = false;
+        GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = false;
 
         // creates the turns order here
         this.turnsOrder = GameController.CreateTurns();
@@ -86,10 +92,10 @@ public class GameController
     }
 
     //singleton's constructor method access thru here
-    public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas)
+    public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas, Canvas cardInventory)
     {
         //if (instance != null) return GameController.instance; // find a better way of joining a game that already exists, this does not work
-        GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, defendCanvas, transferCanvas, diceCanvas);
+        GameController.instance = new GameController(playerCount, distributeCanvas, attackCanvas, defendCanvas, transferCanvas, diceCanvas, cardInventory);
         return GameController.instance;
     }
 
@@ -198,12 +204,6 @@ public class GameController
 
     public void SetupPhase(GameObject selectedObj)
     {
-        // get name of selected country
-        // countryMap[selectedObj.GetComponent<Button>()].GetName();
-
-        if (selectedObj != null) Debug.Log(countryMap[selectedObj.GetComponent<Button>()].GetName());
-
-        Debug.Log("in setup phase");
         if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
 
         Country country = this.countryMap[selectedObj.GetComponent<Button>()];
@@ -269,11 +269,13 @@ public class GameController
                 if (turnPlayer.GetNumberOfTroops() <= 0) // if the next player still has 0
                 {
                     ResetTurn();
-                    this.turnPlayer.GetNewTroops();
+                    this.turnPlayer.GetNewTroopsAndCards();
                     // phase changing to draft
                     this.currentPhase.text = "draft phase";
 
                     HandleObjectClick = DraftPhase;
+                    GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
+                    GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
                     return;
@@ -319,7 +321,12 @@ public class GameController
 
     public void DraftPhase(GameObject selectedObj)
     {
-        Debug.Log(this.turnPlayer.GetNumberOfTroops());
+        if (CardInventory.enabled)
+        {
+            HandleCardClick(selectedObj);
+            return;
+        }
+
         if (selectedObj == null) return;
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
@@ -335,6 +342,17 @@ public class GameController
 
                 GameObject.Find("RemainingDistribution").GetComponent<TextMeshProUGUI>().text = $"Troops Left To Deploy: {this.turnPlayer.GetNumberOfTroops()}";
                 DistributeCanvas.enabled = true;
+                return;
+
+            case "CardInventoryButton":
+                this.CardInventory.enabled = true;
+                return;
+
+            case "CardInventoryButtonClose":
+                this.CardInventory.enabled = false;
+                return;
+
+            case "Trade":
                 return;
 
             case "Confirm":
@@ -356,6 +374,8 @@ public class GameController
                 // phase changing to attack
                 this.currentPhase.text = "attack phase";
                 HandleObjectClick = AttackPhase;
+                GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = false;
+                GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = false;
                 return;
 
             case "Cancel":
@@ -492,8 +512,10 @@ public class GameController
             this.UnHighlight();
             this.currentPhase.text = "draft phase";
             HandleObjectClick = DraftPhase;
+            GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
+            GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
             NextTurn();
-            this.turnPlayer.GetNewTroops();
+            this.turnPlayer.GetNewTroopsAndCards();
             return;
         }
 
@@ -539,6 +561,18 @@ public class GameController
             CameraHandler.DisableMovement = true;
         }
         return;
+    }
+
+    private void HandleCardClick(GameObject selectedObj)
+    {
+        if (selectedObj == null) return;
+
+        
+
+        switch (selectedObj.name)
+        {
+            default: return;
+        }
     }
 
     private void HandleAttackClick(GameObject selectedObj)
@@ -719,9 +753,11 @@ public class GameController
                 this.Transfer(this.attacker, this.defender, num); // transfer num troops to new country
                 this.UnHighlight();
                 NextTurn();
-                this.turnPlayer.GetNewTroops();
+                this.turnPlayer.GetNewTroopsAndCards();
                 this.currentPhase.text = "draft phase";
                 HandleObjectClick = DraftPhase;
+                GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
+                GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                 numberOfTroops.text = "1";
                 return;
 
@@ -752,9 +788,11 @@ public class GameController
                 this.TransferCanvas.enabled = false;
                 this.UnHighlight();
                 NextTurn();
-                this.turnPlayer.GetNewTroops();
+                this.turnPlayer.GetNewTroopsAndCards();
                 this.currentPhase.text = "draft phase";
                 HandleObjectClick = DraftPhase;
+                GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
+                GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                 numberOfTroops.text = "1";
                 return;
 

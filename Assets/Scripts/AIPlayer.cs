@@ -94,7 +94,7 @@ public class AIPlayer : Player
                     GameController.Get().currentPhase.text = "draft phase";
                     GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                     GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
-                    GameController.Get().turnPlayer.GetNewTroops();
+                    GameController.Get().turnPlayer.GetNewTroopsAndCards();
 
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -189,7 +189,7 @@ public class AIPlayer : Player
                 GameController.Get().currentPhase.text = "draft phase";
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();
-                GameController.Get().turnPlayer.GetNewTroops();
+                GameController.Get().turnPlayer.GetNewTroopsAndCards();
             });
         }
     }

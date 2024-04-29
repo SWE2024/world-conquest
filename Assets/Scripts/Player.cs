@@ -2,12 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Troop
-{
-    Infantry,
-    Tanks,
-}
-
 /// <summary>
 /// <c>Player</c> holds all relevant methods for a local player.
 /// </summary>
@@ -18,6 +12,7 @@ public class Player
     int numberOfTroops;
 
     List<Country> ownedCountries;
+    List<Card> ownedCards;
 
     public Player(string name, Color color)
     {
@@ -33,6 +28,7 @@ public class Player
         this.name = name;
         this.color = color;
         ownedCountries = new List<Country>();
+        ownedCards = new List<Card>();
     }
 
     /// <summary>
@@ -49,6 +45,22 @@ public class Player
     public void RemoveCountry(Country country)
     {
         ownedCountries.Remove(country);
+    }
+
+    /// <summary>
+    /// <c>AddCard</c> adds a newly owned card to the <c>ownedCards</c> list.
+    /// </summary>
+    public void AddCard(Card card)
+    {
+        ownedCards.Add(card);
+    }
+
+    /// <summary>
+    /// <c>RemoveCard</c> removes a card from the <c>ownedCards</c> list if it is not longer owned.
+    /// </summary>
+    public void RemoveCard(Card card)
+    {
+        ownedCards.Remove(card);
     }
 
     public List<Country> GetCountries() => ownedCountries;
@@ -70,9 +82,9 @@ public class Player
     }
 
     /// <summary>
-    /// <c>GetNewTroops</c> used at the beginning of the draft phase to calculate how many troops the player should have.
+    /// <c>GetNewTroopsAndCards</c> used at the beginning of the draft phase to calculate how many troops the player should have.
     /// </summary>
-    public void GetNewTroops()
+    public void GetNewTroopsAndCards()
     {
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
     }
