@@ -39,8 +39,8 @@ public class GameController
 
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
-    Country attacker = null;
-    Country defender = null;
+    public Country attacker = null;
+    public Country defender = null;
 
     // represent the same state as above, if it holds a list of country a country is highlighted (can be empty but still means highlighted)
     // if not highlighted, holds null
@@ -610,9 +610,6 @@ public class GameController
         if (selectedObj == null) return;
         int attacker_num = Int32.Parse(GameObject.Find("RemainingDefend").GetComponent<TextMeshProUGUI>().text.Split("\n")[0].Substring(18));
         TextMeshProUGUI defender_text = GameObject.Find("NumberOfTroopsToDefend").GetComponent<TextMeshProUGUI>();
-
-
-
 
         switch (selectedObj.name)
         {
