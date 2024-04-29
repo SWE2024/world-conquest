@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,8 +15,6 @@ public class Map : MonoBehaviour
     [SerializeField] Canvas troopDefend;
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
-
-
 
     /* unused
     void AutoPopulate()
@@ -58,15 +55,16 @@ public class Map : MonoBehaviour
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
-        System.Random rnd = new System.Random();
-
         for (int i = 1; i <= numberOfCountries; i++)
         {
-            // gets the country objects
+            // creates the country objects
+            string name = "";
+            if (Preferences.MapNumber == 1) name = (Map1.CountryNameMap[i]);
+            else name = (Map2.CountryNameMap[i]);
+
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
-            Country country = new Country(button, button.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text);
-            country.SetName(Map2CountryNames.CountryNameMap[i]);
+            Country country = new Country(button, name);
 
             // adds it to hashmap and the gamestate's country list
             countryMap.Add(button, country);

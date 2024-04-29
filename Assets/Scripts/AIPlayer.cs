@@ -1,6 +1,9 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +13,7 @@ public class AIPlayer : Player
 
     override public void TakeTurn()
     {
-        if (GameController.Get().flagSetupPhase) // AI takes a setup claiming a single country
+        if (GameController.Get().HandleObjectClick.GetMethodInfo().Name.Equals("SetupPhase")) // AI takes a setup claiming a single country
         {
             Wait.Start(1f, () => // wait 0 to 2 seconds to take a country so it looks like a real player
             {
@@ -34,8 +37,6 @@ public class AIPlayer : Player
                             {
                                 GameController.Get().currentPhase.text = "deploy phase";
                                 GameController.Get().HandleObjectClick = GameController.Get().SetupDeployPhase;
-                                GameController.Get().flagSetupPhase = false;
-                                GameController.Get().flagSetupDeployPhase = true;
                                 GameController.Get().ResetTurn();
                                 return;
                             }
@@ -68,7 +69,7 @@ public class AIPlayer : Player
                 }
             });
         }
-        else if (GameController.Get().flagSetupDeployPhase) // AI takes a setup deploy turn
+        else if (GameController.Get().HandleObjectClick.GetMethodInfo().Name.Equals("SetupDeployPhase")) // AI takes a setup deploy turn
         {
             Wait.Start(UnityEngine.Random.Range(2, 3), () => // wait 2 to 4 seconds to take a country so it looks like a real player
             {
@@ -87,10 +88,9 @@ public class AIPlayer : Player
                 if (GameController.Get().turnPlayer.GetNumberOfTroops() == 0) // next player has no troops to deploy
                 {
                     GameController.Get().currentPhase.text = "draft phase";
-                    GameController.Get().flagSetupDeployPhase = false;
-                    GameController.Get().flagFinishedSetup = true;
                     GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                     GameController.Get().ResetTurn(); // AI agent is never first player, do not worry about this
+                    GameController.Get().turnPlayer.GetNewTroops();
 
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
@@ -103,7 +103,7 @@ public class AIPlayer : Player
         {
             GameController.Get().currentPhase.text = "draft phase";
             GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
-            Wait.Start(UnityEngine.Random.Range(2, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
+            Wait.Start(UnityEngine.Random.Range(1, 3), () => // wait 2 to 3 seconds to draft to a country so it looks like a real player
             {
                 List<Country> ownedCountries = this.GetCountries();
 
@@ -118,22 +118,25 @@ public class AIPlayer : Player
                 GameController.Get().HandleObjectClick = GameController.Get().AttackPhase;
             });
 
-            Wait.Start(UnityEngine.Random.Range(4, 5), () => // wait to attack a country so it looks like a real player
+            Wait.Start(UnityEngine.Random.Range(6, 9), () => // wait to attack a country so it looks like a real player
             {
                 for (int i = 0; i < this.GetNumberOfOwnedCountries(); i++)
                 {
                     Country selectedCountry = this.GetCountries()[i];
-                    if (selectedCountry.GetTroops() > 1)
+                    if (selectedCountry.GetTroops() > 2)
                     {
                         foreach (Country neighborCountry in selectedCountry.GetNeighbors())
                         {
                             if (neighborCountry.GetOwner() != this)
                             {
-                                if (GameController.Get().Attack(selectedCountry, neighborCountry, Math.Min(selectedCountry.GetTroops(), 3), 1))
+                                if (GameController.Get().Attack(selectedCountry, neighborCountry, Math.Min(selectedCountry.GetTroops() - 1, 3), Math.Min(2, neighborCountry.GetTroops())))
                                 {
                                     Wait.Start(2f, () =>
                                     {
-                                        GameController.Get().Transfer(selectedCountry, neighborCountry, Math.Max(1, (selectedCountry.GetTroops() - 1) / 2));
+                                        if (selectedCountry.GetTroops() > 2)
+                                        {
+                                            GameController.Get().Transfer(selectedCountry, neighborCountry, 2);
+                                        }
                                     });
                                 }
                                 GameController.Get().currentPhase.text = "fortify phase";
@@ -145,30 +148,44 @@ public class AIPlayer : Player
                 }
             });
 
-            Wait.Start(UnityEngine.Random.Range(8, 9), () => // wait to fortify a country so it looks like a real player
+            Wait.Start(UnityEngine.Random.Range(13, 14), () => // wait to fortify a country so it looks like a real player
             {
                 for (int i = 0; i < GetNumberOfOwnedCountries(); i++)
                 {
                     Country owned = this.GetCountries()[i];
-                    if (owned.GetTroops() > 1)
+                    if (owned.GetTroops() >= 3)
                     {
-                        foreach (Country neighbor in owned.GetNeighbors())
+                        List<Country> considered = new List<Country>();
+                        List<Country> visited = new List<Country>();
+                        Action<List<Country>, Country> recurse = null;
+                        recurse = (visited, country) =>
                         {
-                            if (neighbor.GetOwner() == this)
+                            visited.Add(country);
+
+                            foreach (Country neighbor in country.GetNeighbors())
                             {
-                                GameController.Get().Transfer(owned, neighbor, owned.GetTroops() / 2);
-                                return;
+                                if (neighbor.GetOwner() != owned.GetOwner() || visited.Contains(neighbor)) continue;
+                                recurse(visited, neighbor);
                             }
-                        }
+                        };
+
+                        recurse(visited, owned);
+                        considered = visited;
+
+                        Country send = owned;
+                        Country receive = considered[UnityEngine.Random.Range(0, considered.Count - 1)];
+                        if (send != receive) GameController.Get().Transfer(send, receive, (owned.GetTroops() - 1) / 2);
+                        return;
                     }
                 }
             });
 
-            Wait.Start(9f, () =>
+            Wait.Start(15f, () =>
             {
                 GameController.Get().currentPhase.text = "draft phase";
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();
+                GameController.Get().turnPlayer.GetNewTroops();
             });
         }
     }

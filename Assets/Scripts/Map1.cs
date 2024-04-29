@@ -1,10 +1,58 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// <c>Map1</c> contains the list of neighbouring countries for map 1.
+/// <c>Map1</c> contains the list of country names and neighbouring countries for map 1.
 /// </summary>
 public class Map1
 {
+    public static Dictionary<int, string> CountryNameMap = new Dictionary<int, string>()
+    {
+        { 1, "Alaska"},
+        { 2, "Northwest"},
+        { 3, "Alberta"},
+        { 4, "Ontario"},
+        { 5, "Eastern"},
+        { 6, "West US"},
+        { 7, "East US"},
+        { 8, "C. America"},
+        { 9, "Greenland"},
+        { 10, "Venezuela"},
+        { 11, "Brazil"},
+        { 12, "Peru"},
+        { 13, "Argentina"},
+        { 14, "Iceland"},
+        { 15, "Britain"},
+        { 16, "Scandinavia"},
+        { 17, "Russia"},
+        { 18, "North EU"},
+        { 19, "West EU"},
+        { 20, "South EU"},
+        { 21, "N. Africa"},
+        { 22, "Egypt"},
+        { 23, "E. Africa"},
+        { 24, "C. Africa"},
+        { 25, "S. Africa"},
+        { 26, "Madagascar"},
+        { 27, "China"},
+        { 28, "Ural" },
+        { 29, "Afghanistan" },
+        { 30, "India" },
+        { 31, "SE. Asia" },
+        { 32, "Mongolia" },
+        { 33, "Middle East" },
+        { 34, "Siberia" },
+        { 35, "Irkutsk" },
+        { 36, "Yakutsk" },
+        { 37, "Kamchatka" },
+        { 38, "Yelizovo" },
+        { 39, "Vilyuchinsk" },
+        { 40, "Japan" },
+        { 41, "Indonesia" },
+        { 42, "New Guinea" },
+        { 43, "W. Australia" },
+        { 44, "E. Australia" },
+    };
+
     public static List<List<int>> ListOfNeighbours = new List<List<int>> {
         new List<int> {
             2, 3, 37
