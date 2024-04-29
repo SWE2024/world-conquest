@@ -143,13 +143,7 @@ public class Map : MonoBehaviour
             Card c = new Card(country, card_type, s);
             game.ListOfCards.Add(c);
         }
-                
-        // make the cards unclickable in their transparent areas
-        for (int i = 1; i <= 3; i++)
-        {
-            GameObject.Find($"trade{i}").GetComponent<Image>().sprite = game.ListOfCards[Random.Range(0, numberOfCountries - 1)].GetSprite();
-            GameObject.Find($"trade{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
-        }
+        
         for (int i = 1; i <= 6; i++)
         {
             GameObject.Find($"slot{i}").GetComponent<Image>().sprite = game.ListOfCards[Random.Range(0, numberOfCountries - 1)].GetSprite();

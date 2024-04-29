@@ -348,13 +348,6 @@ public class GameController
                 this.CardInventory.enabled = true;
                 return;
 
-            case "CardInventoryButtonClose":
-                this.CardInventory.enabled = false;
-                return;
-
-            case "Trade":
-                return;
-
             case "Confirm":
                 CameraHandler.DisableMovement = false;
 
@@ -571,6 +564,12 @@ public class GameController
 
         switch (selectedObj.name)
         {
+            case "Trade":
+                // do trade here
+                return;
+            case "CardInventoryButtonClose":
+                this.CardInventory.enabled = false;
+                return;
             default: return;
         }
     }
