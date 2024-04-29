@@ -197,6 +197,9 @@ public class GameController
 
     public void SetupPhase(GameObject selectedObj)
     {
+        // get name of selected country
+        // countryMap[selectedObj.GetComponent<Button>()].GetName();
+
         if (selectedObj != null) Debug.Log(countryMap[selectedObj.GetComponent<Button>()].GetName());
 
         Debug.Log("in setup phase");

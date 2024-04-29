@@ -7,7 +7,7 @@ public class Map2
 {
     public static Dictionary<int, string> CountryNameMap = new Dictionary<int, string>()
     {
-        { 1, "Pefronia"},
+        { 1, "Pefrounia"},
         { 2, "Uthoegro"},
         { 3, "Quscea"},
         { 4, "Priuyare"},
@@ -25,9 +25,9 @@ public class Map2
         { 16, "Ublya"},
         { 17, "Nosturg"},
         { 18, "Ethein"},
-        { 19, "Xpiedan"},
-        { 20, "Josmad"},
-        { 21, "Xscurg"},
+        { 19, "Spiedan"},
+        { 20, "Jasmad"},
+        { 21, "Ascurg"},
         { 22, "Uskaevania"},
         { 23, "Xesnana"},
         { 24, "Noplain"},

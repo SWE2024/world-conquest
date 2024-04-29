@@ -62,7 +62,7 @@ public class ClickButton : MonoBehaviour
 
     void HandleMinusAgent()
     {
-        if (Preferences.AgentCount <= 0) { return; }
+        if (Preferences.AgentCount + Preferences.PlayerCount <= 2) { return; }
         Preferences.AgentCount--;
         numberAgents.text = $"{Preferences.AgentCount}";
     }
