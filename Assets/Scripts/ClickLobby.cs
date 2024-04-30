@@ -34,6 +34,9 @@ public class ClickButton : MonoBehaviour
         btnMap1.onClick.AddListener(Map1);
         btnMap2.onClick.AddListener(Map2);
         btnMap3.onClick.AddListener(Map3);
+        btnMap1.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        btnMap2.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        btnMap3.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
 
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
