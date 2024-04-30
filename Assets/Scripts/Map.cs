@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -110,23 +109,18 @@ public class Map : MonoBehaviour
         troopTransfer.enabled = false;
         diceCanvas.enabled = false;
 
-        // Object[] loadedMap1Sprites = Resources.LoadAll("cards/map1", typeof(Sprite));
-        // Object[] loadedMap2Sprites = Resources.LoadAll("cards/map2", typeof(Sprite));
-
-        // Debug.Log(loadedMap1Sprites.Count());
-
-        string path = (Preferences.MapNumber == 1) ? "cards/map1": "cards/map2";
+        string path = (Preferences.MapNumber == 1) ? "cards/map1" : "cards/map2";
         Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>(path);
         foreach (Sprite s in allSpriteAssets)
         {
             string name;
             string card_type;
-            if (s.name == "wildcard") 
+            if (s.name == "wildcard")
             {
                 name = null;
                 card_type = "wildcard";
-            } 
-            else 
+            }
+            else
             {
                 name = s.name.Split("_")[0];
                 card_type = s.name.Split("_")[1];
@@ -135,7 +129,7 @@ public class Map : MonoBehaviour
             Country country = null;
             foreach (Country country_ins in game.ListOfCountries)
             {
-                if (country_ins.GetName() == name) 
+                if (country_ins.GetName() == name)
                 {
                     country = country_ins;
                     break;
@@ -151,7 +145,6 @@ public class Map : MonoBehaviour
         }
         for (int i = 1; i <= 6; i++)
         {
-            // GameObject.Find($"slot{i}").GetComponent<Image>().sprite = game.ListOfCards[Random.Range(0, numberOfCountries - 1)].GetSprite();
             GameObject.Find($"slot{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
     }

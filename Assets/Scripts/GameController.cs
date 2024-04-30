@@ -75,6 +75,7 @@ public class GameController
         this.CardInventory.enabled = false;
         GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = false;
         GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = false;
+        GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
 
         // creates the turns order here
         this.turnsOrder = GameController.CreateTurns();
@@ -168,19 +169,9 @@ public class GameController
     {
         List<int> listOfPlayers = new List<int>();
         List<int> listOfAgents = new List<int>();
-        // List<int> randomized = new List<int>();
 
         for (int i = 0; i < Preferences.PlayerCount; i++) listOfPlayers.Add(i);
         for (int i = Preferences.PlayerCount; i < Preferences.PlayerCount + Preferences.AgentCount; i++) listOfAgents.Add(i);
-
-        /* randomly orders players
-        while (list.Count > 0)
-        {
-            int index = GameController.Random.Next(list.Count);
-            randomized.Add(list[index]);
-            list.RemoveAt(index);
-        }
-        */
 
         List<int> listOfPlayersAndAgents = new List<int>();
         listOfPlayersAndAgents.AddRange(listOfPlayers);
@@ -204,7 +195,13 @@ public class GameController
 
     public void SetupPhase(GameObject selectedObj)
     {
-        if (selectedObj == null || !selectedObj.name.StartsWith("country")) return;
+        if (selectedObj == null || (!selectedObj.name.StartsWith("country") && !selectedObj.name.StartsWith("Rename"))) return;
+
+        if (selectedObj.name.StartsWith("Rename"))
+        {
+            HandleRenameClick(selectedObj);
+            return;
+        }
 
         Country country = this.countryMap[selectedObj.GetComponent<Button>()];
         if (country == null) return;
@@ -231,6 +228,12 @@ public class GameController
     public void SetupDeployPhase(GameObject selectedObj)
     {
         if (selectedObj == null) return;
+
+        if (selectedObj.name.StartsWith("Rename"))
+        {
+            HandleRenameClick(selectedObj);
+            return;
+        }
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
 
@@ -324,13 +327,19 @@ public class GameController
 
     public void DraftPhase(GameObject selectedObj)
     {
+        if (selectedObj == null) return;
+
         if (CardInventory.enabled)
         {
             HandleCardClick(selectedObj);
             return;
         }
 
-        if (selectedObj == null) return;
+        if (selectedObj.name.StartsWith("Rename"))
+        {
+            HandleRenameClick(selectedObj);
+            return;
+        }
 
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroops").GetComponent<TextMeshProUGUI>();
 
@@ -414,6 +423,12 @@ public class GameController
 
     public void AttackPhase(GameObject selectedObj)
     {
+        if (selectedObj == null)
+        {
+            this.UnHighlight();
+            return;
+        }
+
         if (AttackCanvas.enabled)
         {
             Debug.Log("clause attack");
@@ -435,9 +450,9 @@ public class GameController
             return;
         }
 
-        if (selectedObj == null)
+        if (selectedObj.name.StartsWith("Rename"))
         {
-            this.UnHighlight();
+            HandleRenameClick(selectedObj);
             return;
         }
 
@@ -492,15 +507,21 @@ public class GameController
 
     public void FortifyPhase(GameObject selectedObj)
     {
+        if (selectedObj == null)
+        {
+            this.UnHighlight();
+            return;
+        }
+
         if (TransferCanvas.enabled)
         {
             HandleFortifyClick(selectedObj);
             return;
         }
 
-        if (selectedObj == null)
+        if (selectedObj.name.StartsWith("Rename"))
         {
-            this.UnHighlight();
+            HandleRenameClick(selectedObj);
             return;
         }
 
@@ -564,7 +585,6 @@ public class GameController
 
     private void HandleCardClick(GameObject selectedObj)
     {
-        if (selectedObj == null) return;
         switch (selectedObj.name)
         {
             case "Trade":
@@ -585,7 +605,7 @@ public class GameController
                 Debug.Log("came slot");
                 this.turnPlayer.SelectForTrade(selectedObj.name);
                 return;
-            
+
             case "trade1":
             case "trade2":
             case "trade3":
@@ -599,10 +619,45 @@ public class GameController
         }
     }
 
+    private void HandleRenameClick(GameObject selectedObj)
+    {
+        switch (selectedObj.name)
+        {
+            case "RenameCountryButton":
+                GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = true;
+                break;
+            case "RenameConfirm":
+                string from = GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text;
+                string to = GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text;
+
+                foreach (var kvp in countryMap)
+                {
+                    if (kvp.Value.GetName().ToLower().Equals(from.ToLower()))
+                    {
+                        kvp.Value.SetName(to);
+                        Killfeed.Update($"'{from}' was renamed to '{to}'");
+                        GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+                        return;
+                    }
+                }
+
+                Killfeed.Update($"Country '{from}' does not exist");
+                GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "current name";
+                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "new name";
+                break;
+            case "RenameCancel":
+                GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "current name";
+                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "new name";
+                break;
+            default:
+                break;
+        }
+    }
+
     private void HandleAttackClick(GameObject selectedObj)
     {
-        if (selectedObj == null) return;
-
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
         int attacker_num = Int32.Parse(numberOfTroops.text);
 
@@ -669,7 +724,6 @@ public class GameController
 
     private void HandleDefendClick(GameObject selectedObj)
     {
-        if (selectedObj == null) return;
         int attacker_num = Int32.Parse(GameObject.Find("RemainingDefend").GetComponent<TextMeshProUGUI>().text.Split("\n")[0].Substring(18));
         TextMeshProUGUI defender_text = GameObject.Find("NumberOfTroopsToDefend").GetComponent<TextMeshProUGUI>();
 
@@ -710,8 +764,6 @@ public class GameController
 
     private void HandleTransferClick(GameObject selectedObj)
     {
-        if (selectedObj == null) return;
-
         int available = recentFight[0].GetTroops() - 1;
 
         TextMeshProUGUI troopsLeft = GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>();
@@ -760,8 +812,6 @@ public class GameController
 
     private void HandleFortifyClick(GameObject selectedObj)
     {
-        if (selectedObj == null) return;
-
         int available = attacker.GetTroops() - 1;
 
         TextMeshProUGUI troopsLeft = GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>();
