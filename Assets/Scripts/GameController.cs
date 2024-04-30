@@ -77,6 +77,8 @@ public class GameController
         GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = false;
         GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = false;
         GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = false;
+        GameObject.Find("CardNotification").GetComponent<Image>().enabled = false;
 
         // creates the turns order here
         this.turnsOrder = GameController.CreateTurns();
