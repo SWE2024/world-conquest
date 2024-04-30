@@ -30,6 +30,8 @@ public class Player
             case 6: this.numberOfTroops = 20; break;
         }
 
+        this.numberOfTroops = 14;
+
         this.name = name;
         this.color = color;
         ownedCountries = new List<Country>();

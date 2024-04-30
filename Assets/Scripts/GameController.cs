@@ -504,12 +504,6 @@ public class GameController
 
     public void FortifyPhase(GameObject selectedObj)
     {
-        if (selectedObj == null)
-        {
-            this.UnHighlight();
-            return;
-        }
-
         if (TransferCanvas.enabled)
         {
             HandleFortifyClick(selectedObj);
@@ -519,6 +513,12 @@ public class GameController
         if (selectedObj.name.StartsWith("Rename"))
         {
             HandleRenameClick(selectedObj);
+            return;
+        }
+
+        if (selectedObj == null) 
+        {
+            this.UnHighlight();
             return;
         }
 
@@ -803,6 +803,9 @@ public class GameController
 
     private void HandleFortifyClick(GameObject selectedObj)
     {
+        if (selectedObj == null) return;
+
+
         int available = attacker.GetTroops() - 1;
 
         TextMeshProUGUI troopsLeft = GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>();
