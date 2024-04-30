@@ -1,37 +1,20 @@
 using UnityEngine;
-
-public enum Type
-{
-    // wildcard
-    wildcard,
-
-    // map 1
-    infantry,
-    artillery,
-    cavalry,
-
-    // map 2
-    jet,
-    soldier,
-    tank,
-}
-
 public class Card
 {
     Country parent;
-    Type type;
+    string type;
     Sprite sprite;
 
-    public Card(Country c, Type t, Sprite s)
+    public Card(Country c, string card_type, Sprite s)
     {
         parent = c;
-        type = t;
+        type = card_type;
         sprite = s;
     }
 
-    public string GetImage()
+    public string GetCardType()
     {
-        return $"{parent.GetName().ToLower()}_{type}";
+        return type;
     }
 
     public Sprite GetSprite()

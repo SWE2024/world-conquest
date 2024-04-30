@@ -21,7 +21,7 @@ public class GameController
     public Canvas DiceCanvas;
     public Canvas CardInventory;
     public List<Country> ListOfCountries = new List<Country>();
-    public List<Card> ListOfCards = new List<Card>();
+    public static List<Card> ListOfCards = new List<Card>();
 
     Country[] recentFight = new Country[2];
 
@@ -274,6 +274,9 @@ public class GameController
                     this.currentPhase.text = "draft phase";
 
                     HandleObjectClick = DraftPhase;
+                    this.turnPlayer.fill_cards();
+                    this.turnPlayer.InitializeSlot();
+
                     GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
                     GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                     GameObject.Find("EndPhase").GetComponent<Image>().enabled = true;
@@ -345,16 +348,8 @@ public class GameController
                 return;
 
             case "CardInventoryButton":
-                for (int i = 0; i < turnPlayer.ownedCards.Count && i < 6; i++) {
-                    Button slot = GameObject.Find($"slot{i+1}").GetComponent<Button>();
-                    slot.GetComponent<Image>().sprite = turnPlayer.ownedCards[i].GetSprite();
-                }
-
-                for (int i = 1; i < 4; i++) {
-                    GameObject.Find($"trade{i}").GetComponent<Image>().enabled = false;
-                    GameObject.Find($"trade{i}").GetComponent<Button>().enabled = false;
-                    GameObject.Find($"trade{i}").GetComponent<Image>().sprite = null;
-                }
+                this.turnPlayer.LoadSlot();
+                this.turnPlayer.LoadTrade();
                 this.CardInventory.enabled = true;
                 return;
 
@@ -518,6 +513,7 @@ public class GameController
             GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
             GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
             NextTurn();
+            this.turnPlayer.InitializeSlot();
             this.turnPlayer.GetNewTroopsAndCards();
             return;
         }
@@ -572,16 +568,12 @@ public class GameController
         switch (selectedObj.name)
         {
             case "Trade":
-                // do trade here
+                if (this.turnPlayer.Trade()) Debug.Log("trade successful");
+                else Debug.Log("trade unsuccessful");
                 return;
             case "CardInventoryButtonClose":
                 this.CardInventory.enabled = false;
-                for(int i = 1; i < 4; i++) {
-                    Button current_trade = GameObject.Find($"trade{i}").GetComponent<Button>();
-                    current_trade.GetComponent<Image>().sprite = null;
-                    current_trade.GetComponent<Image>().enabled = false;
-                    current_trade.GetComponent<Button>().enabled = false;
-                }
+                this.turnPlayer.Cancel();
                 return;
 
             case "slot1":
@@ -591,45 +583,17 @@ public class GameController
             case "slot5":
             case "slot6":
                 Debug.Log("came slot");
-                Button trade = null;
-                for(int i = 1; i < 4; i++) {
-                    Button current_trade = GameObject.Find($"trade{i}").GetComponent<Button>();
-                    if (current_trade.GetComponent<Image>().sprite == null) 
-                    {
-                        trade = current_trade;
-                        break;
-                    }
-                }
-                if (trade == null) return;
-                trade.GetComponent<Image>().sprite = selectedObj.GetComponent<Button>().GetComponent<Image>().sprite;
-                trade.GetComponent<Image>().enabled = true;
-                trade.GetComponent<Button>().enabled = true;
-
-                selectedObj.GetComponent<Button>().GetComponent<Image>().enabled = false;
-                selectedObj.GetComponent<Button>().enabled = false;
+                this.turnPlayer.SelectForTrade(selectedObj.name);
                 return;
             
             case "trade1":
             case "trade2":
             case "trade3":
                 Debug.Log("came trade");
-                Button trade_slot = selectedObj.GetComponent<Button>();
-                for (int i = 1; i < 7; i++) {
-                    Button current_slot = GameObject.Find($"slot{i}").GetComponent<Button>();
-                    if (!current_slot.GetComponent<Image>().enabled) {
-                        current_slot.GetComponent<Image>().sprite = trade_slot.GetComponent<Image>().sprite;
-                        current_slot.GetComponent<Image>().enabled = true;
-                        current_slot.GetComponent<Button>().enabled = true;
-
-                        
-                        trade_slot.GetComponent<Image>().enabled = false;
-                        trade_slot.GetComponent<Button>().enabled = false;
-                        trade_slot.GetComponent<Image>().sprite = null;
-                        return;
-
-                    }
-
-                }
+                this.turnPlayer.RemoveForTrade(selectedObj.name);
+                return;
+            case "NextCard":
+                this.turnPlayer.Next();
                 return;
             default: return;
         }
@@ -813,6 +777,7 @@ public class GameController
                 this.Transfer(this.attacker, this.defender, num); // transfer num troops to new country
                 this.UnHighlight();
                 NextTurn();
+                this.turnPlayer.InitializeSlot();
                 this.turnPlayer.GetNewTroopsAndCards();
                 this.currentPhase.text = "draft phase";
                 HandleObjectClick = DraftPhase;
@@ -849,6 +814,7 @@ public class GameController
                 this.UnHighlight();
                 NextTurn();
                 this.turnPlayer.GetNewTroopsAndCards();
+                this.turnPlayer.InitializeSlot();
                 this.currentPhase.text = "draft phase";
                 HandleObjectClick = DraftPhase;
                 GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
@@ -959,6 +925,7 @@ public class GameController
                 defender.ChangeTroops(num);
                 attacker.ChangeTroops(-num);
                 outcome = true;
+                this.turnPlayer.gain_card = true;
 
                 recentFight[0] = attacker;
                 recentFight[1] = defender;

@@ -110,25 +110,26 @@ public class Map : MonoBehaviour
         troopTransfer.enabled = false;
         diceCanvas.enabled = false;
 
-        Object[] loadedMap1Sprites = Resources.LoadAll("cards/map1", typeof(Sprite));
-        Object[] loadedMap2Sprites = Resources.LoadAll("cards/map2", typeof(Sprite));
+        // Object[] loadedMap1Sprites = Resources.LoadAll("cards/map1", typeof(Sprite));
+        // Object[] loadedMap2Sprites = Resources.LoadAll("cards/map2", typeof(Sprite));
 
-        Debug.Log(loadedMap1Sprites.Count());
+        // Debug.Log(loadedMap1Sprites.Count());
 
-        Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>("cards/map1");
+        string path = (Preferences.MapNumber == 1) ? "cards/map1": "cards/map2";
+        Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>(path);
         foreach (Sprite s in allSpriteAssets)
         {
             string name;
-            Type card_type;
+            string card_type;
             if (s.name == "wildcard") 
             {
                 name = null;
-                card_type = Type.wildcard;
+                card_type = "wildcard";
             } 
             else 
             {
                 name = s.name.Split("_")[0];
-                card_type = (Type)Type.Parse(typeof(Type), s.name.Split('_')[1]);
+                card_type = s.name.Split("_")[1];
             }
 
             Country country = null;
@@ -141,7 +142,7 @@ public class Map : MonoBehaviour
                 }
             }
             Card c = new Card(country, card_type, s);
-            game.ListOfCards.Add(c);
+            GameController.ListOfCards.Add(c);
         }
 
         for (int i = 1; i <= 3; i++)

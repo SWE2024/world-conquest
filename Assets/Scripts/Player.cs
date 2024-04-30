@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// <c>Player</c> holds all relevant methods for a local player.
@@ -13,6 +14,10 @@ public class Player
 
     List<Country> ownedCountries;
     public List<Card> ownedCards;
+    public bool gain_card = false;
+    System.Random randint = new System.Random();
+    public List<Card> trade =  new List<Card>();
+    public List<Card> slot = new List<Card>();
 
     public Player(string name, Color color)
     {
@@ -87,7 +92,135 @@ public class Player
     public void GetNewTroopsAndCards()
     {
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
+        if (ownedCards.Count < 6 && gain_card) this.ownedCards.Add(GameController.ListOfCards[randint.Next(GameController.ListOfCards.Count)]);
+        gain_card = false;
     }
+
+    public void fill_cards()
+    {
+        for(int i = 0; i < 9; i++) 
+        {
+            this.ownedCards.Add(GameController.ListOfCards[randint.Next(GameController.ListOfCards.Count)]);
+        }
+    }
+
+    public void InitializeSlot() 
+    {
+        slot.Clear();
+        trade.Clear();
+        foreach(Card card in ownedCards) slot.Add(card);
+    }
+
+    public void LoadSlot() 
+    {
+        for(int i = 1; i < 7; i++) 
+        {
+            Button slot = GameObject.Find($"slot{i}").GetComponent<Button>();
+            slot.enabled = false;
+            slot.GetComponent<Image>().enabled = false;
+            slot.GetComponent<Image>().sprite = null;
+        }
+        
+        if (slot.Count > 6) 
+        {
+            GameObject.Find("NextCard").GetComponent<Button>().enabled = true;
+            GameObject.Find("NextCard").GetComponent<Image>().enabled = true;
+        }
+        else 
+        {
+            GameObject.Find("NextCard").GetComponent<Button>().enabled = false;
+            GameObject.Find("NextCard").GetComponent<Image>().enabled = false;
+        }
+
+        for (int i = 0; i < Math.Min(slot.Count, 6); i++) {
+            Button slot_button = GameObject.Find($"slot{i+1}").GetComponent<Button>();
+            slot_button.GetComponent<Image>().sprite = slot[i].GetSprite();
+            slot_button.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+            slot_button.GetComponent<Image>().enabled = true;
+            slot_button.enabled = true;
+        }
+    }
+
+    public void LoadTrade()
+    {
+        for(int i = 0; i < 3; i++) 
+        {
+            Button trade = GameObject.Find($"trade{i+1}").GetComponent<Button>();
+            trade.enabled = false;
+            trade.GetComponent<Image>().enabled = false;
+            trade.GetComponent<Image>().sprite = null;
+        }
+
+        for(int i = 0; i < Math.Min(3, trade.Count); i++) 
+        {
+            Button trade_slot = GameObject.Find($"trade{i + 1}").GetComponent<Button>();
+            trade_slot.GetComponent<Image>().sprite = trade[i].GetSprite();
+            trade_slot.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+            trade_slot.GetComponent<Image>().enabled = true;
+            trade_slot.enabled = true;
+        }
+
+    }
+
+    public void SelectForTrade(string slot_name)  
+    {
+        int index = int.Parse(slot_name[4].ToString()) - 1;
+        Card card = slot[index];
+        trade.Add(card);
+        slot.RemoveAt(index);
+        LoadSlot();
+        LoadTrade();
+    }
+
+    public void RemoveForTrade(string slot_name)  
+    {
+        int index = int.Parse(slot_name[5].ToString()) - 1;
+        Card card = trade[index];
+        slot.Add(card);
+        trade.RemoveAt(index);
+        LoadSlot();
+        LoadTrade();
+    }
+    
+    public void Next()
+    {
+        Card card = slot[0];
+        slot.RemoveAt(0);
+        slot.Add(card);
+        LoadSlot();
+    }
+
+    public void Cancel()
+    {
+        foreach(Card card in trade) slot.Add(card);
+        trade.Clear();
+        LoadTrade();
+    }
+
+    public bool Trade()
+    {
+        HashSet<string> types = new HashSet<string>();
+        foreach(Card card in trade) types.Add(card.GetCardType());
+        foreach(string s in types) Debug.Log(s);
+
+        if (types.Count != 3 && types.Count != 1) 
+        {
+            foreach(Card card in trade) slot.Add(card);
+            trade.Clear();
+            LoadTrade();
+            LoadSlot();
+            return false; 
+        }
+
+        foreach(Card card in trade) ownedCards.Remove(card);
+        trade.Clear();
+        LoadTrade();
+        LoadSlot();
+        return true;
+    }
+
+
+
 
     virtual public void TakeTurn() { } // only implemented in AIPlayer.cs
 }
