@@ -424,11 +424,7 @@ public class GameController
 
     public void AttackPhase(GameObject selectedObj)
     {
-        if (selectedObj == null)
-        {
-            this.UnHighlight();
-            return;
-        }
+        if (selectedObj == null) return;
 
         if (AttackCanvas.enabled)
         {
@@ -671,8 +667,6 @@ public class GameController
                     DefendCanvas.transform.Find("RemainingDefend").GetComponent<TextMeshProUGUI>().text = $"Attacker deployed: {attacker_num} \nTroops Available For Defense: 2\n(choose how many dice to roll)";
                     return;
                 }
-
-
 
                 this.Attack(attacker, defender, attacker_num, 1);
 
@@ -1012,6 +1006,11 @@ public class GameController
 
     public void NextTurn()
     {
+        if (this.turnPlayer.GetNumberOfOwnedCountries() == this.countryMap.Count)
+        {
+            Debug.Log("winner winner chicken dinner!!!");
+        }
+
         this.turnIndex++;
 
         if (this.turnIndex > (this.turnsOrder.Count - 1)) this.turnIndex = 0;

@@ -18795,6 +18795,7 @@ GameObject:
   - component: {fileID: 924758258}
   - component: {fileID: 924758257}
   - component: {fileID: 924758256}
+  - component: {fileID: 924758259}
   m_Layer: 5
   m_Name: CardInventoryButton
   m_TagString: Untagged
@@ -18811,15 +18812,15 @@ RectTransform:
   m_GameObject: {fileID: 924758254}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.005, y: 0.005, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1366933709}
+  m_Father: {fileID: 1678898710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.75, y: 1.8}
-  m_SizeDelta: {x: 435, y: 330}
+  m_AnchoredPosition: {x: -1150, y: -214.99998}
+  m_SizeDelta: {x: 480, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &924758256
 MonoBehaviour:
@@ -18903,6 +18904,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 924758254}
   m_CullTransparentMesh: 1
+--- !u!114 &924758259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 924758254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe032ab48e05cb45b8168ed37393068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btn: {fileID: 924758256}
 --- !u!1 &934157987
 GameObject:
   m_ObjectHideFlags: 0
@@ -26552,7 +26566,6 @@ RectTransform:
   - {fileID: 268301692}
   - {fileID: 335224886}
   - {fileID: 2066091735}
-  - {fileID: 924758255}
   m_Father: {fileID: 1678898710}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -32225,6 +32238,7 @@ RectTransform:
   m_Children:
   - {fileID: 461332102}
   - {fileID: 2061924968}
+  - {fileID: 924758255}
   - {fileID: 297623252}
   - {fileID: 1366933709}
   - {fileID: 1055527407}
@@ -38526,6 +38540,7 @@ GameObject:
   - component: {fileID: 2061924971}
   - component: {fileID: 2061924970}
   - component: {fileID: 2061924969}
+  - component: {fileID: 2061924972}
   m_Layer: 5
   m_Name: RenameCountryButton
   m_TagString: Untagged
@@ -38549,8 +38564,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1050, y: 0}
-  m_SizeDelta: {x: 420, y: 310}
+  m_AnchoredPosition: {x: -1150, y: 0}
+  m_SizeDelta: {x: 480, y: 190}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2061924969
 MonoBehaviour:
@@ -38634,6 +38649,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2061924967}
   m_CullTransparentMesh: 1
+--- !u!114 &2061924972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061924967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe032ab48e05cb45b8168ed37393068, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btn: {fileID: 2061924969}
 --- !u!1 &2062160417
 GameObject:
   m_ObjectHideFlags: 0
