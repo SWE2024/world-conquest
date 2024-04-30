@@ -7,6 +7,8 @@ public class ClickButton : MonoBehaviour
 {
     [SerializeField] Button btnMap1;
     [SerializeField] Button btnMap2;
+    [SerializeField] Button btnMap3;
+
     [SerializeField] Button btnReady;
     [SerializeField] Button btnLeave;
 
@@ -31,6 +33,7 @@ public class ClickButton : MonoBehaviour
 
         btnMap1.onClick.AddListener(Map1);
         btnMap2.onClick.AddListener(Map2);
+        btnMap3.onClick.AddListener(Map3);
 
         btnReady.onClick.AddListener(LoadGame);
         btnLeave.onClick.AddListener(LoadMenu);
@@ -45,6 +48,8 @@ public class ClickButton : MonoBehaviour
     void Map1() { Preferences.MapNumber = 1; }
 
     void Map2() { Preferences.MapNumber = 2; }
+
+    void Map3() { Preferences.MapNumber = 3; }
 
     void HandleMinusPlayer()
     {
@@ -89,6 +94,7 @@ public class ClickButton : MonoBehaviour
     {
         Preferences.PlayerCount = 2;
         Preferences.AgentCount = 1;
+        Preferences.MapNumber = 1;
         Wait.Start(0.75f, () =>
         {
             SceneManager.LoadScene("assets/scenes/scenemainmenu.unity");

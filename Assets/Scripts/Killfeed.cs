@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// <c>Killfeed</c> controls the bottom right section of the screen (killfeed).
@@ -16,6 +15,5 @@ public class Killfeed : MonoBehaviour
     {
         TextMeshProUGUI killfeed = GameObject.Find("KillfeedText").GetComponent<TextMeshProUGUI>();
         killfeed.text = $"({DateTime.Now.ToLongTimeString()}) {text}\n" + killfeed.text;
-        //Wait.Start(6f, () => RemoveFirstLine()); // clear item from killfeed after 6 seconds
     }
 }
