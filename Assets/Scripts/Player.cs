@@ -15,12 +15,12 @@ public class Player
     List<Country> ownedCountries;
     public List<Card> ownedCards;
     public bool gain_card = false;
-    System.Random randint = new System.Random();
     public List<Card> trade =  new List<Card>();
     public List<Card> slot = new List<Card>();
 
     public Player(string name, Color color)
     {
+        Debug.Log("color : " + color);
         switch (Preferences.PlayerCount + Preferences.AgentCount)
         {
             case 2: this.numberOfTroops = 40; break;
@@ -29,6 +29,8 @@ public class Player
             case 5: this.numberOfTroops = 25; break;
             case 6: this.numberOfTroops = 20; break;
         }
+
+        this.numberOfTroops = 3;
 
         this.name = name;
         this.color = color;
@@ -91,8 +93,11 @@ public class Player
     /// </summary>
     public void GetNewTroopsAndCards()
     {
+        //for debugging
+        if (color != new Color(0.95f, 0.3f, 0.3f, 1f)) return;
+
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
-        if (ownedCards.Count < 6 && gain_card) this.ownedCards.Add(GameController.ListOfCards[randint.Next(GameController.ListOfCards.Count)]);
+        if (gain_card) this.ownedCards.Add(GameController.ListOfCards[UnityEngine.Random.Range(0, GameController.ListOfCards.Count - 1)]);
         gain_card = false;
     }
 
@@ -100,7 +105,7 @@ public class Player
     {
         for(int i = 0; i < 9; i++) 
         {
-            this.ownedCards.Add(GameController.ListOfCards[randint.Next(GameController.ListOfCards.Count)]);
+            this.ownedCards.Add(GameController.ListOfCards[UnityEngine.Random.Range(0, GameController.ListOfCards.Count - 1)]);
         }
     }
 
@@ -211,7 +216,7 @@ public class Player
             LoadSlot();
             return false; 
         }
-
+        ChangeNumberOfTroops(6);
         foreach(Card card in trade) ownedCards.Remove(card);
         trade.Clear();
         LoadTrade();

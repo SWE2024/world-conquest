@@ -12,13 +12,7 @@ public class Card
         sprite = s;
     }
 
-    public string GetCardType()
-    {
-        return type;
-    }
+    public string GetCardType() => type;
 
-    public Sprite GetSprite()
-    {
-        return sprite;
-    }
+    public Sprite GetSprite() => sprite;
 }

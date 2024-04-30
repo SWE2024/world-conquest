@@ -1,12 +1,17 @@
+// using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Map : MonoBehaviour
 {
+    public bool gameFinished = false;
     static List<List<int>> ListOfNeighbours;
+
 
     GameController game;
 
@@ -54,6 +59,7 @@ public class Map : MonoBehaviour
 
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas, cardInventory);
+        game.SetMap(this);
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
@@ -192,10 +198,29 @@ public class Map : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (gameFinished) StartCoroutine(ShowRanking());
+
+
+        if (Input.GetMouseButtonDown(0) && !gameFinished)
         {
             GameObject selectedObj = EventSystem.current.currentSelectedGameObject;
             game.HandleObjectClick(selectedObj);
         }
+    }
+
+    IEnumerator ShowRanking()
+    {
+        // SceneManager.LoadSceneAsync("assets/scenes/scenewin.unity");
+        AsyncOperation asyncLoad =  SceneManager.LoadSceneAsync("SceneWin");
+        game.eliminatedPlayers.Reverse();
+        List<string> places = new List<string>() {"2nd", "3rd", "4th", "5th", "6th"};
+        string ranking = "";
+
+        while (!asyncLoad.isDone) yield return null;
+
+        for(int i = 0; i < game.eliminatedPlayers.Count; i++) ranking += $"{places[i]}: {game.eliminatedPlayers[i].GetName()}\n";
+        GameObject.Find("EliminatedList").GetComponent<TextMeshProUGUI>().text = ranking;
+        GameObject.Find("WinnerUsername").GetComponent<TextMeshProUGUI>().text = game.turnPlayer.GetName();
+        GameObject.Find("WinnerColour").GetComponent<Image>().color = game.turnPlayer.GetColor();
     }
 }

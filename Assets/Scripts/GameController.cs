@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
 /// </summary>
-public class GameController
+public class GameController : MonoBehaviour
 {
+    static Map map;
+
     static GameController instance = null;
 
     public delegate void DelegateVar(GameObject selectedObj);
@@ -39,7 +44,8 @@ public class GameController
     public Player turnPlayer;
 
     // this holds the order of turn represented by color
-    List<Player> turnsOrder;
+    public List<Player> turnsOrder;
+    public List<Player> eliminatedPlayers = new List<Player>();
 
     // represent a state, if it holds a country that country is highlighted
     // if not highlighted, holds null
@@ -55,8 +61,11 @@ public class GameController
     int turnIndex; // indicates who is playing
     public int populatedCountries;
 
+    public void SetMap(Map map) => GameController.map = map;
+
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas, Canvas cardInventory)
     {
+
         this.turnIndex = 0;
         this.populatedCountries = 0;
 
@@ -670,7 +679,7 @@ public class GameController
                     return;
                 }
 
-                this.Attack(attacker, defender, attacker_num, 1);
+                if(!this.Attack(attacker, defender, attacker_num, 1)) return;
 
                 if (attacker.GetOwner() == defender.GetOwner())
                 {
@@ -726,7 +735,7 @@ public class GameController
                 int defender_num = Int32.Parse(defender_text.text);
                 this.DefendCanvas.enabled = false;
                 defender_text.text = "1";
-                this.Attack(attacker, defender, attacker_num, defender_num);
+                if(!this.Attack(attacker, defender, attacker_num, defender_num)) return;
 
                 if (attacker.GetOwner() == defender.GetOwner())
                 {
@@ -822,13 +831,6 @@ public class GameController
                 this.TransferCanvas.enabled = false;
                 this.Transfer(this.attacker, this.defender, num); // transfer num troops to new country
                 this.UnHighlight();
-                NextTurn();
-                this.turnPlayer.InitializeSlot();
-                this.turnPlayer.GetNewTroopsAndCards();
-                this.currentPhase.text = "draft phase";
-                HandleObjectClick = DraftPhase;
-                GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
-                GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                 numberOfTroops.text = "1";
                 return;
 
@@ -901,7 +903,6 @@ public class GameController
 
     public bool Attack(Country attacker, Country defender, int num, int defender_num)
     {
-        bool outcome = false;
 
         List<int> atkRolls = new List<int>();
         List<int> defRolls = new List<int>();
@@ -956,28 +957,48 @@ public class GameController
                 GameObject.Find($"AttackerDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.red;
                 GameObject.Find($"DefenderDiceRoll{i + 1}").GetComponent<TextMeshProUGUI>().color = Color.green;
             }
-
-            // fights have ended
-
-            string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
-            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
-            Killfeed.Update($"{turnPlayer.GetName()}: attacking {defender.GetName()} (↓{atkWins})");
-
-            if (defender.GetTroops() == 0)
-            {
-                Killfeed.Update($"{turnPlayer.GetName()}: now owns {defender.GetName()}");
-                GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
-                defender.SetOwner(attacker.GetOwner());
-                defender.ChangeTroops(num);
-                attacker.ChangeTroops(-num);
-                outcome = true;
-                this.turnPlayer.gain_card = true;
-
-                recentFight[0] = attacker;
-                recentFight[1] = defender;
-            }
-            GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
         }
+        // fights have ended
+
+        string s = $"Attacker Lost {atkLosses} Troop(s)!\nDefender Lost {atkWins} Troop(s)!";
+        GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = s;
+        Killfeed.Update($"{turnPlayer.GetName()}: attacking {defender.GetName()} (↓{atkWins})");
+
+        if (defender.GetTroops() == 0)
+        {
+            Player defending_player = defender.GetOwner();
+            if (attacker.GetOwner().GetCountries().Count + 1 == ListOfCountries.Count) {
+                Debug.Log("came to game finished");
+                eliminatedPlayers.Add(defending_player);
+                map.gameFinished = true;
+                return false;
+            }
+
+                Debug.Log("came after if block");
+
+            
+
+
+
+
+            Killfeed.Update($"{turnPlayer.GetName()}: now owns {defender.GetName()}");
+            GameObject.Find("WinnerText").GetComponent<TextMeshProUGUI>().text = $"You Successfully Invaded!";
+            defending_player.RemoveCountry(defender);
+            defender.SetOwner(attacker.GetOwner());
+            defender.ChangeTroops(num);
+            attacker.ChangeTroops(-num);
+            this.turnPlayer.gain_card = true;
+
+            recentFight[0] = attacker;
+            recentFight[1] = defender;
+
+            if (defending_player.GetCountries().Count == 0) {
+                eliminatedPlayers.Add(defending_player);
+                EliminatePlayer();
+            }
+        }
+        GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
+        
 
         if (turnPlayer is not AIPlayer) this.DiceCanvas.enabled = true;
 
@@ -997,7 +1018,7 @@ public class GameController
             GameObject.Find($"WinnerText").GetComponent<TextMeshProUGUI>().text = "";
         });
 
-        return outcome;
+        return true;
     }
 
     public void Transfer(Country from, Country to, int num)
@@ -1091,5 +1112,15 @@ public class GameController
         recurse(visited, this.attacker);
         this.attacker.TempColorChange(Color.grey);
         this.considered = visited;
+    }
+
+    private void EliminatePlayer()
+    {
+        GameObject.Find("EliminatedColour").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count-1].GetColor();
+        GameObject.Find("EliminatedUsername").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count-1].GetColor();
+        GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = true;
+        Wait.Start(3f, () => {
+            GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = false;
+        });
     }
 }
