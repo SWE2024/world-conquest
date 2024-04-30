@@ -30,7 +30,7 @@ public class ScriptFPS : MonoBehaviour
     /// </summary>
     private void toggleFpsCounter()
     {
-        if (Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.V) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
         {
             if (Preferences.isShownFPS) fpsText.enabled = false;
             else fpsText.enabled = true;
@@ -44,7 +44,7 @@ public class ScriptFPS : MonoBehaviour
     /// </summary>
     private void toggleFullscreen()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
         {
             Screen.fullScreen = !Screen.fullScreen;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -627,8 +628,8 @@ public class GameController
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = true;
                 break;
             case "RenameConfirm":
-                string from = GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text;
-                string to = GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text;
+                string from = GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
+                string to = GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
 
                 foreach (var kvp in countryMap)
                 {
@@ -643,13 +644,9 @@ public class GameController
 
                 Killfeed.Update($"Country '{from}' does not exist");
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "current name";
-                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "new name";
                 break;
             case "RenameCancel":
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "current name";
-                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "new name";
                 break;
             default:
                 break;

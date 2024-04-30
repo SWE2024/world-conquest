@@ -27,7 +27,7 @@ public class ScriptAudio : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
         {
             if (isMuted) music.volume = Preferences.CurrentVolume;
             else music.volume = 0f;
