@@ -10,13 +10,22 @@ public static class Preferences
     public static float CurrentVolume = 0.5f;
     public static bool isShownFPS = true;
 
+    /// <summary>
+    /// <c>LoadPreferences</c> searches the file system for a config file and reads it if found.
+    /// </summary>
     public static void LoadPreferences()
     {
-        // load a settings file that holds the player's preferences
+        // load the file
+        // parse the preferences and set them here
     }
 
+    /// <summary>
+    /// <c>SavePreferences</c> gets the current game preferences and saves them to an external file to save state.
+    /// </summary>
     public static void SavePreferences()
     {
-        // create a settings file that holds the player's preferences
+        // read current player's preferences
+        // create a file
+        // layout this file with the preference data
     }
 }

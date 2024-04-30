@@ -25,6 +25,11 @@ public class ScriptHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         StartCoroutine(MoveButton(btn.transform.localPosition, originalPos));
     }
 
+    /// <summary>
+    /// <c>MoveButton</c> smoothly slides a button from <c>startPos</c> to <c>endPos</c>.
+    /// </summary>
+    /// <param name="startPos">The starting 2D location of the GameObject.</param>
+    /// <param name="endPos">The ending 2D location of the GameObject.</param>
     IEnumerator MoveButton(Vector2 startPos, Vector2 endPos)
     {
         float startTime = Time.time;
