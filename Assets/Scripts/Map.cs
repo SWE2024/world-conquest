@@ -15,6 +15,7 @@ public class Map : MonoBehaviour
     [SerializeField] Canvas troopDefend;
     [SerializeField] Canvas troopTransfer;
     [SerializeField] Canvas diceCanvas;
+    [SerializeField] Canvas cardInventory;
 
     /* unused
     void AutoPopulate()
@@ -43,15 +44,17 @@ public class Map : MonoBehaviour
     void Start()
     {
         int numberOfCountries = 0;
-        int otherMap = 0;
-        int otherCountries = 0;
 
-        if (Preferences.MapNumber == 1) { numberOfCountries = 44; otherCountries = 27; otherMap = 2; ListOfNeighbours = Map1.ListOfNeighbours; }
-        if (Preferences.MapNumber == 2) { numberOfCountries = 27; otherCountries = 44; otherMap = 1; ListOfNeighbours = Map2.ListOfNeighbours; }
+        switch (Preferences.MapNumber)
+        {
+            case 1: numberOfCountries = 44; ListOfNeighbours = Map1.ListOfNeighbours; break;
+            case 2: numberOfCountries = 27; ListOfNeighbours = Map2.ListOfNeighbours; break;
+            case 3: numberOfCountries = 6; ListOfNeighbours = Map3.ListOfNeighbours; break;
+        }
 
         //initializes the gamestate instance which is singleton
-        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas);
-
+        game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas, cardInventory);
+        
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
@@ -59,8 +62,12 @@ public class Map : MonoBehaviour
         {
             // creates the country objects
             string name = "";
-            if (Preferences.MapNumber == 1) name = (Map1.CountryNameMap[i]);
-            else name = (Map2.CountryNameMap[i]);
+            switch (Preferences.MapNumber)
+            {
+                case 1: name = Map1.CountryNameMap[i]; break;
+                case 2: name = Map2.CountryNameMap[i]; break;
+                case 3: name = Map3.CountryNameMap[i]; break;
+            }
 
             GameObject obj = GameObject.Find($"country{i}map{Preferences.MapNumber}");
             Button button = obj.GetComponent<Button>();
@@ -72,21 +79,54 @@ public class Map : MonoBehaviour
 
             // makes the country clickable
             obj.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+
+            // show the connections for the map
+            GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;
         }
 
-        for (int i = 1; i <= otherCountries; i++)
+        // delete map objects from unused maps
+        if (Preferences.MapNumber != 1)
         {
-            // disables the other map's elements
-            GameObject obj = GameObject.Find($"country{i}map{otherMap}");
-
-            obj.GetComponent<Button>().enabled = false;
-            obj.GetComponent<Image>().enabled = false;
-            obj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().enabled = false;
-            obj.transform.GetChild(1).GetComponent<TextMeshProUGUI>().enabled = false;
+            for (int i = 1; i <= 44; i++)
+            {
+                GameObject go = GameObject.Find($"country{i}map1");
+                go.GetComponent<Image>().enabled = false;
+                go.GetComponent<Button>().enabled = false;
+                foreach (Transform child in go.transform)
+                {
+                    child.GetComponent<TextMeshProUGUI>().enabled = false;
+                }
+            }
+            GameObject.Find($"connectionsmap1").GetComponent<Image>().enabled = false;
         }
-
-        GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;
-        GameObject.Find($"connectionsmap{otherMap}").GetComponent<Image>().enabled = false;
+        if (Preferences.MapNumber != 2)
+        {
+            for (int i = 1; i <= 27; i++)
+            {
+                GameObject go = GameObject.Find($"country{i}map2");
+                go.GetComponent<Image>().enabled = false;
+                go.GetComponent<Button>().enabled = false;
+                foreach (Transform child in go.transform)
+                {
+                    child.GetComponent<TextMeshProUGUI>().enabled = false;
+                }
+            }
+            GameObject.Find($"connectionsmap2").GetComponent<Image>().enabled = false;
+        }
+        if (Preferences.MapNumber != 3)
+        {
+            for (int i = 1; i <= 6; i++)
+            {
+                GameObject go = GameObject.Find($"country{i}map3");
+                go.GetComponent<Image>().enabled = false;
+                go.GetComponent<Button>().enabled = false;
+                foreach (Transform child in go.transform)
+                {
+                    child.GetComponent<TextMeshProUGUI>().enabled = false;
+                }
+            }
+            GameObject.Find($"connectionsmap3").GetComponent<Image>().enabled = false;
+        }
 
         // sets Neighbors for each country 
         for (int i = 0; i < game.ListOfCountries.Count; i++)
@@ -107,6 +147,48 @@ public class Map : MonoBehaviour
         troopAttack.enabled = false;
         troopTransfer.enabled = false;
         diceCanvas.enabled = false;
+
+        // get spritesheets for cards for your chosen map
+        string path = $"cards/map{Preferences.MapNumber}";
+
+        Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>(path);
+        foreach (Sprite s in allSpriteAssets)
+        {
+            string name;
+            string card_type;
+            if (s.name == "wildcard")
+            {
+                name = null;
+                card_type = "wildcard";
+            }
+            else
+            {
+                name = s.name.Split("_")[0];
+                card_type = s.name.Split("_")[1];
+            }
+
+            Country country = null;
+            foreach (Country country_ins in game.ListOfCountries)
+            {
+                if (country_ins.GetName() == name)
+                {
+                    country = country_ins;
+                    break;
+                }
+            }
+            Card c = new Card(country, card_type, s);
+            GameController.ListOfCards.Add(c);
+        }
+
+        for (int i = 1; i <= 3; i++)
+        {
+            GameObject.Find($"trade{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        }
+
+        for (int i = 1; i <= 6; i++)
+        {
+            GameObject.Find($"slot{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
+        }
     }
 
     // Update is called once per frame
