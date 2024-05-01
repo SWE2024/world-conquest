@@ -13,8 +13,6 @@ using UnityEngine.UI;
 /// </summary>
 public class GameController : MonoBehaviour
 {
-    static Map map;
-
     static GameController instance = null;
 
     public delegate void DelegateVar(GameObject selectedObj);
@@ -59,8 +57,6 @@ public class GameController : MonoBehaviour
 
     int turnIndex; // indicates who is playing
     public int populatedCountries;
-
-    public void SetMap(Map map) => GameController.map = map;
 
     private GameController(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas, Canvas cardInventory)
     {
@@ -1118,7 +1114,7 @@ public class GameController : MonoBehaviour
     private void EliminatePlayer()
     {
         GameObject.Find("EliminatedColour").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count - 1].GetColor();
-        GameObject.Find("EliminatedUsername").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count - 1].GetColor();
+        GameObject.Find("EliminatedUsername").GetComponent<TextMeshProUGUI>().text = eliminatedPlayers[eliminatedPlayers.Count - 1].GetName();
         GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = true;
         Wait.Start(3f, () =>
         {

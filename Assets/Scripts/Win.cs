@@ -19,7 +19,10 @@ public class Win : MonoBehaviour
     {
         music = GameObject.Find("Music").GetComponent<AudioSource>(); // switches music based on scene
         music.clip = winMusic;
-        music.Play();        
+        music.Play();     
+
+        btnLeave.onClick.AddListener(LoadMenu);
+
         GameObject.Find("EliminatedList").GetComponent<TextMeshProUGUI>().text = eliminatedList;
         GameObject.Find("WinnerUsername").GetComponent<TextMeshProUGUI>().text = username;
         GameObject.Find("WinnerColour").GetComponent<Image>().color = winnerColor;

@@ -57,7 +57,7 @@ public class Map : MonoBehaviour
 
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas, cardInventory);
-        game.SetMap(this);
+        
 
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
