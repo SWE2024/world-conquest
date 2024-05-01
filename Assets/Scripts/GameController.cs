@@ -811,7 +811,6 @@ public class GameController
     {
         if (selectedObj == null) return;
 
-
         int available = attacker.GetTroops() - 1;
 
         TextMeshProUGUI troopsLeft = GameObject.Find("AvailableForTransfer").GetComponent<TextMeshProUGUI>();
@@ -826,6 +825,13 @@ public class GameController
                 this.TransferCanvas.enabled = false;
                 this.Transfer(this.attacker, this.defender, num); // transfer num troops to new country
                 this.UnHighlight();
+                NextTurn();
+                this.turnPlayer.GetNewTroopsAndCards();
+                this.turnPlayer.InitializeSlot();
+                this.currentPhase.text = "draft phase";
+                HandleObjectClick = DraftPhase;
+                GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
+                GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
                 numberOfTroops.text = "1";
                 return;
 
