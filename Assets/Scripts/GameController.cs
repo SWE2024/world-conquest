@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Mail;
 using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -527,7 +525,7 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        if (selectedObj == null) 
+        if (selectedObj == null)
         {
             this.UnHighlight();
             return;
@@ -679,7 +677,7 @@ public class GameController : MonoBehaviour
                     return;
                 }
 
-                if(!this.Attack(attacker, defender, attacker_num, 1)) return;
+                if (!this.Attack(attacker, defender, attacker_num, 1)) return;
 
                 if (attacker.GetOwner() == defender.GetOwner())
                 {
@@ -735,7 +733,7 @@ public class GameController : MonoBehaviour
                 int defender_num = Int32.Parse(defender_text.text);
                 this.DefendCanvas.enabled = false;
                 defender_text.text = "1";
-                if(!this.Attack(attacker, defender, attacker_num, defender_num)) return;
+                if (!this.Attack(attacker, defender, attacker_num, defender_num)) return;
 
                 if (attacker.GetOwner() == defender.GetOwner())
                 {
@@ -967,16 +965,17 @@ public class GameController : MonoBehaviour
         if (defender.GetTroops() == 0)
         {
             Player defending_player = defender.GetOwner();
-            if (attacker.GetOwner().GetCountries().Count + 1 == ListOfCountries.Count) {
+            if (attacker.GetOwner().GetCountries().Count + 1 == ListOfCountries.Count)
+            {
                 Debug.Log("came to game finished");
                 eliminatedPlayers.Add(defending_player);
                 map.gameFinished = true;
                 return false;
             }
 
-                Debug.Log("came after if block");
+            Debug.Log("came after if block");
 
-            
+
 
 
 
@@ -992,13 +991,14 @@ public class GameController : MonoBehaviour
             recentFight[0] = attacker;
             recentFight[1] = defender;
 
-            if (defending_player.GetCountries().Count == 0) {
+            if (defending_player.GetCountries().Count == 0)
+            {
                 eliminatedPlayers.Add(defending_player);
                 EliminatePlayer();
             }
         }
         GameObject.Find("SoundConquer").GetComponent<AudioSource>().Play();
-        
+
 
         if (turnPlayer is not AIPlayer) this.DiceCanvas.enabled = true;
 
@@ -1116,10 +1116,11 @@ public class GameController : MonoBehaviour
 
     private void EliminatePlayer()
     {
-        GameObject.Find("EliminatedColour").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count-1].GetColor();
-        GameObject.Find("EliminatedUsername").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count-1].GetColor();
+        GameObject.Find("EliminatedColour").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count - 1].GetColor();
+        GameObject.Find("EliminatedUsername").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count - 1].GetColor();
         GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = true;
-        Wait.Start(3f, () => {
+        Wait.Start(3f, () =>
+        {
             GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = false;
         });
     }

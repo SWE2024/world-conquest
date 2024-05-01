@@ -1,4 +1,3 @@
-// using System.Collections;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -52,8 +51,8 @@ public class Map : MonoBehaviour
 
         switch (Preferences.MapNumber)
         {
-            case 1: numberOfCountries = 44; ListOfNeighbours = Map1.ListOfNeighbours;  break;
-            case 2: numberOfCountries = 27; ListOfNeighbours = Map2.ListOfNeighbours;  break;
+            case 1: numberOfCountries = 44; ListOfNeighbours = Map1.ListOfNeighbours; break;
+            case 2: numberOfCountries = 27; ListOfNeighbours = Map2.ListOfNeighbours; break;
             case 3: numberOfCountries = 6; ListOfNeighbours = Map3.ListOfNeighbours; break;
         }
 
@@ -211,14 +210,14 @@ public class Map : MonoBehaviour
     IEnumerator ShowRanking()
     {
         // SceneManager.LoadSceneAsync("assets/scenes/scenewin.unity");
-        AsyncOperation asyncLoad =  SceneManager.LoadSceneAsync("SceneWin");
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("SceneWin");
         game.eliminatedPlayers.Reverse();
-        List<string> places = new List<string>() {"2nd", "3rd", "4th", "5th", "6th"};
+        List<string> places = new List<string>() { "2nd", "3rd", "4th", "5th", "6th" };
         string ranking = "";
 
         while (!asyncLoad.isDone) yield return null;
 
-        for(int i = 0; i < game.eliminatedPlayers.Count; i++) ranking += $"{places[i]}: {game.eliminatedPlayers[i].GetName()}\n";
+        for (int i = 0; i < game.eliminatedPlayers.Count; i++) ranking += $"{places[i]}: {game.eliminatedPlayers[i].GetName()}\n";
         GameObject.Find("EliminatedList").GetComponent<TextMeshProUGUI>().text = ranking;
         GameObject.Find("WinnerUsername").GetComponent<TextMeshProUGUI>().text = game.turnPlayer.GetName();
         GameObject.Find("WinnerColour").GetComponent<Image>().color = game.turnPlayer.GetColor();

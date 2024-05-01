@@ -30,6 +30,7 @@ public class Player
             case 6: this.numberOfTroops = 20; break;
         }
 
+        // for debugging
         this.numberOfTroops = 3;
 
         this.name = name;
