@@ -63,21 +63,21 @@ public class ClickButton : MonoBehaviour
 
     void HandlePlusPlayer()
     {
-        if (Preferences.PlayerCount + Preferences.AgentCount >= 6) { return; }
+        if ((Preferences.PlayerCount + Preferences.AgentCount >= 6) || Preferences.PlayerCount == 6) { return; }
         Preferences.PlayerCount++;
         numberPlayers.text = $"{Preferences.PlayerCount}";
     }
 
     void HandleMinusAgent()
     {
-        if (Preferences.AgentCount + Preferences.PlayerCount <= 2) { return; }
+        if ((Preferences.AgentCount + Preferences.PlayerCount <= 2) || Preferences.AgentCount == 0) { return; }
         Preferences.AgentCount--;
         numberAgents.text = $"{Preferences.AgentCount}";
     }
 
     void HandlePlusAgent()
     {
-        if (Preferences.AgentCount + Preferences.PlayerCount >= 6) { return; }
+        if ((Preferences.AgentCount + Preferences.PlayerCount >= 6) || Preferences.AgentCount == 5) { return; }
         Preferences.AgentCount++;
         numberAgents.text = $"{Preferences.AgentCount}";
     }

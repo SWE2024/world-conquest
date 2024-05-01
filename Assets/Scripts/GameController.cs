@@ -11,7 +11,7 @@ using UnityEngine.UI;
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
 /// </summary>
-public class GameController : MonoBehaviour
+public class GameController
 {
     static GameController instance = null;
 
@@ -152,7 +152,7 @@ public class GameController : MonoBehaviour
 
         for (int i = 0; i < remainder; i++)
         {
-            int index = UnityEngine.Random.Range(0, copyTurns.Count - 1);
+            int index = UnityEngine.Random.Range(0, copyTurns.Count);
             listOfColors.Add(copyTurns[index]);
             copyTurns.RemoveAt(index);
         }
