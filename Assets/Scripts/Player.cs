@@ -20,7 +20,6 @@ public class Player
 
     public Player(string name, Color color)
     {
-        Debug.Log("color : " + color);
         switch (Preferences.PlayerCount + Preferences.AgentCount)
         {
             case 2: this.numberOfTroops = 40; break;
@@ -100,7 +99,10 @@ public class Player
         gain_card = false;
     }
 
-    public void fill_cards()
+    /// <summary>
+    /// <c>FillCards</c> gives 9 random cards to the player.
+    /// </summary>
+    public void FillCards()
     {
         for(int i = 0; i < 9; i++) 
         {
@@ -108,6 +110,9 @@ public class Player
         }
     }
 
+    /// <summary>
+    /// <c>InitializeSlot</c> clears current cards in the slow and then fills all slots with owned cards.
+    /// </summary>
     public void InitializeSlot() 
     {
         slot.Clear();
@@ -115,6 +120,9 @@ public class Player
         foreach(Card card in ownedCards) slot.Add(card);
     }
 
+    /// <summary>
+    /// <c>LoadSlot</c> physically fills the slots in game with the cards that the player owns.
+    /// </summary>
     public void LoadSlot() 
     {
         for(int i = 1; i < 7; i++) 
@@ -145,6 +153,9 @@ public class Player
         }
     }
 
+    /// <summary>
+    /// <c>LoadTrade</c> finds 3 cards that are eligible for trade in.
+    /// </summary>
     public void LoadTrade()
     {
         for(int i = 0; i < 3; i++) 
@@ -163,9 +174,12 @@ public class Player
             trade_slot.GetComponent<Image>().enabled = true;
             trade_slot.enabled = true;
         }
-
     }
 
+    /// <summary>
+    /// <c>SelectForTrade</c> adds a card from the deck to the trade.
+    /// </summary>
+    /// <param name="slot_name">The name of the slot that you click .</param>
     public void SelectForTrade(string slot_name)  
     {
         int index = int.Parse(slot_name[4].ToString()) - 1;
@@ -176,6 +190,10 @@ public class Player
         LoadTrade();
     }
 
+    /// <summary>
+    /// <c>RemoveForTrade</c> removes a card from the trade section.
+    /// </summary>
+    /// <param name="slot_name">The name of the slot that you click .</param>
     public void RemoveForTrade(string slot_name)  
     {
         int index = int.Parse(slot_name[5].ToString()) - 1;
@@ -185,7 +203,10 @@ public class Player
         LoadSlot();
         LoadTrade();
     }
-    
+
+    /// <summary>
+    /// <c>Next</c> gets the first card in the slot and sends it to the back.
+    /// </summary>
     public void Next()
     {
         Card card = slot[0];
@@ -194,6 +215,9 @@ public class Player
         LoadSlot();
     }
 
+    /// <summary>
+    /// <c>Cancel</c> removes all cards from the trade deck, and back into the slot.
+    /// </summary>
     public void Cancel()
     {
         foreach(Card card in trade) slot.Add(card);
@@ -201,6 +225,9 @@ public class Player
         LoadTrade();
     }
 
+    /// <summary>
+    /// <c>Trade</c> gets the 3 cards in the trade deck and trades them in for troops.
+    /// </summary>
     public bool Trade()
     {
         HashSet<string> types = new HashSet<string>();

@@ -14,12 +14,18 @@ public class ScriptHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         originalPos = btn.transform.localPosition;
     }
 
+    /// <summary>
+    /// <c>OnPointerEnter</c> moves the button to the right when the mouse enters.
+    /// </summary>
     public void OnPointerEnter(PointerEventData eventData)
     {
         Vector2 moveRight = originalPos + new Vector2(+100, 0);
         StartCoroutine(MoveButton(btn.transform.localPosition, moveRight));
     }
 
+    /// <summary>
+    /// <c>OnPointerExit</c> moves the button to the left when the mouse exits.
+    /// </summary>
     public void OnPointerExit(PointerEventData eventData)
     {
         StartCoroutine(MoveButton(btn.transform.localPosition, originalPos));

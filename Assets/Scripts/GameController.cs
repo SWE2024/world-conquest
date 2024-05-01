@@ -284,7 +284,7 @@ public class GameController
                     this.currentPhase.text = "draft phase";
 
                     HandleObjectClick = DraftPhase;
-                    this.turnPlayer.fill_cards();
+                    this.turnPlayer.FillCards();
                     this.turnPlayer.InitializeSlot();
 
                     GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;

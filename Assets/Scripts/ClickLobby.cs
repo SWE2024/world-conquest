@@ -54,6 +54,9 @@ public class ClickButton : MonoBehaviour
 
     void Map3() { Preferences.MapNumber = 3; }
 
+    /// <summary>
+    /// <c>HandleMinusPlayer</c> checks if you are allowed to remove a player.
+    /// </summary>
     void HandleMinusPlayer()
     {
         if ((Preferences.PlayerCount <= 2 && Preferences.AgentCount == 0) || (Preferences.PlayerCount == 1)) { return; }
@@ -61,6 +64,9 @@ public class ClickButton : MonoBehaviour
         numberPlayers.text = $"{Preferences.PlayerCount}";
     }
 
+    /// <summary>
+    /// <c>HandlePlusPlayer</c> checks if you are allowed to add a player.
+    /// </summary>
     void HandlePlusPlayer()
     {
         if ((Preferences.PlayerCount + Preferences.AgentCount >= 6) || Preferences.PlayerCount == 6) { return; }
@@ -68,6 +74,9 @@ public class ClickButton : MonoBehaviour
         numberPlayers.text = $"{Preferences.PlayerCount}";
     }
 
+    /// <summary>
+    /// <c>HandleMinusAgent</c> checks if you are allowed to remove an agent.
+    /// </summary>
     void HandleMinusAgent()
     {
         if ((Preferences.AgentCount + Preferences.PlayerCount <= 2) || Preferences.AgentCount == 0) { return; }
@@ -75,6 +84,9 @@ public class ClickButton : MonoBehaviour
         numberAgents.text = $"{Preferences.AgentCount}";
     }
 
+    /// <summary>
+    /// <c>HandlePlusAgent</c> checks if you are allowed to add an agent.
+    /// </summary>
     void HandlePlusAgent()
     {
         if ((Preferences.AgentCount + Preferences.PlayerCount >= 6) || Preferences.AgentCount == 5) { return; }
@@ -82,6 +94,9 @@ public class ClickButton : MonoBehaviour
         numberAgents.text = $"{Preferences.AgentCount}";
     }
 
+    /// <summary>
+    /// <c>LoadGame</c> opens the game scene and switches the music.
+    /// </summary>
     void LoadGame()
     {
         Wait.Start(0.75f, () =>
@@ -93,6 +108,9 @@ public class ClickButton : MonoBehaviour
         });
     }
 
+    /// <summary>
+    /// <c>LoadMenu</c> resets preferences and loads the main menu scene.
+    /// </summary>
     void LoadMenu()
     {
         Preferences.PlayerCount = 2;

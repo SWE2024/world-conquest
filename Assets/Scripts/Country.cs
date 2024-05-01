@@ -31,14 +31,36 @@ public class Country
         Neighbors = list;
     }
 
+    /// <summary>
+    /// <c>GetNeighbors</c> returns the list of neighboring countries.
+    /// </summary>
+    /// <returns>
+    /// List of neighboring Country objects.
+    /// </returns>
     public List<Country> GetNeighbors() => Neighbors;
 
+    /// <summary>
+    /// <c>GetName</c> returns the name of the country.
+    /// </summary>
+    /// <returns>
+    /// Name of the Country.
+    /// </returns>
     public string GetName() => this.Name;
 
+    /// <summary>
+    /// <c>GetOwner</c> returns the owner of the country.
+    /// </summary>
+    /// <returns>
+    /// Owner of the Country..
+    /// </returns>
     public Player GetOwner() => this.Owner;
 
-    public Color GetColor() => Owner.GetColor();
-
+    /// <summary>
+    /// <c>GetTroops</c> returns the number of troops on the country.
+    /// </summary>
+    /// <returns>
+    /// Number of troops on the Country.
+    /// </returns>
     public int GetTroops() => this.Troops;
 
     /// <summary>

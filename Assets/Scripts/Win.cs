@@ -29,6 +29,9 @@ public class Win : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// <c>LoadMenu</c> resets all preferences and sends you back to the main menu.
+    /// </summary>
     void LoadMenu()
     {
         Preferences.PlayerCount = 2;
@@ -40,11 +43,5 @@ public class Win : MonoBehaviour
             music.clip = lobbyMusic;
             music.Play();
         });
-    }
-
-
-    void Update() 
-    {
-
     }
 }

@@ -20,6 +20,9 @@ public class ClickMainMenu : MonoBehaviour
         btnExit.onClick.AddListener(ExitGame);
     }
 
+    /// <summary>
+    /// <c>LoadLobby</c> resets the preferences of the game and opens the lobby scene.
+    /// </summary>
     void LoadLobby()
     {
         // reset preferences to default values in case they have been changed
@@ -38,6 +41,9 @@ public class ClickMainMenu : MonoBehaviour
         SceneManager.LoadScene("assets/scenes/scenelobby.unity");
     }
 
+    /// <summary>
+    /// <c>ExitGame</c> completely closes the game.
+    /// </summary>
     void ExitGame()
     {
         StartCoroutine(CloseGame());
@@ -49,23 +55,11 @@ public class ClickMainMenu : MonoBehaviour
         Application.Quit();
     }
 
-    public void PointerEnterPlay()
-    {
-        trianglePlay.enabled = true;
-    }
+    public void PointerEnterPlay() { trianglePlay.enabled = true; }
 
-    public void PointerEnterExit()
-    {
-        triangleExit.enabled = true;
-    }
+    public void PointerEnterExit() { triangleExit.enabled = true; }
 
-    public void PointerLeavePlay()
-    {
-        trianglePlay.enabled = false;
-    }
+    public void PointerLeavePlay() { trianglePlay.enabled = false; }
 
-    public void PointerLeaveExit()
-    {
-        triangleExit.enabled = false;
-    }
+    public void PointerLeaveExit() { triangleExit.enabled = false; }
 }

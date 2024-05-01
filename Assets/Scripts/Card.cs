@@ -12,7 +12,19 @@ public class Card
         sprite = s;
     }
 
+    /// <summary>
+    /// <c>GetCardType</c> returns the type of a card.
+    /// </summary>
+    /// <returns>
+    /// A string showing the type of the card.
+    /// </returns>
     public string GetCardType() => type;
 
+    /// <summary>
+    /// <c>GetSprite</c> returns the sprite associated with a card.
+    /// </summary>
+    /// <returns>
+    /// A sprite of the card image.
+    /// </returns>
     public Sprite GetSprite() => sprite;
 }

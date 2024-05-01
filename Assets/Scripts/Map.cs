@@ -1,15 +1,12 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Map : MonoBehaviour
 {
     static List<List<int>> ListOfNeighbours;
-
 
     GameController game;
 
@@ -58,7 +55,6 @@ public class Map : MonoBehaviour
         //initializes the gamestate instance which is singleton
         game = GameController.New(Preferences.PlayerCount, troopDistribution, troopAttack, troopDefend, troopTransfer, diceCanvas, cardInventory);
         
-
         //this is map to get the country instance that holds the button that is clicked
         Dictionary<Button, Country> countryMap = new Dictionary<Button, Country>();
 
@@ -88,6 +84,7 @@ public class Map : MonoBehaviour
             GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;
         }
 
+        // delete map objects from unused maps
         if (Preferences.MapNumber != 1)
         {
             for (int i = 1; i <= 44; i++)
@@ -151,6 +148,7 @@ public class Map : MonoBehaviour
         troopTransfer.enabled = false;
         diceCanvas.enabled = false;
 
+        // get spritesheets for cards for your chosen map
         string path = $"cards/map{Preferences.MapNumber}";
 
         Sprite[] allSpriteAssets = Resources.LoadAll<Sprite>(path);
@@ -202,6 +200,4 @@ public class Map : MonoBehaviour
             game.HandleObjectClick(selectedObj);
         }
     }
-
-
 }
