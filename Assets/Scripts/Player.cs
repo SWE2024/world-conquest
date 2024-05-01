@@ -95,7 +95,14 @@ public class Player
         // if (color != new Color(0.95f, 0.3f, 0.3f, 1f)) return; // for debugging
 
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
-        if (gain_card) this.ownedCards.Add(GameController.ListOfCards[UnityEngine.Random.Range(0, GameController.ListOfCards.Count)]);
+        if (gain_card) 
+        {
+            GameObject.Find("CardNotification").GetComponent<Image>().enabled = true;
+            int index = UnityEngine.Random.Range(0, GameController.ListOfCards.Count);
+            Card card = GameController.ListOfCards[index];
+            GameController.ListOfCards.RemoveAt(index);
+            this.ownedCards.Add(card);
+        }
         gain_card = false;
     }
 
@@ -106,7 +113,10 @@ public class Player
     {
         for(int i = 0; i < 9; i++) 
         {
-            this.ownedCards.Add(GameController.ListOfCards[UnityEngine.Random.Range(0, GameController.ListOfCards.Count)]);
+            int index = UnityEngine.Random.Range(0, GameController.ListOfCards.Count);
+            Card card = GameController.ListOfCards[index];
+            GameController.ListOfCards.RemoveAt(index);
+            this.ownedCards.Add(card);
         }
     }
 

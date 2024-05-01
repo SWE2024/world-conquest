@@ -83,6 +83,7 @@ public class GameController
         GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
         GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = false;
         GameObject.Find("CardNotification").GetComponent<Image>().enabled = false;
+        GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = false;
 
         // creates the turns order here
         this.turnsOrder = GameController.CreateTurns();
@@ -284,7 +285,7 @@ public class GameController
                     this.currentPhase.text = "draft phase";
 
                     HandleObjectClick = DraftPhase;
-                    this.turnPlayer.FillCards();
+                    // this.turnPlayer.FillCards();
                     this.turnPlayer.InitializeSlot();
 
                     GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
@@ -537,8 +538,8 @@ public class GameController
             GameObject.Find("CardInventoryButton").GetComponent<Image>().enabled = true;
             GameObject.Find("CardInventoryButton").GetComponent<Button>().enabled = true;
             NextTurn();
-            this.turnPlayer.InitializeSlot();
             this.turnPlayer.GetNewTroopsAndCards();
+            this.turnPlayer.InitializeSlot();
             return;
         }
 
@@ -591,12 +592,26 @@ public class GameController
         switch (selectedObj.name)
         {
             case "Trade":
-                if (this.turnPlayer.Trade()) Debug.Log("trade successful");
-                else Debug.Log("trade unsuccessful");
+                if (this.turnPlayer.Trade()) 
+                {
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was successful. You gained 6 troops.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.green;
+                }
+                else 
+                {
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was unsuccessful. You have to trade one of each type or three of a type.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.red;
+                }
+                GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = true;
+
+                Wait.Start(2f, () => {
+                    GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = false;
+                });
                 return;
             case "CardInventoryButtonClose":
                 this.CardInventory.enabled = false;
                 this.turnPlayer.Cancel();
+                GameObject.Find("CardNotification").GetComponent<Image>().enabled = false;
                 return;
 
             case "slot1":
