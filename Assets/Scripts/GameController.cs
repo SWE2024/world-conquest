@@ -4,6 +4,7 @@ using System.Reflection;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -969,7 +970,7 @@ public class GameController : MonoBehaviour
             {
                 Debug.Log("came to game finished");
                 eliminatedPlayers.Add(defending_player);
-                map.gameFinished = true;
+                ShowRanking();
                 return false;
             }
 
@@ -1123,5 +1124,17 @@ public class GameController : MonoBehaviour
         {
             GameObject.Find("PlayerEliminated").GetComponent<Canvas>().enabled = false;
         });
+    }
+
+    void ShowRanking()
+    {
+        eliminatedPlayers.Reverse();
+        List<string> places = new List<string>() { "2nd", "3rd", "4th", "5th", "6th" };
+        string ranking = "";
+        for (int i = 0; i < eliminatedPlayers.Count; i++) ranking += $"{places[i]}: {eliminatedPlayers[i].GetName()}\n";
+        Win.eliminatedList = ranking;
+        Win.username = turnPlayer.GetName();
+        Win.winnerColor = turnPlayer.GetColor();
+        SceneManager.LoadScene("assets/scenes/scenewin.unity");
     }
 }
