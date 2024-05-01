@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
 /// </summary>
@@ -592,19 +591,20 @@ public class GameController
         switch (selectedObj.name)
         {
             case "Trade":
-                if (this.turnPlayer.Trade()) 
+                if (this.turnPlayer.Trade())
                 {
-                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was successful. You gained 6 troops.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was successful. You gained 6 troops.";
                     GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.green;
                 }
-                else 
+                else
                 {
-                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was unsuccessful. You have to trade one of each type or three of a type.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was unsuccessful. You have to trade one of each type or three of a type.";
                     GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.red;
                 }
                 GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = true;
 
-                Wait.Start(2f, () => {
+                Wait.Start(2f, () =>
+                {
                     GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = false;
                 });
                 return;
@@ -644,29 +644,52 @@ public class GameController
             case "RenameCountryButton":
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = true;
                 break;
+
             case "RenameConfirm":
                 string from = GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
                 string to = GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
 
+                Country foundCountry = null;
+                string[] names = new string[countryMap.Count];
+                int i = 0;
+
                 foreach (var kvp in countryMap)
                 {
-                    if (kvp.Value.GetName().ToLower().Equals(from.ToLower()))
+                    string name = kvp.Value.GetName();
+                    names[i] = name;
+                    i++;
+                    if (to.ToLower().Equals(name.ToLower()))
                     {
-                        kvp.Value.SetName(to);
-                        Killfeed.Update($"'{from}' was renamed to '{to}'");
+                        Killfeed.Update($"Country '{to}' already exists");
                         GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+                        GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "";
+                        GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "";
                         return;
                     }
+
+                    if (name.ToLower().Equals(from.ToLower())) foundCountry = kvp.Value;
                 }
 
-                Killfeed.Update($"Country '{from}' does not exist");
+                if (foundCountry != null)
+                {
+                    foundCountry.SetName(to);
+                    Killfeed.Update($"'{from}' was renamed to '{to}'");
+                }
+                else
+                {
+                    Killfeed.Update($"Country '{from}' does not exist");
+                }
+
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                break;
+                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "";
+                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "";
+                return;
+
             case "RenameCancel":
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                break;
-            default:
-                break;
+                return;
+
+            default: return;
         }
     }
 

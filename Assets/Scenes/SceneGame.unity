@@ -5834,8 +5834,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1000, y: 250}
-  m_SizeDelta: {x: 300, y: 200}
+  m_AnchoredPosition: {x: 1175, y: -225}
+  m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &212927945
 MonoBehaviour:
@@ -36878,7 +36878,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2560, y: 2000}
+  m_SizeDelta: {x: 2560, y: 1440}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1840452419
 MonoBehaviour:
@@ -36900,7 +36900,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Card Inventory
+  m_text: Outcome of Trading in Cards
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e3afd6450cbd8a84cbcc577456a52d03, type: 2}
   m_sharedMaterial: {fileID: 5575954358767294868, guid: e3afd6450cbd8a84cbcc577456a52d03, type: 2}

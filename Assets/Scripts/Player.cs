@@ -15,7 +15,7 @@ public class Player
     List<Country> ownedCountries;
     public List<Card> ownedCards;
     public bool gain_card = false;
-    public List<Card> trade =  new List<Card>();
+    public List<Card> trade = new List<Card>();
     public List<Card> slot = new List<Card>();
 
     public Player(string name, Color color)
@@ -95,7 +95,7 @@ public class Player
         // if (color != new Color(0.95f, 0.3f, 0.3f, 1f)) return; // for debugging
 
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
-        if (gain_card) 
+        if (gain_card)
         {
             GameObject.Find("CardNotification").GetComponent<Image>().enabled = true;
             int index = UnityEngine.Random.Range(0, GameController.ListOfCards.Count);
@@ -111,7 +111,7 @@ public class Player
     /// </summary>
     public void FillCards()
     {
-        for(int i = 0; i < 9; i++) 
+        for (int i = 0; i < 9; i++)
         {
             int index = UnityEngine.Random.Range(0, GameController.ListOfCards.Count);
             Card card = GameController.ListOfCards[index];
@@ -123,39 +123,40 @@ public class Player
     /// <summary>
     /// <c>InitializeSlot</c> clears current cards in the slow and then fills all slots with owned cards.
     /// </summary>
-    public void InitializeSlot() 
+    public void InitializeSlot()
     {
         slot.Clear();
         trade.Clear();
-        foreach(Card card in ownedCards) slot.Add(card);
+        foreach (Card card in ownedCards) slot.Add(card);
     }
 
     /// <summary>
     /// <c>LoadSlot</c> physically fills the slots in game with the cards that the player owns.
     /// </summary>
-    public void LoadSlot() 
+    public void LoadSlot()
     {
-        for(int i = 1; i < 7; i++) 
+        for (int i = 1; i < 7; i++)
         {
             Button slot = GameObject.Find($"slot{i}").GetComponent<Button>();
             slot.enabled = false;
             slot.GetComponent<Image>().enabled = false;
             slot.GetComponent<Image>().sprite = null;
         }
-        
-        if (slot.Count > 6) 
+
+        if (slot.Count > 6)
         {
             GameObject.Find("NextCard").GetComponent<Button>().enabled = true;
             GameObject.Find("NextCard").GetComponent<Image>().enabled = true;
         }
-        else 
+        else
         {
             GameObject.Find("NextCard").GetComponent<Button>().enabled = false;
             GameObject.Find("NextCard").GetComponent<Image>().enabled = false;
         }
 
-        for (int i = 0; i < Math.Min(slot.Count, 6); i++) {
-            Button slot_button = GameObject.Find($"slot{i+1}").GetComponent<Button>();
+        for (int i = 0; i < Math.Min(slot.Count, 6); i++)
+        {
+            Button slot_button = GameObject.Find($"slot{i + 1}").GetComponent<Button>();
             slot_button.GetComponent<Image>().sprite = slot[i].GetSprite();
             slot_button.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
             slot_button.GetComponent<Image>().enabled = true;
@@ -168,15 +169,15 @@ public class Player
     /// </summary>
     public void LoadTrade()
     {
-        for(int i = 0; i < 3; i++) 
+        for (int i = 0; i < 3; i++)
         {
-            Button trade = GameObject.Find($"trade{i+1}").GetComponent<Button>();
+            Button trade = GameObject.Find($"trade{i + 1}").GetComponent<Button>();
             trade.enabled = false;
             trade.GetComponent<Image>().enabled = false;
             trade.GetComponent<Image>().sprite = null;
         }
 
-        for(int i = 0; i < Math.Min(3, trade.Count); i++) 
+        for (int i = 0; i < Math.Min(3, trade.Count); i++)
         {
             Button trade_slot = GameObject.Find($"trade{i + 1}").GetComponent<Button>();
             trade_slot.GetComponent<Image>().sprite = trade[i].GetSprite();
@@ -190,7 +191,7 @@ public class Player
     /// <c>SelectForTrade</c> adds a card from the deck to the trade.
     /// </summary>
     /// <param name="slot_name">The name of the slot that you click .</param>
-    public void SelectForTrade(string slot_name)  
+    public void SelectForTrade(string slot_name)
     {
         int index = int.Parse(slot_name[4].ToString()) - 1;
         Card card = slot[index];
@@ -204,7 +205,7 @@ public class Player
     /// <c>RemoveForTrade</c> removes a card from the trade section.
     /// </summary>
     /// <param name="slot_name">The name of the slot that you click .</param>
-    public void RemoveForTrade(string slot_name)  
+    public void RemoveForTrade(string slot_name)
     {
         int index = int.Parse(slot_name[5].ToString()) - 1;
         Card card = trade[index];
@@ -230,7 +231,7 @@ public class Player
     /// </summary>
     public void Cancel()
     {
-        foreach(Card card in trade) slot.Add(card);
+        foreach (Card card in trade) slot.Add(card);
         trade.Clear();
         LoadTrade();
     }
@@ -241,19 +242,19 @@ public class Player
     public bool Trade()
     {
         HashSet<string> types = new HashSet<string>();
-        foreach(Card card in trade) types.Add(card.GetCardType());
-        foreach(string s in types) Debug.Log(s);
+        foreach (Card card in trade) types.Add(card.GetCardType());
+        foreach (string s in types) Debug.Log(s);
 
-        if (types.Count != 3 && types.Count != 1) 
+        if (types.Count != 3 && types.Count != 1)
         {
-            foreach(Card card in trade) slot.Add(card);
+            foreach (Card card in trade) slot.Add(card);
             trade.Clear();
             LoadTrade();
             LoadSlot();
-            return false; 
+            return false;
         }
         ChangeNumberOfTroops(6);
-        foreach(Card card in trade) ownedCards.Remove(card);
+        foreach (Card card in trade) ownedCards.Remove(card);
         trade.Clear();
         LoadTrade();
         LoadSlot();
