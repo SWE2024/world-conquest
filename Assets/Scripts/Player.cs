@@ -28,9 +28,7 @@ public class Player
             case 5: this.numberOfTroops = 25; break;
             case 6: this.numberOfTroops = 20; break;
         }
-
-        // this.numberOfTroops = 3; // for debugging
-
+        
         this.name = name;
         this.color = color;
         ownedCountries = new List<Country>();
@@ -92,12 +90,11 @@ public class Player
     /// </summary>
     public void GetNewTroopsAndCards()
     {
-        // if (color != new Color(0.95f, 0.3f, 0.3f, 1f)) return; // for debugging
-
         this.numberOfTroops = Math.Max(this.ownedCountries.Count / 3, 3); // you need to receive at least 3 armies
         if (gain_card)
         {
-            GameObject.Find("CardNotification").GetComponent<Image>().enabled = true;
+            if (this is not AIPlayer) GameObject.Find("CardNotification").GetComponent<Image>().enabled = true;
+
             int index = UnityEngine.Random.Range(0, GameController.ListOfCards.Count);
             Card card = GameController.ListOfCards[index];
             GameController.ListOfCards.RemoveAt(index);
@@ -241,6 +238,8 @@ public class Player
     /// </summary>
     public bool Trade()
     {
+        if (trade.Count < 3) return false; // stops the player from being able to trade in less than 3 cards
+
         HashSet<string> types = new HashSet<string>();
         foreach (Card card in trade) types.Add(card.GetCardType());
         foreach (string s in types) Debug.Log(s);
@@ -254,6 +253,7 @@ public class Player
             return false;
         }
         ChangeNumberOfTroops(6);
+        Killfeed.Update($"{this.GetName()}: traded in for 6 troops");
         foreach (Card card in trade) ownedCards.Remove(card);
         trade.Clear();
         LoadTrade();
