@@ -51,12 +51,16 @@ public class ScriptSettings : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!isOpen) OpenSettingsMenu();
-            else CloseSettingsMenu();
+            Canvas canvas = GameObject.Find("RenameCountry")?.GetComponent<Canvas>();
+            if ((!SceneManager.GetActiveScene().name.Equals("SceneGame")) || (canvas != null && !canvas.enabled))
+            {
+                if (!isOpen) OpenSettingsMenu();
+                else CloseSettingsMenu();
 
-            isOpen = !isOpen;
+                isOpen = !isOpen;
+            }
         }
     }
 

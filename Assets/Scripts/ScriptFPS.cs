@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// <c>ScriptFPS</c> controls the screen FPS counter and the display refresh rate.
@@ -30,12 +31,16 @@ public class ScriptFPS : MonoBehaviour
     /// </summary>
     private void toggleFpsCounter()
     {
-        if (Input.GetKeyDown(KeyCode.V) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
+        if (Input.GetKeyDown(KeyCode.V))
         {
-            if (Preferences.isShownFPS) fpsText.enabled = false;
-            else fpsText.enabled = true;
+            Canvas canvas = GameObject.Find("RenameCountry")?.GetComponent<Canvas>();
+            if ((!SceneManager.GetActiveScene().name.Equals("SceneGame")) || (canvas != null && !canvas.enabled))
+            {
+                if (Preferences.isShownFPS) fpsText.enabled = false;
+                else fpsText.enabled = true;
 
-            Preferences.isShownFPS = !Preferences.isShownFPS; // disables frame rate (or enables)
+                Preferences.isShownFPS = !Preferences.isShownFPS; // disables frame rate (or enables)
+            }
         }
     }
 
@@ -44,9 +49,13 @@ public class ScriptFPS : MonoBehaviour
     /// </summary>
     private void toggleFullscreen()
     {
-        if (Input.GetKeyDown(KeyCode.F) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
+        if (Input.GetKeyDown(KeyCode.F))
         {
-            Screen.fullScreen = !Screen.fullScreen;
+            Canvas canvas = GameObject.Find("RenameCountry")?.GetComponent<Canvas>();
+            if ((!SceneManager.GetActiveScene().name.Equals("SceneGame")) || (canvas != null && !canvas.enabled))
+            {
+                Screen.fullScreen = !Screen.fullScreen;
+            }
         }
     }
 

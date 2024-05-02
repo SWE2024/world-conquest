@@ -694,7 +694,7 @@ public class GameController
     /// <c>HandleRenameClick</c> handles clicks in the rename country screen.
     /// </summary>
     /// <param name="selectedObj">The object the user has clicked.</param>
-    private void HandleRenameClick(GameObject selectedObj)
+    public void HandleRenameClick(GameObject selectedObj)
     {
         switch (selectedObj.name)
         {
