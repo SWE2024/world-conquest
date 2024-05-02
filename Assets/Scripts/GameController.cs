@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
 /// <summary>
 /// <c>GameController</c> handles the logic of the local version of the game.
 /// </summary>
@@ -100,7 +99,13 @@ public class GameController
         this.HandleObjectClick = SetupPhase;
     }
 
-    //singleton's constructor method access thru here
+    /// <summary>
+    /// <c>New</c> creates and starts a new game.
+    /// </summary>
+    /// <param name="playerCount">The number of players the game will start with (players + agents).</param>
+    /// <returns>
+    /// New GameController instance.
+    /// </returns> 
     public static GameController New(int playerCount, Canvas distributeCanvas, Canvas attackCanvas, Canvas defendCanvas, Canvas transferCanvas, Canvas diceCanvas, Canvas cardInventory)
     {
         //if (instance != null) return GameController.instance; // find a better way of joining a game that already exists, this does not work
@@ -108,9 +113,21 @@ public class GameController
         return GameController.instance;
     }
 
+    /// <summary>
+    /// <c>Get</c> retrieves the instance of the currently open game.
+    /// </summary>
+    /// <returns>
+    /// Current GameController instance (including current game state).
+    /// </returns> 
     public static GameController Get() => GameController.instance;
 
-    // returns a color from a random int
+    /// <summary>
+    /// <c>IntToColor</c> converts a number into a color. Use when setting up the game to get player colors.
+    /// </summary>
+    /// <param name="num">The number of players the game will start with (players + agents).</param>
+    /// <returns>
+    /// Unique Color for each number input.
+    /// </returns>
     public static Color IntToColor(int num) => num switch
     {
         0 => new Color(0.95f, 0.30f, 0.30f),
@@ -122,8 +139,7 @@ public class GameController
         _ => throw new Exception("color not found"),
     };
 
-    // this generates a of colors that represents the distributed number of countries, 
-    // if 5 reds are here red holds five countries
+    /* unused
     public List<Color> GenerateListOfColors()
     {
         int numberOfCountries = 0;
@@ -171,8 +187,15 @@ public class GameController
         }
         return output;
     }
+    */
 
-    // generate the Randomized a color list to track turns
+    /// <summary>
+    /// <c>CreateTurns</c> gets the number of players required, creates the <c>Player</c> and <c>AIPlayer</c> objects required.
+    /// Then, these objects are added to a list.
+    /// </summary>
+    /// <returns>
+    /// List of players and AI agents in the order of their turns.
+    /// </returns>
     private static List<Player> CreateTurns()
     {
         List<int> listOfPlayers = new List<int>();
@@ -196,11 +219,19 @@ public class GameController
         return output;
     }
 
+    /// <summary>
+    /// <c>SetCountryMap</c> sets the map of buttons to Country objects to handle clicks correctly.
+    /// </summary>
+    /// <param name="map">The map of buttons to their <c>Country</c> object.</param>
     public void SetCountryMap(Dictionary<Button, Country> map)
     {
         this.countryMap = map;
     }
 
+    /// <summary>
+    /// <c>SetupPhase</c> handles clicks in the phase where not all countries are owned.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     public void SetupPhase(GameObject selectedObj)
     {
         if (selectedObj == null || (!selectedObj.name.StartsWith("country") && !selectedObj.name.StartsWith("Rename"))) return;
@@ -233,6 +264,11 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>SetupDeployPhase</c> handles clicks in the phase where all countries are owned;
+    /// but some players have troops left to deploy.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     public void SetupDeployPhase(GameObject selectedObj)
     {
         if (selectedObj == null) return;
@@ -333,6 +369,10 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>DraftPhase</c> handles clicks in the first phase of each player's turn, troops are deployed.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     public void DraftPhase(GameObject selectedObj)
     {
         if (selectedObj == null) return;
@@ -429,6 +469,10 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>AttackPhase</c> handles clicks in the attacking phase of the turn.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     public void AttackPhase(GameObject selectedObj)
     {
         if (selectedObj == null) return;
@@ -509,6 +553,10 @@ public class GameController
         return;
     }
 
+    /// <summary>
+    /// <c>FortifyPhase</c> handles clicks in the phase after attack where players can fortify a country.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     public void FortifyPhase(GameObject selectedObj)
     {
         if (TransferCanvas.enabled)
@@ -587,24 +635,29 @@ public class GameController
         return;
     }
 
+    /// <summary>
+    /// <c>HandleCardClick</c> handles clicks in the card inventory screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     private void HandleCardClick(GameObject selectedObj)
     {
         switch (selectedObj.name)
         {
             case "Trade":
-                if (this.turnPlayer.Trade()) 
+                if (this.turnPlayer.Trade())
                 {
-                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was successful. You gained 6 troops.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was successful. You gained 6 troops.";
                     GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.green;
                 }
-                else 
+                else
                 {
-                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was unsuccessful. You have to trade one of each type or three of a type.";    
+                    GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().text = "Trade was unsuccessful. You have to trade one of each type or three of a type.";
                     GameObject.Find("TradeResultText").GetComponent<TextMeshProUGUI>().color = Color.red;
                 }
                 GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = true;
 
-                Wait.Start(2f, () => {
+                Wait.Start(2f, () =>
+                {
                     GameObject.Find("TradeResult").GetComponent<Canvas>().enabled = false;
                 });
                 return;
@@ -637,39 +690,70 @@ public class GameController
         }
     }
 
-    private void HandleRenameClick(GameObject selectedObj)
+    /// <summary>
+    /// <c>HandleRenameClick</c> handles clicks in the rename country screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
+    public void HandleRenameClick(GameObject selectedObj)
     {
         switch (selectedObj.name)
         {
             case "RenameCountryButton":
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = true;
                 break;
+
             case "RenameConfirm":
                 string from = GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
                 string to = GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text.FirstCharacterToUpper();
 
+                Country foundCountry = null;
+                string[] names = new string[countryMap.Count];
+                int i = 0;
+
                 foreach (var kvp in countryMap)
                 {
-                    if (kvp.Value.GetName().ToLower().Equals(from.ToLower()))
+                    string name = kvp.Value.GetName();
+                    names[i] = name;
+                    i++;
+                    if (to.ToLower().Equals(name.ToLower()))
                     {
-                        kvp.Value.SetName(to);
-                        Killfeed.Update($"'{from}' was renamed to '{to}'");
+                        Killfeed.Update($"Country '{to}' already exists");
                         GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
+                        GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "";
+                        GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "";
                         return;
                     }
+
+                    if (name.ToLower().Equals(from.ToLower())) foundCountry = kvp.Value;
                 }
 
-                Killfeed.Update($"Country '{from}' does not exist");
+                if (foundCountry != null)
+                {
+                    foundCountry.SetName(to);
+                    Killfeed.Update($"'{from}' was renamed to '{to}'");
+                }
+                else
+                {
+                    Killfeed.Update($"Country '{from}' does not exist");
+                }
+
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                break;
+                GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "";
+                GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "";
+                return;
+
             case "RenameCancel":
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
-                break;
-            default:
-                break;
+                return;
+
+            default: return;
         }
     }
 
+    /// <summary>
+    /// <c>HandleAttackClick</c> handles clicks in the attacking screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     private void HandleAttackClick(GameObject selectedObj)
     {
         TextMeshProUGUI numberOfTroops = GameObject.Find("NumberOfTroopsToSend").GetComponent<TextMeshProUGUI>();
@@ -734,6 +818,10 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>HandleAttackClick</c> handles clicks in the troop defend screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     private void HandleDefendClick(GameObject selectedObj)
     {
         int attacker_num = Int32.Parse(GameObject.Find("RemainingDefend").GetComponent<TextMeshProUGUI>().text.Split("\n")[0].Substring(18));
@@ -774,6 +862,10 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>HandleTransferClick</c> handles clicks in the transferring of troops screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     private void HandleTransferClick(GameObject selectedObj)
     {
         int available = recentFight[0].GetTroops() - 1;
@@ -822,6 +914,10 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>HandleFortifyClick</c> handles clicks in the country fortification screen.
+    /// </summary>
+    /// <param name="selectedObj">The object the user has clicked.</param>
     private void HandleFortifyClick(GameObject selectedObj)
     {
         if (selectedObj == null) return;
@@ -890,20 +986,44 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>HighlightEnemy</c> changes the color of all enemies that you can attack.
+    /// </summary>
+    /// <param name="country">The country that has enemies you want to highlight.</param>
     public void HighlightEnemy(Country country)
     {
         this.attacker = country;
-        this.considered = country.HighlightEnemyNeighbours();
+        this.considered = country.HighlightEnemyNeighbors();
         return;
     }
 
-    public void HighlightFriendly(Country country)
+    /// <summary>
+    /// <c>HighlightConnectedCountries</c> recurses through all connected countries to find which ones can be fortified.
+    /// </summary>
+    private void HighlightConnectedCountries()
     {
-        this.attacker = country;
-        this.considered = country.HighlightFriendlyNeighbours();
-        return;
+        List<Country> visited = new List<Country>();
+        Action<List<Country>, Country> recurse = null;
+        recurse = (visited, country) =>
+        {
+            visited.Add(country);
+            country.TempColorChange(Color.white);
+
+            foreach (Country neighbor in country.GetNeighbors())
+            {
+                if (neighbor.GetOwner() != attacker.GetOwner() || visited.Contains(neighbor)) continue;
+                recurse(visited, neighbor);
+            }
+        };
+
+        recurse(visited, this.attacker);
+        this.attacker.TempColorChange(Color.grey);
+        this.considered = visited;
     }
 
+    /// <summary>
+    /// <c>UnHighlight</c> reverses any color changes that happened during attack or fortify.
+    /// </summary>
     public void UnHighlight()
     {
         if (attacker != null)
@@ -917,6 +1037,14 @@ public class GameController
         }
     }
 
+    /// <summary>
+    /// <c>Attack</c> handles the whole attack after the users have chosen countries and troops. 
+    /// Rolls dice and shows outcome of fight.
+    /// </summary>
+    /// <param name="attacker">The country that is going to attack.</param>
+    /// <param name="defender">The country that is going to defend.</param>
+    /// <param name="num">The number of troops that are going to attack.</param>
+    /// <param name="defender_num">The number of troops that are going to defend.</param>
     public bool Attack(Country attacker, Country defender, int num, int defender_num)
     {
 
@@ -1039,6 +1167,12 @@ public class GameController
         return true;
     }
 
+    /// <summary>
+    /// <c>Transfer</c> moves <c>num</c> troops from a country to another country.
+    /// </summary>
+    /// <param name="from">The country that is going to send the troops.</param>
+    /// <param name="to">The country that is going to receive the troops.</param>
+    /// <param name="num">The number of troops that are going to be sent.</param>
     public void Transfer(Country from, Country to, int num)
     {
         from.ChangeTroops(-num);
@@ -1048,6 +1182,9 @@ public class GameController
         Killfeed.Update($"{turnPlayer.GetName()}: sent {num} troop(s) from {from.GetName()} to {to.GetName()}");
     }
 
+    /// <summary>
+    /// <c>NextTurn</c> finds the next player that can take a turn and switches to them.
+    /// </summary>
     public void NextTurn()
     {
         if (this.turnPlayer.GetNumberOfOwnedCountries() == this.countryMap.Count)
@@ -1078,6 +1215,9 @@ public class GameController
         else EnableButtons();
     }
 
+    /// <summary>
+    /// <c>ResetTurn</c> goes back to the first player's turn.
+    /// </summary>
     public void ResetTurn()
     {
         turnIndex = 0;
@@ -1087,10 +1227,25 @@ public class GameController
         EnableButtons();
     }
 
+    /// <summary>
+    /// <c>GetTurnsName</c> finds the name of the current player.
+    /// </summary>
+    /// <returns>
+    /// The name of the currently playing player.
+    /// </returns>
     public string GetTurnsName() => turnPlayer.GetName();
 
+    /// <summary>
+    /// <c>GetTurnsColor</c> finds the color of the current player.
+    /// </summary>
+    /// <returns>
+    /// The color of the currently playing player.
+    /// </returns>
     public Color GetTurnsColor() => turnPlayer.GetColor();
 
+    /// <summary>
+    /// <c>EnableButtons</c> allows the player to click all buttons on the screen when it is their turn.
+    /// </summary>
     private void EnableButtons()
     {
         foreach (var kvp in countryMap)
@@ -1101,6 +1256,9 @@ public class GameController
         GameObject.Find("EndPhase").GetComponent<Button>().enabled = true;
     }
 
+    /// <summary>
+    /// <c>DisableButtons</c> stops the player from clicking buttons when it is not their turn.
+    /// </summary>
     private void DisableButtons()
     {
         foreach (var kvp in countryMap)
@@ -1111,27 +1269,9 @@ public class GameController
         GameObject.Find("EndPhase").GetComponent<Button>().enabled = false;
     }
 
-    private void HighlightConnectedCountries()
-    {
-        List<Country> visited = new List<Country>();
-        Action<List<Country>, Country> recurse = null;
-        recurse = (visited, country) =>
-        {
-            visited.Add(country);
-            country.TempColorChange(Color.white);
-
-            foreach (Country neighbor in country.GetNeighbors())
-            {
-                if (neighbor.GetOwner() != attacker.GetOwner() || visited.Contains(neighbor)) continue;
-                recurse(visited, neighbor);
-            }
-        };
-
-        recurse(visited, this.attacker);
-        this.attacker.TempColorChange(Color.grey);
-        this.considered = visited;
-    }
-
+    /// <summary>
+    /// <c>EliminatePlayer</c> shows a screen with information of the recently eliminated player.
+    /// </summary>
     private void EliminatePlayer()
     {
         GameObject.Find("EliminatedColour").GetComponent<Image>().color = eliminatedPlayers[eliminatedPlayers.Count - 1].GetColor();
@@ -1143,7 +1283,10 @@ public class GameController
         });
     }
 
-    void ShowRanking()
+    /// <summary>
+    /// <c>ShowRanking</c> shows the order of which all players were eliminated for the win screen of the game.
+    /// </summary>
+    private void ShowRanking()
     {
         eliminatedPlayers.Reverse();
         List<string> places = new List<string>() { "2nd", "3rd", "4th", "5th", "6th" };

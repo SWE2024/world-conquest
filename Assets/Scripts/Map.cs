@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class Map : MonoBehaviour
 {
-    static List<List<int>> ListOfNeighbours;
+    static List<List<int>> ListOfNeighbors;
 
     GameController game;
 
@@ -45,11 +45,11 @@ public class Map : MonoBehaviour
     {
         int numberOfCountries = 0;
 
-        switch (Preferences.MapNumber)
+        switch (Preferences.MapNumber) // sets the correct variables based on the map being played
         {
-            case 1: numberOfCountries = 44; ListOfNeighbours = Map1.ListOfNeighbours; break;
-            case 2: numberOfCountries = 27; ListOfNeighbours = Map2.ListOfNeighbours; break;
-            case 3: numberOfCountries = 6; ListOfNeighbours = Map3.ListOfNeighbours; break;
+            case 1: numberOfCountries = 44; ListOfNeighbors = Map1.ListOfNeighbors; break;
+            case 2: numberOfCountries = 27; ListOfNeighbors = Map2.ListOfNeighbors; break;
+            case 3: numberOfCountries = 6; ListOfNeighbors = Map3.ListOfNeighbors; break;
         }
 
         //initializes the gamestate instance which is singleton
@@ -84,7 +84,7 @@ public class Map : MonoBehaviour
             GameObject.Find($"connectionsmap{Preferences.MapNumber}").GetComponent<Image>().enabled = true;
         }
 
-        // delete map objects from unused maps
+        // disable map objects from unused maps
         if (Preferences.MapNumber != 1)
         {
             for (int i = 1; i <= 44; i++)
@@ -133,7 +133,7 @@ public class Map : MonoBehaviour
         {
             List<Country> neighbors = new List<Country>();
 
-            foreach (int index in ListOfNeighbours[i])
+            foreach (int index in ListOfNeighbors[i])
             {
                 neighbors.Add(game.ListOfCountries[index - 1]);
             }
@@ -182,11 +182,13 @@ public class Map : MonoBehaviour
 
         for (int i = 1; i <= 3; i++)
         {
+            // stops you from being able to click the transparent parts of the image
             GameObject.Find($"trade{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
 
         for (int i = 1; i <= 6; i++)
         {
+            // stops you from being able to click the transparent parts of the image
             GameObject.Find($"slot{i}").GetComponent<Image>().alphaHitTestMinimumThreshold = 0.1f;
         }
     }

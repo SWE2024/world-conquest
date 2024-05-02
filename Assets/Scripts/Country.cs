@@ -121,7 +121,7 @@ public class Country
     /// <returns>
     /// List of <c>Country</c> objects that are neighboring enemies.
     /// </returns>
-    public List<Country> HighlightEnemyNeighbours()
+    public List<Country> HighlightEnemyNeighbors()
     {
         TempColorChange(Color.grey);
 
@@ -138,12 +138,12 @@ public class Country
     }
 
     /// <summary>
-    /// <c>HighlightFriendlyNeighbours</c> recursively checks all neighbors and if they are friendly, adds them to a list.
+    /// <c>HighlightFriendlyNeighbors</c> recursively checks all neighbors and if they are friendly, adds them to a list.
     /// </summary>
     /// <returns>
     /// List of <c>Country</c> that you can fortify with.
     /// </returns>
-    public List<Country> HighlightFriendlyNeighbours() // currently only finds 1 layer of neighbors
+    public List<Country> HighlightFriendlyNeighbors() // currently only finds 1 layer of neighbors
     {
         TempColorChange(Color.grey);
 

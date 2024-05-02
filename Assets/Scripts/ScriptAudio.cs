@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// <c>ScriptAudio</c> handles the in-game audio.
@@ -27,12 +28,16 @@ public class ScriptAudio : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M) && !GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled)
+        if (Input.GetKeyDown(KeyCode.M))
         {
-            if (isMuted) music.volume = Preferences.CurrentVolume;
-            else music.volume = 0f;
+            Canvas canvas = GameObject.Find("RenameCountry")?.GetComponent<Canvas>();
+            if ((!SceneManager.GetActiveScene().name.Equals("SceneGame")) || (canvas != null && !canvas.enabled))
+            {
+                if (isMuted) music.volume = Preferences.CurrentVolume;
+                else music.volume = 0f;
 
-            isMuted = !isMuted;
+                isMuted = !isMuted;
+            }
         }
     }
 
