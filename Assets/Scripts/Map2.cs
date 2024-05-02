@@ -36,7 +36,7 @@ public class Map2
         { 27, "Swuca"},
     };
 
-    public static List<List<int>> ListOfNeighbours = new List<List<int>> {
+    public static List<List<int>> ListOfNeighbors = new List<List<int>> {
         new List<int> {
             2, 3, 4, 5
         },

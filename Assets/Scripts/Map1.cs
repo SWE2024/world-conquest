@@ -53,7 +53,7 @@ public class Map1
         { 44, "E. Australia" },
     };
 
-    public static List<List<int>> ListOfNeighbours = new List<List<int>> {
+    public static List<List<int>> ListOfNeighbors = new List<List<int>> {
         new List<int> {
             2, 3, 37
         },
