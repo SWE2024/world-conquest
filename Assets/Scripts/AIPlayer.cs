@@ -189,6 +189,7 @@ public class AIPlayer : Player
                 GameController.Get().HandleObjectClick = GameController.Get().DraftPhase;
                 GameController.Get().NextTurn();
                 GameController.Get().turnPlayer.GetNewTroopsAndCards();
+                GameController.Get().turnPlayer.InitializeSlot();
             });
         }
     }

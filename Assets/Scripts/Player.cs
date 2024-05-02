@@ -241,6 +241,8 @@ public class Player
     /// </summary>
     public bool Trade()
     {
+        if (trade.Count < 3) return false; // stops the player from being able to trade in less than 3 cards
+
         HashSet<string> types = new HashSet<string>();
         foreach (Card card in trade) types.Add(card.GetCardType());
         foreach (string s in types) Debug.Log(s);
@@ -254,6 +256,7 @@ public class Player
             return false;
         }
         ChangeNumberOfTroops(6);
+        Killfeed.Update($"{this.GetName()}: traded in for 6 troops");
         foreach (Card card in trade) ownedCards.Remove(card);
         trade.Clear();
         LoadTrade();

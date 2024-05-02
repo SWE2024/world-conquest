@@ -717,7 +717,7 @@ public class GameController
                     i++;
                     if (to.ToLower().Equals(name.ToLower()))
                     {
-                        Killfeed.Update($"Country '{to}' already exists");
+                        Killfeed.Update($"Error: Country '{to}' already exists");
                         GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
                         GameObject.Find("RenameCountryFrom").GetComponent<TMP_InputField>().text = "";
                         GameObject.Find("RenameCountryTo").GetComponent<TMP_InputField>().text = "";
@@ -730,11 +730,11 @@ public class GameController
                 if (foundCountry != null)
                 {
                     foundCountry.SetName(to);
-                    Killfeed.Update($"'{from}' was renamed to '{to}'");
+                    Killfeed.Update($"Success: '{from}' was renamed to '{to}'");
                 }
                 else
                 {
-                    Killfeed.Update($"Country '{from}' does not exist");
+                    Killfeed.Update($"Error: Country '{from}' does not exist");
                 }
 
                 GameObject.Find("RenameCountry").GetComponent<Canvas>().enabled = false;
@@ -763,8 +763,8 @@ public class GameController
         {
             case "Confirm":
                 this.AttackCanvas.enabled = false;
-
-                if (this.defender.GetTroops() > 1)
+               
+                if (this.defender.GetTroops() > 1 && this.defender.GetOwner() is not AIPlayer)
                 {
                     numberOfTroops.text = "1";
                     AttackCanvas.enabled = false;
@@ -773,7 +773,9 @@ public class GameController
                     return;
                 }
 
-                if (!this.Attack(attacker, defender, attacker_num, 1)) return;
+                int defender_num = (this.defender.GetTroops() > 1 && this.defender.GetOwner() is AIPlayer) ? UnityEngine.Random.Range(1, 3) : 1;
+
+                if (!this.Attack(attacker, defender, attacker_num, defender_num)) return;
 
                 if (attacker.GetOwner() == defender.GetOwner())
                 {
